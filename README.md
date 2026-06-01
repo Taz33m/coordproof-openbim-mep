@@ -4,13 +4,24 @@
 
 CoordProof generates a coordinated mechanical-room package from a shared Python/OpenBIM source layer. The package includes IFC4 semantics, FreeCAD review models, QCAD DXF/PDF drawings, STEP/STL CAD exports, asset manifests, BOM/clearance reports, and automated validation.
 
-![CoordProof generated OpenBIM package](screenshots/00_coordproof_system_overview.png)
+<p align="center">
+  <a href="https://youtu.be/4Ww1gH0GFy8">
+    <img src="https://img.youtube.com/vi/4Ww1gH0GFy8/maxresdefault.jpg" alt="CoordProof video overview thumbnail" width="920">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://taz33m.github.io/coordproof-openbim-mep/">Project page</a> ·
+  <a href="https://youtu.be/4Ww1gH0GFy8">Video overview</a>
+</p>
 
 ## System
 
 CoordProof models a mechanical room as a traceable CAD/BIM production package. Asset IDs, dimensions, locations, IFC classes, system membership, distribution ports, clearance zones, drawing annotations, exports, and validation rules are generated from shared source definitions.
 
 The package connects geometry, drawings, IFC semantics, reports, and QA outputs as inspectable artifacts.
+
+![CoordProof generated OpenBIM package](screenshots/00_coordproof_system_overview.png)
 
 ## Evidence Summary
 
@@ -127,15 +138,3 @@ The implemented scope is CAD/BIM automation and OpenBIM package generation.
 Excluded scopes: stamped engineering design, construction documents, manufacturer fabrication modeling, code compliance, hydraulic calculation, airflow calculation, and full clash-detection analysis.
 
 Major objects are named, classified, exported, documented, mapped, coordinated, and validated from the same OpenBIM source layer. See [`docs/limitations.md`](docs/limitations.md) for detailed modeling assumptions and boundaries.
-
-## Technical Reel
-
-<p align="center">
-  <a href="https://youtu.be/4Ww1gH0GFy8">
-    <img src="https://img.youtube.com/vi/4Ww1gH0GFy8/maxresdefault.jpg" alt="CoordProof technical reel thumbnail" width="920">
-  </a>
-</p>
-
-<p align="center">
-  <strong><a href="https://youtu.be/4Ww1gH0GFy8">Watch the CoordProof technical reel on YouTube</a></strong>
-</p>
