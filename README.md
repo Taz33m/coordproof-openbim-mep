@@ -23,6 +23,16 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 
 ![CoordProof generated OpenBIM package](screenshots/00_coordproof_system_overview.png)
 
+## Visual Outputs
+
+| 3D coordination review | Drawing package | OpenBIM validation |
+| --- | --- | --- |
+| ![FreeCAD mechanical room overview](screenshots/01_freecad_mechanical_room_overview.png) | ![QCAD floor plan preview](screenshots/04_qcad_floor_plan.png) | ![IFC validation report](screenshots/05_ifc_validation_report.png) |
+
+| Section + IFC connectivity | BIM hierarchy | Asset/export coverage |
+| --- | --- | --- |
+| ![Section and IFC connectivity](screenshots/07_qcad_section_and_riser.png) | ![FreeCAD BIM structure](screenshots/02_freecad_bim_structure.png) | ![Export formats overview](screenshots/06_export_formats_overview.png) |
+
 ## Evidence Summary
 
 | Output | Count | Purpose |
@@ -76,16 +86,6 @@ flowchart LR
 | Assets | [`cadquery/`](cadquery/), [`openscad/`](openscad/), [`exports/`](exports/) |
 | Reports | [`reports/coordination_report.md`](reports/coordination_report.md), [`reports/bill_of_materials.csv`](reports/bill_of_materials.csv), [`reports/clash_clearance_report.csv`](reports/clash_clearance_report.csv) |
 | Validation | [`validation/validation_report.md`](validation/validation_report.md), [`tools/preflight_public_package.py`](tools/preflight_public_package.py) |
-
-## Visual Outputs
-
-| 3D coordination review | Drawing package | OpenBIM validation |
-| --- | --- | --- |
-| ![FreeCAD mechanical room overview](screenshots/01_freecad_mechanical_room_overview.png) | ![QCAD floor plan preview](screenshots/04_qcad_floor_plan.png) | ![IFC validation report](screenshots/05_ifc_validation_report.png) |
-
-| Section + IFC connectivity | BIM hierarchy | Asset/export coverage |
-| --- | --- | --- |
-| ![Section and IFC connectivity](screenshots/07_qcad_section_and_riser.png) | ![FreeCAD BIM structure](screenshots/02_freecad_bim_structure.png) | ![Export formats overview](screenshots/06_export_formats_overview.png) |
 
 ## Validation
 
