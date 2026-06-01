@@ -1,0 +1,1000 @@
+{
+  "assets": [
+    {
+      "asset_id": "room_shell_001",
+      "display_name": "Mechanical Room Shell",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcSpace",
+      "parameters": {
+        "length_mm": 6000,
+        "width_mm": 4200,
+        "height_mm": 3200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc",
+        "freecad_review_ifc": "bim/mechanical_room_freecad_review.ifc",
+        "freecad": "freecad/mechanical_room.FCStd",
+        "freecad_bim": "freecad/mechanical_room_bim.FCStd",
+        "step": "exports/step/mechanical_room_assembly.step"
+      },
+      "validation_status": "passed",
+      "notes": "Room volume and enclosing architectural shell."
+    },
+    {
+      "asset_id": "slab_concrete_base_001",
+      "display_name": "Concrete Slab Base",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcSlab",
+      "parameters": {
+        "length_mm": 6000,
+        "width_mm": 4200,
+        "height_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Base slab for the mechanical room."
+    },
+    {
+      "asset_id": "wall_north_001",
+      "display_name": "North Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 6000,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "North architectural boundary wall."
+    },
+    {
+      "asset_id": "wall_south_001",
+      "display_name": "South Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 6000,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "South architectural boundary wall."
+    },
+    {
+      "asset_id": "wall_east_001",
+      "display_name": "East Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 4200,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "East architectural boundary wall."
+    },
+    {
+      "asset_id": "wall_west_001",
+      "display_name": "West Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 4200,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "West architectural boundary wall."
+    },
+    {
+      "asset_id": "door_access_001",
+      "display_name": "Access Door",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcDoor",
+      "parameters": {
+        "width_mm": 1000,
+        "height_mm": 2100
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Primary access opening in the south wall."
+    },
+    {
+      "asset_id": "equipment_ahu_001",
+      "display_name": "Air Handling Unit AHU-1",
+      "category": "mechanical_equipment",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcUnitaryEquipment",
+      "parameters": {
+        "length_mm": 1500,
+        "width_mm": 850,
+        "height_mm": 1100
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Main packaged air-handling unit with filter, coil, fan, and service-access context in the IFC schedule."
+    },
+    {
+      "asset_id": "pipe_supply_001",
+      "display_name": "Supply Pipe Run",
+      "category": "flow_segment",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_diameter_mm": 80,
+        "length_mm": 3600
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWS supply pipe route coordinated with valves, support, and AHU coil connection."
+    },
+    {
+      "asset_id": "pipe_return_001",
+      "display_name": "Return Pipe Run",
+      "category": "flow_segment",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_diameter_mm": 80,
+        "length_mm": 3600
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWR return pipe route coordinated with valves, support, and AHU coil connection."
+    },
+    {
+      "asset_id": "clearance_ahu_service_zone_001",
+      "display_name": "AHU Service Clearance Zone",
+      "category": "clearance_zone",
+      "source_tool": "FreeCAD BIM",
+      "units": "millimeters",
+      "ifc_class": "IfcVirtualElement",
+      "parameters": {
+        "length_mm": 1800,
+        "width_mm": 1000,
+        "height_mm": 1900
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Rule-based transparent clearance volume for AHU service access."
+    },
+    {
+      "asset_id": "mechanical_room_ifc_001",
+      "display_name": "Mechanical Room IFC Export",
+      "category": "bim_export",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcProject",
+      "parameters": {},
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc",
+        "semantic_inventory_csv": "bim/openbim_semantic_inventory.csv",
+        "entity_summary_md": "bim/ifc_entity_summary.md"
+      },
+      "validation_status": "passed",
+      "notes": "Programmatic IFC export used for validation and review."
+    },
+    {
+      "asset_id": "ahu_filter_001",
+      "display_name": "AHU Filter 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcFilter",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 800,
+        "height_mm": 760
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Filter section tracked as an individual IFC product."
+    },
+    {
+      "asset_id": "ahu_coil_001",
+      "display_name": "AHU Coil 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcCoil",
+      "parameters": {
+        "length_mm": 160,
+        "width_mm": 800,
+        "height_mm": 760
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Cooling coil section connected to CHWS/CHWR ports."
+    },
+    {
+      "asset_id": "ahu_fan_001",
+      "display_name": "AHU Fan 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcFan",
+      "parameters": {
+        "radius_mm": 260,
+        "length_mm": 420
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Fan section connected to the supply-air system."
+    },
+    {
+      "asset_id": "pump_chws_duty_001",
+      "display_name": "Pump CHWS Duty 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPump",
+      "parameters": {
+        "radius_mm": 170,
+        "length_mm": 460
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Duty chilled-water pump with connected distribution ports."
+    },
+    {
+      "asset_id": "pump_chws_standby_001",
+      "display_name": "Pump CHWS Standby 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPump",
+      "parameters": {
+        "radius_mm": 170,
+        "length_mm": 460
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Standby chilled-water pump tracked in the IFC product schedule."
+    },
+    {
+      "asset_id": "pipe_supply_drop_001",
+      "display_name": "Pipe Supply Drop 01",
+      "category": "flow_segment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_radius_mm": 40,
+        "length_mm": 800
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Vertical CHWS drop connecting the overhead pipe rack to the AHU coil."
+    },
+    {
+      "asset_id": "pipe_return_drop_001",
+      "display_name": "Pipe Return Drop 01",
+      "category": "flow_segment",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_radius_mm": 40,
+        "length_mm": 810
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Vertical CHWR drop connecting the AHU coil back to the return rack."
+    },
+    {
+      "asset_id": "valve_chws_isolation_001",
+      "display_name": "Valve CHWS Isolation 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWS isolation valve tracked as a flow controller."
+    },
+    {
+      "asset_id": "valve_chws_balancing_001",
+      "display_name": "Valve CHWS Balancing 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWS balancing valve tracked as a flow controller."
+    },
+    {
+      "asset_id": "valve_chwr_isolation_001",
+      "display_name": "Valve CHWR Isolation 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWR isolation valve tracked as a flow controller."
+    },
+    {
+      "asset_id": "valve_chwr_balancing_001",
+      "display_name": "Valve CHWR Balancing 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWR balancing valve tracked as a flow controller."
+    },
+    {
+      "asset_id": "pipe_fitting_chws_elbow_001",
+      "display_name": "Pipe Fitting CHWS Elbow 01",
+      "category": "flow_fitting",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeFitting",
+      "parameters": {
+        "radius_mm": 60,
+        "length_mm": 120
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWS elbow fitting at the pipe-drop transition."
+    },
+    {
+      "asset_id": "pipe_fitting_chwr_elbow_001",
+      "display_name": "Pipe Fitting CHWR Elbow 01",
+      "category": "flow_fitting",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcPipeFitting",
+      "parameters": {
+        "radius_mm": 60,
+        "length_mm": 120
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "CHWR elbow fitting at the pipe-drop transition."
+    },
+    {
+      "asset_id": "sensor_chws_pressure_001",
+      "display_name": "Sensor CHWS Pressure 01",
+      "category": "instrumentation",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcSensor",
+      "parameters": {
+        "radius_mm": 55,
+        "length_mm": 80
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Pressure sensor on the CHWS rack."
+    },
+    {
+      "asset_id": "duct_branch_001",
+      "display_name": "Duct Branch 01",
+      "category": "ductwork",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 650,
+        "width_mm": 360,
+        "height_mm": 180
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Branch duct segment connected to the supply terminal."
+    },
+    {
+      "asset_id": "duct_return_001",
+      "display_name": "Duct Return 01",
+      "category": "ductwork",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 1350,
+        "width_mm": 340,
+        "height_mm": 180
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Return-air duct segment connected to the AHU return path."
+    },
+    {
+      "asset_id": "damper_fire_001",
+      "display_name": "Damper Fire 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcDamper",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 420,
+        "height_mm": 220
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Fire damper tracked in the supply-air distribution system."
+    },
+    {
+      "asset_id": "air_terminal_supply_001",
+      "display_name": "Air Terminal Supply Diffuser 01",
+      "category": "terminal",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcAirTerminal",
+      "parameters": {
+        "length_mm": 450,
+        "width_mm": 450,
+        "height_mm": 60
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Supply diffuser terminal connected to the branch duct."
+    },
+    {
+      "asset_id": "air_terminal_return_001",
+      "display_name": "Air Terminal Return Grille 01",
+      "category": "terminal",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcAirTerminal",
+      "parameters": {
+        "length_mm": 420,
+        "width_mm": 420,
+        "height_mm": 60
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Return grille terminal connected to the return-air system."
+    },
+    {
+      "asset_id": "cable_tray_drop_001",
+      "display_name": "Cable Tray Drop 01",
+      "category": "electrical_routing",
+      "source_tool": "IfcOpenShell",
+      "units": "millimeters",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 120,
+        "height_mm": 520
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "validation_status": "passed",
+      "notes": "Vertical tray drop connected to the overhead cable tray route."
+    },
+    {
+      "asset_id": "support_pipe_bracket_type_a",
+      "display_name": "Pipe Support Bracket Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 220,
+        "width_mm": 120,
+        "height_mm": 300,
+        "pipe_diameter_mm": 60,
+        "bolt_spacing_mm": 150,
+        "material_tag": "painted_steel"
+      },
+      "exports": {
+        "step": "exports/step/support_pipe_bracket_type_a.step",
+        "stl": "exports/stl/support_pipe_bracket_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Parametric floor-mounted support bracket for a horizontal pipe run."
+    },
+    {
+      "asset_id": "support_duct_hanger_type_a",
+      "display_name": "Duct Hanger Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "duct_width_mm": 420,
+        "duct_height_mm": 220,
+        "height_mm": 520,
+        "rod_diameter_mm": 12,
+        "material_tag": "galvanized_steel"
+      },
+      "exports": {
+        "step": "exports/step/support_duct_hanger_type_a.step",
+        "stl": "exports/stl/support_duct_hanger_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Simple trapeze hanger assembly for rectangular ductwork."
+    },
+    {
+      "asset_id": "cable_tray_overhead_001",
+      "display_name": "Overhead Cable Tray Segment",
+      "category": "electrical_routing",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 900,
+        "width_mm": 220,
+        "height_mm": 80,
+        "thickness_mm": 4,
+        "material_tag": "perforated_aluminum"
+      },
+      "exports": {
+        "step": "exports/step/cable_tray_overhead_001.step",
+        "stl": "exports/stl/cable_tray_overhead_001.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Perforated U-channel tray segment for control/electrical routing."
+    },
+    {
+      "asset_id": "equipment_base_type_a",
+      "display_name": "Equipment Base Type A",
+      "category": "mechanical_equipment",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcFooting",
+      "parameters": {
+        "length_mm": 1200,
+        "width_mm": 800,
+        "height_mm": 160,
+        "bolt_diameter_mm": 18,
+        "material_tag": "concrete"
+      },
+      "exports": {
+        "step": "exports/step/equipment_base_type_a.step",
+        "stl": "exports/stl/equipment_base_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Concrete housekeeping pad with anchor bolt holes."
+    },
+    {
+      "asset_id": "equipment_pump_skid_001",
+      "display_name": "Pump Skid Frame",
+      "category": "mechanical_equipment",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcElementAssembly",
+      "parameters": {
+        "length_mm": 1100,
+        "width_mm": 520,
+        "height_mm": 180,
+        "rail_width_mm": 70,
+        "material_tag": "painted_steel"
+      },
+      "exports": {
+        "step": "exports/step/equipment_pump_skid_001.step",
+        "stl": "exports/stl/equipment_pump_skid_001.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Steel skid frame placeholder for pump assembly support."
+    },
+    {
+      "asset_id": "sleeve_wall_penetration_type_a",
+      "display_name": "Wall Penetration Sleeve Type A",
+      "category": "penetration",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcBuildingElementPart",
+      "parameters": {
+        "pipe_diameter_mm": 110,
+        "wall_thickness_mm": 200,
+        "clearance_mm": 30,
+        "material_tag": "steel_sleeve"
+      },
+      "exports": {
+        "step": "exports/step/sleeve_wall_penetration_type_a.step",
+        "stl": "exports/stl/sleeve_wall_penetration_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Cylindrical sleeve for pipe or duct penetration through a wall."
+    },
+    {
+      "asset_id": "pipe_clamp_type_a",
+      "display_name": "Pipe Clamp Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "pipe_diameter_mm": 60,
+        "width_mm": 45,
+        "thickness_mm": 10,
+        "bolt_diameter_mm": 10,
+        "material_tag": "galvanized_steel"
+      },
+      "exports": {
+        "step": "exports/step/pipe_clamp_type_a.step",
+        "stl": "exports/stl/pipe_clamp_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Ring clamp with mounting ears for small-diameter pipe support."
+    },
+    {
+      "asset_id": "duct_main_001",
+      "display_name": "Main Rectangular Duct Segment",
+      "category": "ductwork",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 900,
+        "duct_width_mm": 420,
+        "duct_height_mm": 220,
+        "wall_thickness_mm": 6,
+        "material_tag": "galvanized_sheet_metal"
+      },
+      "exports": {
+        "step": "exports/step/duct_main_001.step",
+        "stl": "exports/stl/duct_main_001.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Hollow rectangular duct segment for main air distribution route."
+    },
+    {
+      "asset_id": "plate_mounting_type_a",
+      "display_name": "Mounting Plate Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 260,
+        "width_mm": 160,
+        "thickness_mm": 12,
+        "bolt_diameter_mm": 14,
+        "bolt_spacing_mm": 190,
+        "material_tag": "steel"
+      },
+      "exports": {
+        "step": "exports/step/plate_mounting_type_a.step",
+        "stl": "exports/stl/plate_mounting_type_a.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Generic slotted support plate for wall or floor mounting."
+    },
+    {
+      "asset_id": "openscad_pipe_clamp_type_b",
+      "display_name": "OpenSCAD Pipe Clamp Type B",
+      "category": "mechanical_support",
+      "source_tool": "OpenSCAD",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "pipe_diameter_mm": 50,
+        "thickness_mm": 8,
+        "width_mm": 35
+      },
+      "exports": {
+        "scad": "openscad/pipe_clamp.scad",
+        "stl": "exports/stl/openscad_pipe_clamp_type_b.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Declarative OpenSCAD pipe clamp component example."
+    },
+    {
+      "asset_id": "openscad_bracket_plate_type_b",
+      "display_name": "OpenSCAD Bracket Plate Type B",
+      "category": "mechanical_support",
+      "source_tool": "OpenSCAD",
+      "units": "millimeters",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 180,
+        "width_mm": 90,
+        "thickness_mm": 10
+      },
+      "exports": {
+        "scad": "openscad/bracket_plate.scad",
+        "stl": "exports/stl/openscad_bracket_plate_type_b.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Slotted bracket plate with top-level parameters."
+    },
+    {
+      "asset_id": "openscad_cable_tray_segment_type_b",
+      "display_name": "OpenSCAD Cable Tray Segment Type B",
+      "category": "electrical_routing",
+      "source_tool": "OpenSCAD",
+      "units": "millimeters",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 500,
+        "width_mm": 160,
+        "height_mm": 60
+      },
+      "exports": {
+        "scad": "openscad/cable_tray_segment.scad",
+        "stl": "exports/stl/openscad_cable_tray_segment_type_b.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Simple U-channel cable tray with repeated perforations."
+    },
+    {
+      "asset_id": "openscad_duct_connector_type_b",
+      "display_name": "OpenSCAD Duct Connector Type B",
+      "category": "ductwork",
+      "source_tool": "OpenSCAD",
+      "units": "millimeters",
+      "ifc_class": "IfcFlowFitting",
+      "parameters": {
+        "duct_width_mm": 360,
+        "duct_height_mm": 180,
+        "thickness_mm": 5
+      },
+      "exports": {
+        "scad": "openscad/duct_connector.scad",
+        "stl": "exports/stl/openscad_duct_connector_type_b.stl"
+      },
+      "validation_status": "passed",
+      "notes": "Flanged rectangular duct connector."
+    },
+    {
+      "asset_id": "drawing_floor_plan_001",
+      "display_name": "Floor Plan Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:50"
+      },
+      "exports": {
+        "dxf": "qcad/floor_plan.dxf",
+        "pdf": "qcad/pdf_exports/floor_plan.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Room layout with walls, door, major equipment, and clearance zones."
+    },
+    {
+      "asset_id": "drawing_equipment_layout_001",
+      "display_name": "Equipment Layout Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:50"
+      },
+      "exports": {
+        "dxf": "qcad/equipment_layout.dxf",
+        "pdf": "qcad/pdf_exports/equipment_layout.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Equipment arrangement and service zones."
+    },
+    {
+      "asset_id": "drawing_section_aa_001",
+      "display_name": "Section A-A Coordination Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:25"
+      },
+      "exports": {
+        "dxf": "qcad/section_aa.dxf",
+        "pdf": "qcad/pdf_exports/section_aa.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Coordinated section showing vertical separation, room height, clearance headroom, pipe rack, duct, and tray."
+    },
+    {
+      "asset_id": "drawing_system_riser_001",
+      "display_name": "MEP System Riser Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "NTS"
+      },
+      "exports": {
+        "dxf": "qcad/system_riser.dxf",
+        "pdf": "qcad/pdf_exports/system_riser.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Schematic riser/connectivity sheet documenting IFC distribution systems and port relationships."
+    },
+    {
+      "asset_id": "drawing_pipe_support_detail_001",
+      "display_name": "Pipe Support Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/pipe_support_detail.dxf",
+        "pdf": "qcad/pdf_exports/pipe_support_detail.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Pipe support bracket dimensions and anchor layout."
+    },
+    {
+      "asset_id": "drawing_wall_penetration_detail_001",
+      "display_name": "Wall Penetration Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/wall_penetration_detail.dxf",
+        "pdf": "qcad/pdf_exports/wall_penetration_detail.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Sleeve and wall penetration detail."
+    },
+    {
+      "asset_id": "drawing_duct_hanger_detail_001",
+      "display_name": "Duct Hanger Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/duct_hanger_detail.dxf",
+        "pdf": "qcad/pdf_exports/duct_hanger_detail.pdf"
+      },
+      "validation_status": "passed",
+      "notes": "Trapeze hanger and duct support dimensions."
+    },
+    {
+      "asset_id": "report_coordination_001",
+      "display_name": "Coordination Report",
+      "category": "report",
+      "source_tool": "Python",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "tools/openbim_core.py"
+      },
+      "exports": {
+        "md": "reports/coordination_report.md"
+      },
+      "validation_status": "passed",
+      "notes": "Generated source-of-truth summary tying IFC products, systems, connections, BOM, and clearance checks together."
+    },
+    {
+      "asset_id": "report_bom_001",
+      "display_name": "Bill of Materials",
+      "category": "report",
+      "source_tool": "Python",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "tools/openbim_core.py"
+      },
+      "exports": {
+        "csv": "reports/bill_of_materials.csv"
+      },
+      "validation_status": "passed",
+      "notes": "Generated BOM from the same semantic product schedule used for IFC output."
+    },
+    {
+      "asset_id": "report_clash_clearance_001",
+      "display_name": "Clash and Clearance Report",
+      "category": "report",
+      "source_tool": "Python",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "tools/openbim_core.py"
+      },
+      "exports": {
+        "csv": "reports/clash_clearance_report.csv"
+      },
+      "validation_status": "passed",
+      "notes": "Generated bounding-box clearance and coordination checks for the mechanical-room layout."
+    }
+  ]
+}

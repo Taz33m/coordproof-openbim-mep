@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mechanical Room Asset Parameters",
+  "type": "object",
+  "additionalProperties": {
+    "type": [
+      "number",
+      "integer",
+      "string",
+      "boolean",
+      "array",
+      "object"
+    ]
+  },
+  "properties": {
+    "asset_id": {
+      "type": "string"
+    },
+    "length_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "width_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "height_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "thickness_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "wall_thickness_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "pipe_diameter_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "duct_width_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "duct_height_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "bolt_diameter_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "bolt_spacing_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "mounting_hole_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "clearance_mm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "material_tag": {
+      "type": "string"
+    },
+    "export_formats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

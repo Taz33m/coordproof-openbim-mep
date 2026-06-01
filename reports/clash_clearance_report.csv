@@ -1,0 +1,21 @@
+check_id,check_type,left,right,minimum_mm,actual_mm,status,notes
+CLR-AHU-001,clearance_rule,Clearance_ServiceZone_AHU_01,Equipment_AHU_01,1000 depth / 1900 headroom,1000 depth / 1900 headroom,PASS,AHU service access zone is explicit IFC geometry and manifest asset.
+INT-001,bbox_intersection,Pipe_Supply_01,Valve_CHWS_Isolation_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-002,bbox_intersection,Pipe_Supply_01,Valve_CHWS_Balancing_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-003,bbox_intersection,Pipe_Supply_01,PipeFitting_CHWS_Elbow_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-004,bbox_intersection,Pipe_Supply_01,PipeClamp_TypeA_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-005,bbox_intersection,Pipe_Return_01,Valve_CHWR_Isolation_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-006,bbox_intersection,Pipe_Return_01,Valve_CHWR_Balancing_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-007,bbox_intersection,Pipe_Return_01,PipeFitting_CHWR_Elbow_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-008,bbox_intersection,Duct_Main_01,Duct_Return_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-009,bbox_intersection,Duct_Main_01,Damper_Fire_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-010,bbox_intersection,Duct_Main_01,Support_DuctHanger_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-011,bbox_intersection,Duct_Branch_01,AirTerminal_SupplyDiffuser_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-012,bbox_intersection,Duct_Return_01,AirTerminal_ReturnGrille_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-013,bbox_intersection,Duct_Return_01,Support_DuctHanger_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-014,bbox_intersection,Damper_Fire_01,Support_DuctHanger_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+INT-015,bbox_intersection,CableTray_Overhead_01,CableTray_Drop_01,0,0,REVIEW,Bounding-box screen; REVIEW is acceptable for connected equipment/pipe interfaces.
+SEP-016,pipe-to-duct separation,Pipe_Supply_01,Duct_Branch_01,100,111,PASS,Rule generated from shared BIM product schedule.
+SEP-017,pipe-to-duct separation,Pipe_Return_01,Duct_Branch_01,100,260,PASS,Rule generated from shared BIM product schedule.
+SEP-018,tray-to-duct separation,CableTray_Overhead_01,Duct_Branch_01,150,563,PASS,Rule generated from shared BIM product schedule.
+SEP-019,tray above clearance headroom,CableTray_Overhead_01,Clearance_ServiceZone_AHU_01,0,50,PASS,Rule generated from shared BIM product schedule.

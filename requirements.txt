@@ -1,0 +1,5 @@
+cadquery>=2.5
+ifcopenshell>=0.8
+ezdxf>=1.4
+reportlab>=4.2
+Pillow>=9.0

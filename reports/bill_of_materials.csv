@@ -1,0 +1,40 @@
+asset_id,name,ifc_class,category,systems,material,dimensions_mm,source_tool
+slab_concrete_base_001,Slab_Concrete_Base,IfcSlab,architectural_shell,,cast_in_place_concrete,6000 x 4200 x 200,FreeCAD BIM
+wall_north_001,Wall_North_01,IfcWall,architectural_shell,,concrete,6000 x 200 x 3000,FreeCAD BIM
+wall_south_001,Wall_South_01,IfcWall,architectural_shell,,concrete,6000 x 200 x 3000,FreeCAD BIM
+wall_east_001,Wall_East_01,IfcWall,architectural_shell,,concrete,200 x 4200 x 3000,FreeCAD BIM
+wall_west_001,Wall_West_01,IfcWall,architectural_shell,,concrete,200 x 4200 x 3000,FreeCAD BIM
+door_access_001,Door_Access_01,IfcDoor,architectural_shell,,painted_hollow_metal,1000 x 70 x 2100,FreeCAD BIM
+equipment_base_type_a,EquipmentPad_AHU_01,IfcFooting,mechanical_equipment,,concrete,1800 x 1100 x 160,CadQuery
+equipment_ahu_001,Equipment_AHU_01,IfcUnitaryEquipment,mechanical_equipment,System_SupplyAir;System_ReturnAir,painted_steel,1500 x 850 x 1100,FreeCAD BIM
+ahu_filter_001,AHU_Filter_01,IfcFilter,mechanical_equipment,System_SupplyAir,filter_media,120 x 800 x 760,IfcOpenShell
+ahu_coil_001,AHU_Coil_01,IfcCoil,mechanical_equipment,System_SupplyAir;System_CHWS;System_CHWR,copper_aluminum_coil,160 x 800 x 760,IfcOpenShell
+ahu_fan_001,AHU_Fan_01,IfcFan,mechanical_equipment,System_SupplyAir,painted_steel,dia 520 x 420,IfcOpenShell
+equipment_pump_skid_001,Equipment_PumpSkid_01,IfcElementAssembly,mechanical_equipment,System_CHWS,painted_steel,1400 x 800 x 180,CadQuery
+pump_chws_duty_001,Pump_CHWS_Duty_01,IfcPump,mechanical_equipment,System_CHWS,painted_steel,dia 340 x 460,IfcOpenShell
+pump_chws_standby_001,Pump_CHWS_Standby_01,IfcPump,mechanical_equipment,System_CHWS,painted_steel,dia 340 x 460,IfcOpenShell
+pipe_supply_001,Pipe_Supply_01,IfcPipeSegment,flow_segment,System_CHWS,carbon_steel_chws,dia 80 x 3600,FreeCAD BIM
+pipe_return_001,Pipe_Return_01,IfcPipeSegment,flow_segment,System_CHWR,carbon_steel_chwr,dia 80 x 3920,FreeCAD BIM
+pipe_supply_drop_001,Pipe_Supply_Drop_01,IfcPipeSegment,flow_segment,System_CHWS,carbon_steel_chws,dia 80 x 800,IfcOpenShell
+pipe_return_drop_001,Pipe_Return_Drop_01,IfcPipeSegment,flow_segment,System_CHWR,carbon_steel_chwr,dia 80 x 810,IfcOpenShell
+valve_chws_isolation_001,Valve_CHWS_Isolation_01,IfcValve,flow_controller,System_CHWS,bronze_valve_body,dia 160 x 140,IfcOpenShell
+valve_chws_balancing_001,Valve_CHWS_Balancing_01,IfcValve,flow_controller,System_CHWS,bronze_valve_body,dia 160 x 140,IfcOpenShell
+valve_chwr_isolation_001,Valve_CHWR_Isolation_01,IfcValve,flow_controller,System_CHWR,bronze_valve_body,dia 160 x 140,IfcOpenShell
+valve_chwr_balancing_001,Valve_CHWR_Balancing_01,IfcValve,flow_controller,System_CHWR,bronze_valve_body,dia 160 x 140,IfcOpenShell
+pipe_fitting_chws_elbow_001,PipeFitting_CHWS_Elbow_01,IfcPipeFitting,flow_fitting,System_CHWS,carbon_steel_chws,dia 120 x 120,IfcOpenShell
+pipe_fitting_chwr_elbow_001,PipeFitting_CHWR_Elbow_01,IfcPipeFitting,flow_fitting,System_CHWR,carbon_steel_chwr,dia 120 x 120,IfcOpenShell
+sensor_chws_pressure_001,Sensor_CHWS_Pressure_01,IfcSensor,instrumentation,System_CHWS,stainless_steel,dia 110 x 80,IfcOpenShell
+duct_main_001,Duct_Main_01,IfcDuctSegment,ductwork,System_SupplyAir,galvanized_sheet_metal,3600 x 420 x 220,CadQuery
+duct_branch_001,Duct_Branch_01,IfcDuctSegment,ductwork,System_SupplyAir,galvanized_sheet_metal,650 x 360 x 180,IfcOpenShell
+duct_return_001,Duct_Return_01,IfcDuctSegment,ductwork,System_ReturnAir,galvanized_sheet_metal,1350 x 340 x 180,IfcOpenShell
+damper_fire_001,Damper_Fire_01,IfcDamper,flow_controller,System_SupplyAir,galvanized_sheet_metal,120 x 420 x 220,IfcOpenShell
+air_terminal_supply_001,AirTerminal_SupplyDiffuser_01,IfcAirTerminal,terminal,System_SupplyAir,powder_coated_steel,450 x 450 x 60,IfcOpenShell
+air_terminal_return_001,AirTerminal_ReturnGrille_01,IfcAirTerminal,terminal,System_ReturnAir,powder_coated_steel,420 x 420 x 60,IfcOpenShell
+cable_tray_overhead_001,CableTray_Overhead_01,IfcCableCarrierSegment,electrical_routing,System_ElectricalRouting,perforated_aluminum,3200 x 220 x 80,CadQuery
+cable_tray_drop_001,CableTray_Drop_01,IfcCableCarrierSegment,electrical_routing,System_ElectricalRouting,perforated_aluminum,120 x 120 x 520,IfcOpenShell
+support_pipe_bracket_type_a,Support_PipeBracket_01,IfcMechanicalFastener,mechanical_support,,painted_steel,220 x 120 x 300,CadQuery
+support_duct_hanger_type_a,Support_DuctHanger_01,IfcMechanicalFastener,mechanical_support,,galvanized_steel,520 x 60 x 520,CadQuery
+pipe_clamp_type_a,PipeClamp_TypeA_01,IfcMechanicalFastener,mechanical_support,,galvanized_steel,dia 110 x 45,CadQuery
+plate_mounting_type_a,Plate_Mounting_01,IfcMechanicalFastener,mechanical_support,,steel,260 x 160 x 12,CadQuery
+sleeve_wall_penetration_type_a,Sleeve_WallPenetration_01,IfcBuildingElementPart,penetration,,steel_sleeve,dia 170 x 220,CadQuery
+clearance_ahu_service_zone_001,Clearance_ServiceZone_AHU_01,IfcVirtualElement,clearance_zone,,clearance_volume,1800 x 1000 x 1900,FreeCAD BIM

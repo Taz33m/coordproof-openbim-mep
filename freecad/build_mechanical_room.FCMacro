@@ -1,0 +1,332 @@
+"""Build the CoordProof mechanical room assembly in FreeCAD.
+
+Run from FreeCAD's macro editor or through freecad-ai Plan Mode.
+Units are millimeters.
+"""
+
+import os
+
+import FreeCAD as App
+import Part
+
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SOURCE_PATH = os.path.join(ROOT, "freecad", "mechanical_room.FCStd")
+BIM_PATH = os.path.join(ROOT, "freecad", "mechanical_room_bim.FCStd")
+ASSEMBLY_STEP_PATH = os.path.join(ROOT, "exports", "step", "mechanical_room_assembly.step")
+
+ASSET_METADATA = {
+    "Space_MechanicalRoom_001": ("room_shell_001", "architectural_shell", "Space"),
+    "Slab_Concrete_Base": ("slab_concrete_base_001", "architectural_shell", "Slab"),
+    "Wall_North_01": ("wall_north_001", "architectural_shell", "Wall"),
+    "Wall_South_01": ("wall_south_001", "architectural_shell", "Wall"),
+    "Wall_South_02": ("wall_south_001", "architectural_shell", "Wall"),
+    "Wall_East_01": ("wall_east_001", "architectural_shell", "Wall"),
+    "Wall_West_01": ("wall_west_001", "architectural_shell", "Wall"),
+    "Door_Access_01": ("door_access_001", "architectural_shell", "Door"),
+    "EquipmentPad_AHU_01": ("equipment_base_type_a", "mechanical_equipment", "Footing"),
+    "Equipment_AHU_01": ("equipment_ahu_001", "mechanical_equipment", "Flow Terminal"),
+    "EquipmentPad_PumpSkid_01": ("equipment_base_type_a", "mechanical_equipment", "Footing"),
+    "Equipment_PumpSkid_01": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "Pipe_Supply_01": ("pipe_supply_001", "flow_segment", "Flow Segment"),
+    "Pipe_Return_01": ("pipe_return_001", "flow_segment", "Flow Segment"),
+    "Pipe_Elbow_Drop_01": ("pipe_supply_001", "flow_segment", "Flow Fitting"),
+    "Duct_Main_01": ("duct_main_001", "ductwork", "Flow Segment"),
+    "CableTray_Overhead_01": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "Support_PipeBracket_01": ("support_pipe_bracket_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_PipeBracket_02": ("support_pipe_bracket_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_DuctHanger_01": ("support_duct_hanger_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_DuctHanger_02": ("support_duct_hanger_type_a", "mechanical_support", "Mechanical Fastener"),
+    "PipeClamp_TypeA_01": ("pipe_clamp_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Plate_Mounting_01": ("plate_mounting_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Sleeve_WallPenetration_01": ("sleeve_wall_penetration_type_a", "penetration", "Building Element Part"),
+    "Clearance_ServiceZone_AHU_01": ("clearance_ahu_service_zone_001", "clearance_zone", "Virtual Element"),
+    "AHU_FilterBank_01": ("equipment_ahu_001", "mechanical_equipment", "Flow Terminal"),
+    "AHU_ServicePanel_01": ("equipment_ahu_001", "mechanical_equipment", "Flow Terminal"),
+    "AHU_FanHousing_01": ("equipment_ahu_001", "mechanical_equipment", "Flow Terminal"),
+    "AHU_SupplyTransition_01": ("duct_main_001", "ductwork", "Flow Fitting"),
+    "AHU_ReturnPlenum_01": ("duct_main_001", "ductwork", "Flow Fitting"),
+    "PumpSkid_Rail_North_01": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "PumpSkid_Rail_South_01": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "PumpSkid_Crossmember_01": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "PumpSkid_Crossmember_02": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "Pump_Motor_01": ("equipment_pump_skid_001", "mechanical_equipment", "Flow Moving Device"),
+    "Pump_Motor_02": ("equipment_pump_skid_001", "mechanical_equipment", "Flow Moving Device"),
+    "Pump_Volute_01": ("equipment_pump_skid_001", "mechanical_equipment", "Flow Moving Device"),
+    "Pump_Volute_02": ("equipment_pump_skid_001", "mechanical_equipment", "Flow Moving Device"),
+    "Pump_CouplingGuard_01": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "Pump_CouplingGuard_02": ("equipment_pump_skid_001", "mechanical_equipment", "Element Assembly"),
+    "Pipe_Supply_Drop_AHU_01": ("pipe_supply_001", "flow_segment", "Flow Segment"),
+    "Pipe_Return_Drop_AHU_01": ("pipe_return_001", "flow_segment", "Flow Segment"),
+    "Pipe_Supply_ToPump_01": ("pipe_supply_001", "flow_segment", "Flow Segment"),
+    "Pipe_Return_FromPump_01": ("pipe_return_001", "flow_segment", "Flow Segment"),
+    "Valve_Isolation_Supply_01": ("pipe_supply_001", "flow_segment", "Flow Controller"),
+    "Valve_Isolation_Return_01": ("pipe_return_001", "flow_segment", "Flow Controller"),
+    "Flange_Supply_01": ("pipe_supply_001", "flow_segment", "Flow Fitting"),
+    "Flange_Return_01": ("pipe_return_001", "flow_segment", "Flow Fitting"),
+    "Gauge_Pressure_01": ("pipe_supply_001", "flow_segment", "Flow Instrument"),
+    "Duct_Return_Branch_01": ("duct_main_001", "ductwork", "Flow Segment"),
+    "Duct_Supply_Drop_01": ("duct_main_001", "ductwork", "Flow Segment"),
+    "Duct_FireDamper_01": ("duct_main_001", "ductwork", "Flow Controller"),
+    "Diffuser_Supply_01": ("duct_main_001", "ductwork", "Flow Terminal"),
+    "CableTray_Rung_01": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "CableTray_Rung_02": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "CableTray_Rung_03": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "CableTray_Rung_04": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "CableTray_Drop_01": ("cable_tray_overhead_001", "electrical_routing", "Distribution Element"),
+    "Support_PipeBracket_03": ("support_pipe_bracket_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_DuctHanger_03": ("support_duct_hanger_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_CableTrayHanger_01": ("support_duct_hanger_type_a", "mechanical_support", "Mechanical Fastener"),
+    "Support_CableTrayHanger_02": ("support_duct_hanger_type_a", "mechanical_support", "Mechanical Fastener"),
+}
+
+
+def set_view(obj, color=None, transparency=None):
+    view = getattr(obj, "ViewObject", None)
+    if view is None:
+        return
+    if color is not None:
+        view.ShapeColor = color
+    if transparency is not None:
+        view.Transparency = transparency
+
+
+def add_metadata(obj, name):
+    asset_id, category, ifc_type = ASSET_METADATA.get(
+        name, ("unmapped", "unmapped", "Part")
+    )
+    for prop_name, value in [
+        ("AssetID", asset_id),
+        ("Category", category),
+        ("SourceTool", "FreeCAD"),
+        ("IfcType", ifc_type),
+    ]:
+        if prop_name not in obj.PropertiesList:
+            obj.addProperty("App::PropertyString", prop_name, "OpenBIM")
+        setattr(obj, prop_name, value)
+
+
+def add_part(doc, name, shape, color):
+    obj = doc.addObject("Part::Feature", name)
+    obj.Label = name
+    obj.Shape = shape
+    add_metadata(obj, name)
+    set_view(obj, color=color)
+    return obj
+
+
+def box(name, x, y, z, lx, ly, lz, color):
+    shape = Part.makeBox(lx, ly, lz, App.Vector(x, y, z))
+    return add_part(DOC, name, shape, color)
+
+
+def cyl_x(name, x, y, z, radius, length, color):
+    shape = Part.makeCylinder(radius, length)
+    obj = add_part(DOC, name, shape, color)
+    obj.Placement = App.Placement(App.Vector(x, y, z), App.Rotation(App.Vector(0, 1, 0), 90))
+    return obj
+
+
+def cyl_y(name, x, y, z, radius, length, color):
+    shape = Part.makeCylinder(radius, length)
+    obj = add_part(DOC, name, shape, color)
+    obj.Placement = App.Placement(App.Vector(x, y, z), App.Rotation(App.Vector(1, 0, 0), 90))
+    return obj
+
+
+def cyl_z(name, x, y, z, radius, length, color):
+    shape = Part.makeCylinder(radius, length, App.Vector(x, y, z))
+    return add_part(DOC, name, shape, color)
+
+
+def torus(name, x, y, z, major_radius, minor_radius, normal, color):
+    shape = Part.makeTorus(major_radius, minor_radius, App.Vector(x, y, z), App.Vector(*normal))
+    return add_part(DOC, name, shape, color)
+
+
+def sleeve_x(name, x, y, z, inner_radius, outer_radius, length, color):
+    outer = Part.makeCylinder(outer_radius, length)
+    inner = Part.makeCylinder(inner_radius, length + 4, App.Vector(0, 0, -2))
+    shape = outer.cut(inner)
+    obj = add_part(DOC, name, shape, color)
+    obj.Placement = App.Placement(App.Vector(x, y, z), App.Rotation(App.Vector(0, 1, 0), 90))
+    return obj
+
+
+def group(doc, name, ifc_type=None):
+    obj = doc.addObject("App::DocumentObjectGroup", name)
+    obj.Label = name
+    if ifc_type:
+        obj.addProperty("App::PropertyString", "IfcType", "OpenBIM")
+        obj.IfcType = ifc_type
+    return obj
+
+
+def add_to_group(target_group, objects):
+    for obj in objects:
+        try:
+            target_group.addObject(obj)
+        except Exception:
+            pass
+
+
+DOC = App.newDocument("CoordProofMechanicalRoom")
+
+ARCH = (0.72, 0.72, 0.70)
+SLAB = (0.55, 0.55, 0.55)
+EQUIP = (0.10, 0.32, 0.55)
+PIPE_SUPPLY = (0.00, 0.45, 0.85)
+PIPE_RETURN = (0.85, 0.30, 0.12)
+DUCT = (0.70, 0.70, 0.78)
+SUPPORT = (0.18, 0.18, 0.18)
+CABLE = (0.95, 0.72, 0.20)
+PENETRATION = (0.65, 0.65, 0.80)
+CLEARANCE = (0.20, 0.75, 0.45)
+PANEL = (0.86, 0.90, 0.92)
+MOTOR = (0.10, 0.18, 0.25)
+VALVE = (0.95, 0.55, 0.08)
+
+# Room shell
+box("Slab_Concrete_Base", 0, 0, 0, 6000, 4200, 200, SLAB)
+box("Wall_North_01", 0, 4000, 200, 6000, 200, 3200, ARCH)
+box("Wall_South_01", 0, 0, 200, 2300, 200, 3200, ARCH)
+box("Wall_South_02", 3300, 0, 200, 2700, 200, 3200, ARCH)
+box("Wall_East_01", 5800, 0, 200, 200, 4200, 3200, ARCH)
+box("Wall_West_01", 0, 0, 200, 200, 4200, 3200, ARCH)
+box("Door_Access_01", 2300, -30, 200, 1000, 60, 2100, (0.25, 0.18, 0.10))
+
+# Equipment and pads
+box("EquipmentPad_AHU_01", 700, 650, 200, 1700, 1100, 160, SLAB)
+box("Equipment_AHU_01", 850, 780, 360, 1500, 850, 1100, EQUIP)
+box("AHU_FilterBank_01", 890, 805, 475, 120, 800, 900, PANEL)
+box("AHU_ServicePanel_01", 1135, 760, 520, 470, 36, 760, PANEL)
+cyl_y("AHU_FanHousing_01", 1940, 760, 875, 185, 910, PANEL)
+box("AHU_SupplyTransition_01", 2280, 1050, 1160, 560, 330, 330, DUCT)
+box("AHU_ReturnPlenum_01", 625, 1030, 720, 260, 360, 460, DUCT)
+box("EquipmentPad_PumpSkid_01", 3600, 650, 200, 1400, 800, 140, SLAB)
+box("Equipment_PumpSkid_01", 3750, 820, 340, 1100, 520, 180, EQUIP)
+box("PumpSkid_Rail_North_01", 3700, 810, 360, 1200, 70, 120, SUPPORT)
+box("PumpSkid_Rail_South_01", 3700, 1290, 360, 1200, 70, 120, SUPPORT)
+box("PumpSkid_Crossmember_01", 3820, 840, 430, 70, 480, 80, SUPPORT)
+box("PumpSkid_Crossmember_02", 4700, 840, 430, 70, 480, 80, SUPPORT)
+cyl_x("Pump_Motor_01", 4050, 930, 650, 120, 460, MOTOR)
+cyl_x("Pump_Motor_02", 4050, 1160, 650, 120, 460, MOTOR)
+cyl_x("Pump_Volute_01", 4500, 930, 620, 145, 230, EQUIP)
+cyl_x("Pump_Volute_02", 4500, 1160, 620, 145, 230, EQUIP)
+box("Pump_CouplingGuard_01", 4375, 840, 585, 160, 180, 130, VALVE)
+box("Pump_CouplingGuard_02", 4375, 1070, 585, 160, 180, 130, VALVE)
+
+# Pipe and duct routes
+cyl_x("Pipe_Supply_01", 900, 2860, 1800, 40, 3600, PIPE_SUPPLY)
+cyl_x("Pipe_Return_01", 900, 3060, 1620, 40, 3600, PIPE_RETURN)
+cyl_y("Pipe_Elbow_Drop_01", 4500, 2860, 900, 40, 900, PIPE_SUPPLY)
+cyl_z("Pipe_Supply_Drop_AHU_01", 1280, 2860, 880, 38, 920, PIPE_SUPPLY)
+cyl_z("Pipe_Return_Drop_AHU_01", 1540, 3060, 880, 38, 740, PIPE_RETURN)
+cyl_y("Pipe_Supply_ToPump_01", 4620, 1320, 760, 36, 1380, PIPE_SUPPLY)
+cyl_y("Pipe_Return_FromPump_01", 4820, 1320, 600, 36, 1600, PIPE_RETURN)
+box("Valve_Isolation_Supply_01", 2550, 2800, 1725, 180, 120, 150, VALVE)
+box("Valve_Isolation_Return_01", 3020, 3000, 1545, 180, 120, 150, VALVE)
+torus("Flange_Supply_01", 1265, 2860, 1800, 55, 7, (1, 0, 0), SUPPORT)
+torus("Flange_Return_01", 1515, 3060, 1620, 55, 7, (1, 0, 0), SUPPORT)
+cyl_z("Gauge_Pressure_01", 2840, 2860, 1850, 34, 80, PANEL)
+box("Duct_Main_01", 900, 3300, 2450, 3600, 420, 220, DUCT)
+box("Duct_Return_Branch_01", 2550, 2920, 2360, 650, 360, 180, DUCT)
+box("Duct_Supply_Drop_01", 2440, 1540, 1460, 360, 300, 1030, DUCT)
+box("Duct_FireDamper_01", 3120, 3280, 2410, 80, 460, 310, VALVE)
+box("Diffuser_Supply_01", 2360, 1480, 1350, 520, 420, 60, PANEL)
+box("CableTray_Overhead_01", 1200, 2200, 2850, 3200, 220, 80, CABLE)
+for rung_index, rung_x in enumerate([1550, 2200, 2850, 3500], start=1):
+    box("CableTray_Rung_%02d" % rung_index, rung_x, 2190, 2925, 32, 240, 28, SUPPORT)
+box("CableTray_Drop_01", 4320, 2140, 2180, 120, 120, 700, CABLE)
+
+# Supports, penetration, and clearance
+box("Support_PipeBracket_01", 1800, 2780, 200, 220, 120, 300, SUPPORT)
+box("Support_PipeBracket_02", 3300, 2780, 200, 220, 120, 300, SUPPORT)
+box("Support_PipeBracket_03", 4450, 2780, 200, 220, 120, 300, SUPPORT)
+box("Support_DuctHanger_01", 1950, 3260, 2200, 520, 60, 520, SUPPORT)
+box("Support_DuctHanger_02", 3450, 3260, 2200, 520, 60, 520, SUPPORT)
+box("Support_DuctHanger_03", 4300, 3260, 2200, 520, 60, 520, SUPPORT)
+box("Support_CableTrayHanger_01", 2100, 2170, 2680, 60, 300, 260, SUPPORT)
+box("Support_CableTrayHanger_02", 3650, 2170, 2680, 60, 300, 260, SUPPORT)
+clamp_shape = Part.makeTorus(40, 6, App.Vector(1900, 2860, 1800), App.Vector(1, 0, 0))
+add_part(DOC, "PipeClamp_TypeA_01", clamp_shape, SUPPORT)
+box("Plate_Mounting_01", 1760, 2760, 200, 260, 160, 12, SUPPORT)
+sleeve_x("Sleeve_WallPenetration_01", 5700, 2800, 1800, 70, 95, 240, PENETRATION)
+clearance = box("Clearance_ServiceZone_AHU_01", 650, 1700, 200, 1800, 1000, 1900, CLEARANCE)
+set_view(clearance, transparency=75)
+
+DOC.recompute()
+DOC.saveAs(SOURCE_PATH)
+print("Saved source model", SOURCE_PATH)
+
+# BIM organization layer for model-tree review and IFC export intent. These are
+# real FreeCAD BIM/Arch objects so the native IFC exporter can create hierarchy.
+objects_by_name = {obj.Name: obj for obj in DOC.Objects}
+parts = [obj for obj in DOC.Objects if obj.TypeId == "Part::Feature"]
+
+try:
+    import Arch
+
+    space = Arch.makeSpace(name="Space_MechanicalRoom_001")
+    space.Label = "Space_MechanicalRoom_001"
+    add_metadata(space, "Space_MechanicalRoom_001")
+    if "IfcType" in space.PropertiesList:
+        space.IfcType = "Space"
+
+    storey = Arch.makeFloor([space] + parts, name="Storey_MechanicalLevel_01")
+    storey.Label = "Storey_MechanicalLevel_01"
+    building = Arch.makeBuilding([storey], name="Building_MechanicalLab")
+    building.Label = "Building_MechanicalLab"
+    site = Arch.makeSite([building], name="Site_OpenBIM_Testbed")
+    site.Label = "Site_OpenBIM_Testbed"
+    project = Arch.makeProject([site], name="Project_CoordProof_MechanicalRoom")
+    project.Label = "Project_CoordProof_MechanicalRoom"
+except Exception as exc:
+    print("Arch/BIM hierarchy creation failed, falling back to document groups:", exc)
+    project = group(DOC, "Project_CoordProof_MechanicalRoom", "Project")
+    site = group(DOC, "Site_OpenBIM_Testbed", "Site")
+    building = group(DOC, "Building_MechanicalLab", "Building")
+    storey = group(DOC, "Storey_MechanicalLevel_01", "Building Storey")
+    space = group(DOC, "Space_MechanicalRoom_001", "Space")
+    project.addObject(site)
+    site.addObject(building)
+    building.addObject(storey)
+    storey.addObject(space)
+
+architectural = group(DOC, "Group_ArchitecturalShell")
+equipment = group(DOC, "Group_MechanicalEquipment")
+flow = group(DOC, "Group_FlowSegments")
+ductwork = group(DOC, "Group_Ductwork")
+electrical = group(DOC, "Group_ElectricalRouting")
+supports = group(DOC, "Group_Supports")
+penetrations = group(DOC, "Group_Penetrations")
+clearances = group(DOC, "Group_ClearanceZones")
+
+groups_by_category = {
+    "architectural_shell": architectural,
+    "mechanical_equipment": equipment,
+    "flow_segment": flow,
+    "ductwork": ductwork,
+    "electrical_routing": electrical,
+    "mechanical_support": supports,
+    "penetration": penetrations,
+    "clearance_zone": clearances,
+}
+for part in parts:
+    category = getattr(part, "Category", "")
+    target = groups_by_category.get(category)
+    if target is not None:
+        add_to_group(target, [part])
+
+DOC.recompute()
+DOC.saveAs(BIM_PATH)
+print("Saved BIM-organized model", BIM_PATH)
+
+try:
+    import Import
+
+    shape_objects = [obj for obj in DOC.Objects if hasattr(obj, "Shape")]
+    Import.export(shape_objects, ASSEMBLY_STEP_PATH)
+    print("Saved assembly STEP", ASSEMBLY_STEP_PATH)
+except Exception as exc:
+    print("Assembly STEP export skipped:", exc)

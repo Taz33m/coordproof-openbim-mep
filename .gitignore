@@ -1,0 +1,22 @@
+.DS_Store
+.env
+.env.*
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# CAD/BIM working backups
+*.FCBak
+*.FCStd1
+*.bak
+*.tmp
+
+# Generated files may be committed for portfolio review, but keep transient logs out.
+*.log
+
+# Video deliverables are externally hosted, not committed.
+video/**/renders/
+video/**/.thumbnails/
+video/**/*.mp4
+video/**/*.webm

@@ -1,0 +1,45 @@
+asset_id,freecad_object_name,ifc_class,category,notes
+room_shell_001,Space_MechanicalRoom_001,IfcSpace,architectural_shell,Room volume and enclosing architectural shell.
+slab_concrete_base_001,Slab_Concrete_Base,IfcSlab,architectural_shell,Base slab for the mechanical room.
+wall_north_001,Wall_North_01,IfcWall,architectural_shell,North architectural boundary wall.
+wall_south_001,Wall_South_01,IfcWall,architectural_shell,South architectural boundary wall.
+wall_east_001,Wall_East_01,IfcWall,architectural_shell,East architectural boundary wall.
+wall_west_001,Wall_West_01,IfcWall,architectural_shell,West architectural boundary wall.
+door_access_001,Door_Access_01,IfcDoor,architectural_shell,Primary access opening in the south wall.
+equipment_ahu_001,Equipment_AHU_01,IfcUnitaryEquipment,mechanical_equipment,"Main packaged air-handling unit with filter, coil, fan, and service-access context in the IFC schedule."
+pipe_supply_001,Pipe_Supply_01,IfcPipeSegment,flow_segment,"CHWS supply pipe route coordinated with valves, support, and AHU coil connection."
+pipe_return_001,Pipe_Return_01,IfcPipeSegment,flow_segment,"CHWR return pipe route coordinated with valves, support, and AHU coil connection."
+clearance_ahu_service_zone_001,Clearance_ServiceZone_AHU_01,IfcVirtualElement,clearance_zone,Rule-based transparent clearance volume for AHU service access.
+mechanical_room_ifc_001,Project_CoordProof_MechanicalRoom,IfcProject,bim_export,Programmatic IFC export used for validation and review.
+ahu_filter_001,AHU_Filter_01,IfcFilter,mechanical_equipment,Filter section tracked as an individual IFC product.
+ahu_coil_001,AHU_Coil_01,IfcCoil,mechanical_equipment,Cooling coil section connected to CHWS/CHWR ports.
+ahu_fan_001,AHU_Fan_01,IfcFan,mechanical_equipment,Fan section connected to the supply-air system.
+pump_chws_duty_001,Pump_CHWS_Duty_01,IfcPump,mechanical_equipment,Duty chilled-water pump with connected distribution ports.
+pump_chws_standby_001,Pump_CHWS_Standby_01,IfcPump,mechanical_equipment,Standby chilled-water pump tracked in the IFC product schedule.
+pipe_supply_drop_001,Pipe_Supply_Drop_01,IfcPipeSegment,flow_segment,Vertical CHWS drop connecting the overhead pipe rack to the AHU coil.
+pipe_return_drop_001,Pipe_Return_Drop_01,IfcPipeSegment,flow_segment,Vertical CHWR drop connecting the AHU coil back to the return rack.
+valve_chws_isolation_001,Valve_CHWS_Isolation_01,IfcValve,flow_controller,CHWS isolation valve tracked as a flow controller.
+valve_chws_balancing_001,Valve_CHWS_Balancing_01,IfcValve,flow_controller,CHWS balancing valve tracked as a flow controller.
+valve_chwr_isolation_001,Valve_CHWR_Isolation_01,IfcValve,flow_controller,CHWR isolation valve tracked as a flow controller.
+valve_chwr_balancing_001,Valve_CHWR_Balancing_01,IfcValve,flow_controller,CHWR balancing valve tracked as a flow controller.
+pipe_fitting_chws_elbow_001,PipeFitting_CHWS_Elbow_01,IfcPipeFitting,flow_fitting,CHWS elbow fitting at the pipe-drop transition.
+pipe_fitting_chwr_elbow_001,PipeFitting_CHWR_Elbow_01,IfcPipeFitting,flow_fitting,CHWR elbow fitting at the pipe-drop transition.
+sensor_chws_pressure_001,Sensor_CHWS_Pressure_01,IfcSensor,instrumentation,Pressure sensor on the CHWS rack.
+duct_branch_001,Duct_Branch_01,IfcDuctSegment,ductwork,Branch duct segment connected to the supply terminal.
+duct_return_001,Duct_Return_01,IfcDuctSegment,ductwork,Return-air duct segment connected to the AHU return path.
+damper_fire_001,Damper_Fire_01,IfcDamper,flow_controller,Fire damper tracked in the supply-air distribution system.
+air_terminal_supply_001,AirTerminal_SupplyDiffuser_01,IfcAirTerminal,terminal,Supply diffuser terminal connected to the branch duct.
+air_terminal_return_001,AirTerminal_ReturnGrille_01,IfcAirTerminal,terminal,Return grille terminal connected to the return-air system.
+cable_tray_drop_001,CableTray_Drop_01,IfcCableCarrierSegment,electrical_routing,Vertical tray drop connected to the overhead cable tray route.
+support_pipe_bracket_type_a,Support_PipeBracket_01,IfcMechanicalFastener,mechanical_support,Parametric floor-mounted support bracket for a horizontal pipe run.
+support_duct_hanger_type_a,Support_DuctHanger_01,IfcMechanicalFastener,mechanical_support,Simple trapeze hanger assembly for rectangular ductwork.
+cable_tray_overhead_001,CableTray_Overhead_01,IfcCableCarrierSegment,electrical_routing,Perforated U-channel tray segment for control/electrical routing.
+equipment_base_type_a,EquipmentPad_AHU_01,IfcFooting,mechanical_equipment,Concrete housekeeping pad with anchor bolt holes.
+equipment_pump_skid_001,Equipment_PumpSkid_01,IfcElementAssembly,mechanical_equipment,Steel skid frame placeholder for pump assembly support.
+sleeve_wall_penetration_type_a,Sleeve_WallPenetration_01,IfcBuildingElementPart,penetration,Cylindrical sleeve for pipe or duct penetration through a wall.
+pipe_clamp_type_a,PipeClamp_TypeA_01,IfcMechanicalFastener,mechanical_support,Ring clamp with mounting ears for small-diameter pipe support.
+duct_main_001,Duct_Main_01,IfcDuctSegment,ductwork,Hollow rectangular duct segment for main air distribution route.
+plate_mounting_type_a,Plate_Mounting_01,IfcMechanicalFastener,mechanical_support,Generic slotted support plate for wall or floor mounting.
+report_coordination_001,Coordination_Report,IfcDocumentReference,report,"Generated source-of-truth summary tying IFC products, systems, connections, BOM, and clearance checks together."
+report_bom_001,Bill_of_Materials,IfcDocumentReference,report,Generated BOM from the same semantic product schedule used for IFC output.
+report_clash_clearance_001,Clash_and_Clearance_Report,IfcDocumentReference,report,Generated bounding-box clearance and coordination checks for the mechanical-room layout.
