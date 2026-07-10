@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible pipeline, geometry, IFC, drawing, or validation defect.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: asset_ids
+    attributes:
+      label: Affected asset IDs
+      placeholder: plate_mounting_type_a
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the exact command and the smallest parameter/input change that triggers the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Environment
+      description: Paste `make doctor` or `make doctor-full` output. Remove private paths if necessary.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Validation output
+      description: Paste the relevant failure from `make validate` or `make preflight`.
+      render: text

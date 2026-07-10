@@ -1,5 +1,8 @@
-cadquery>=2.5
-ifcopenshell>=0.8
-ezdxf>=1.4
-reportlab>=4.2
-Pillow>=9.0
+# Tested compatibility ranges. Keep upper bounds deliberate: CAD kernels and
+# exporters can change geometry or file serialization between major releases.
+cadquery>=2.5,<2.6
+ifcopenshell>=0.8,<0.9
+ezdxf>=1.4,<2
+reportlab>=4.2,<6
+Pillow>=9,<13
+jsonschema>=4.23,<5

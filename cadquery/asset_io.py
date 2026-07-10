@@ -2,11 +2,34 @@
 
 from __future__ import annotations
 
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 
 import cadquery as cq
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def normalize_step_header(path: Path) -> None:
+    """Remove host paths and wall-clock time from a CadQuery STEP header."""
+
+    epoch = int(os.environ.get("SOURCE_DATE_EPOCH", "0"))
+    timestamp = datetime.fromtimestamp(epoch, tz=UTC).strftime("%Y-%m-%dT%H:%M:%S")
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for index, line in enumerate(lines):
+        if not line.startswith("FILE_NAME("):
+            continue
+        fields = line.split("'")
+        if len(fields) < 5:
+            raise RuntimeError(f"Unexpected STEP FILE_NAME header in {path}")
+        fields[1] = path.name
+        fields[3] = timestamp
+        lines[index] = "'".join(fields)
+        break
+    else:
+        raise RuntimeError(f"STEP FILE_NAME header not found in {path}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def export_shape(shape: cq.Workplane, asset_id: str) -> tuple[Path, Path]:
@@ -15,6 +38,7 @@ def export_shape(shape: cq.Workplane, asset_id: str) -> tuple[Path, Path]:
     step_path.parent.mkdir(parents=True, exist_ok=True)
     stl_path.parent.mkdir(parents=True, exist_ok=True)
     cq.exporters.export(shape, str(step_path))
+    normalize_step_header(step_path)
     cq.exporters.export(shape, str(stl_path), tolerance=0.25, angularTolerance=0.2)
     return step_path, stl_path
 

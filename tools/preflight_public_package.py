@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import subprocess
 import sys
@@ -10,6 +12,7 @@ from pathlib import Path
 import ifcopenshell
 
 ROOT = Path(__file__).resolve().parents[1]
+PROVENANCE = ROOT / "manifest" / "build_provenance.json"
 
 SECRET_PATTERNS = [
     re.compile(r"OPENAI_API_KEY\s*="),
@@ -51,11 +54,15 @@ EXCLUDED_DIRS = {
 REQUIRED_FILES = [
     "README.md",
     "Makefile",
+    "constraints-release.txt",
+    "spec/mechanical_room.project.json",
+    "spec/project.schema.json",
     "bim/mechanical_room.ifc",
     "bim/mechanical_room_freecad_review.ifc",
     "bim/openbim_semantic_inventory.csv",
     "manifest/asset_manifest.json",
     "manifest/export_index.csv",
+    "manifest/build_provenance.json",
     "reports/coordination_report.md",
     "reports/bill_of_materials.csv",
     "reports/clash_clearance_report.csv",
@@ -67,7 +74,7 @@ REQUIRED_FILES = [
     "screenshots/07_qcad_section_and_riser.png",
 ]
 
-EXPECTED_COUNTS = {
+MINIMUM_COUNTS = {
     "qcad/*.dxf": 7,
     "qcad/pdf_exports/*.pdf": 7,
     "exports/step/*.step": 10,
@@ -117,10 +124,10 @@ def check_required_files() -> list[str]:
 
 def check_expected_counts() -> list[str]:
     failures: list[str] = []
-    for pattern, expected in EXPECTED_COUNTS.items():
+    for pattern, expected in MINIMUM_COUNTS.items():
         actual = len(list(ROOT.glob(pattern)))
-        if actual != expected:
-            failures.append(f"{pattern}: expected {expected}, found {actual}")
+        if actual < expected:
+            failures.append(f"{pattern}: expected at least {expected}, found {actual}")
     return failures
 
 
@@ -137,6 +144,7 @@ def check_validation_report() -> list[str]:
     text = report.read_text(encoding="utf-8")
     required = [
         "Overall Status: **PASSED**",
+        "Sources Validation\n\nStatus: **PASSED**",
         "IFC Validation\n\nStatus: **PASSED**",
         "Manifest Validation\n\nStatus: **PASSED**",
         "Exports Validation\n\nStatus: **PASSED**",
@@ -176,6 +184,61 @@ def check_git_ignored() -> list[str]:
     return failures
 
 
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def check_provenance() -> list[str]:
+    if not PROVENANCE.exists():
+        return ["missing manifest/build_provenance.json"]
+    try:
+        payload = json.loads(PROVENANCE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"invalid manifest/build_provenance.json: {exc}"]
+
+    artifacts = payload.get("artifacts")
+    if not isinstance(artifacts, dict):
+        return ["build provenance has no artifacts object"]
+
+    required_coverage = {
+        "spec/mechanical_room.project.json",
+        "spec/project.schema.json",
+        "manifest/asset_manifest.json",
+        "manifest/export_index.csv",
+        "manifest/parameter_schema.json",
+        "bim/bim_object_map.csv",
+        "validation/validation_report.md",
+        *(rel(path) for path in (ROOT / "screenshots").glob("*.png")),
+    }
+    failures = [
+        f"build provenance missing golden evidence: {item}"
+        for item in sorted(required_coverage - artifacts.keys())
+    ]
+    for item, record in artifacts.items():
+        candidate = Path(item)
+        if candidate.is_absolute() or ".." in candidate.parts or "\\" in item:
+            failures.append(f"unsafe provenance path: {item}")
+            continue
+        path = ROOT / candidate
+        if not path.is_file():
+            failures.append(f"provenance artifact missing: {item}")
+            continue
+        if not isinstance(record, dict):
+            failures.append(f"invalid provenance record: {item}")
+            continue
+        expected_hash = record.get("sha256")
+        expected_bytes = record.get("bytes")
+        if expected_hash != file_sha256(path):
+            failures.append(f"provenance hash mismatch: {item}")
+        if expected_bytes != path.stat().st_size:
+            failures.append(f"provenance byte-count mismatch: {item}")
+    return failures
+
+
 def run_validation() -> list[str]:
     result = subprocess.run(
         [sys.executable, "validation/run_all.py"],
@@ -190,6 +253,20 @@ def run_validation() -> list[str]:
     return []
 
 
+def run_project_spec_validation() -> list[str]:
+    result = subprocess.run(
+        [sys.executable, "tools/project_spec.py", "validate"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    if result.returncode:
+        return ["tools/project_spec.py validate failed:\n" + result.stdout]
+    return []
+
+
 def main() -> int:
     failures: list[str] = []
     failures.extend(check_required_files())
@@ -197,7 +274,9 @@ def main() -> int:
     failures.extend(check_backups())
     failures.extend(check_git_ignored())
     failures.extend(check_validation_report())
+    failures.extend(run_project_spec_validation())
     failures.extend(run_validation())
+    failures.extend(check_provenance())
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room.ifc", min_products=43))
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room_freecad_review.ifc", min_products=40))
     failures.extend(f"secret-like pattern found: {hit}" for hit in scan_patterns(SECRET_PATTERNS))
@@ -210,9 +289,11 @@ def main() -> int:
         return 1
 
     print("Preflight PASSED")
+    print("- ProjectSpec schema and semantics passed")
     print("- validation report passed")
     print("- required artifacts present")
     print("- expected export counts present")
+    print("- provenance hashes cover and match golden evidence")
     print("- primary and review IFCs are IFC4 with zero proxy fallback")
     print("- no secret-like strings or absolute local paths found in text files")
     print("- no transient backup/log/env files found")

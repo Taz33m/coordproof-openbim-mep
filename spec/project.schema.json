@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://taz33m.github.io/coordproof-openbim-mep/schema/project-spec-v1.json",
+  "title": "CoordProof ProjectSpec v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "project",
+    "units",
+    "spatial",
+    "systems",
+    "asset_types",
+    "occurrences",
+    "artifacts",
+    "connections",
+    "requirements"
+  ],
+  "properties": {
+    "$schema": {"$ref": "#/$defs/nonEmptyString"},
+    "schema_version": {"type": "integer", "const": 1},
+    "project": {"$ref": "#/$defs/project"},
+    "units": {"const": "millimeters"},
+    "spatial": {"$ref": "#/$defs/spatial"},
+    "systems": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/system"}
+    },
+    "asset_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/assetType"}
+    },
+    "occurrences": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/occurrence"}
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "connections": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/connection"}
+    },
+    "requirements": {"$ref": "#/$defs/requirements"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "nonEmptyString": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "positiveNumber": {"type": "number", "exclusiveMinimum": 0},
+    "ifcClass": {
+      "enum": [
+        "IfcAirTerminal",
+        "IfcBuildingElementPart",
+        "IfcCableCarrierSegment",
+        "IfcCoil",
+        "IfcDamper",
+        "IfcDocumentReference",
+        "IfcDoor",
+        "IfcDuctSegment",
+        "IfcElementAssembly",
+        "IfcFan",
+        "IfcFilter",
+        "IfcFlowFitting",
+        "IfcFooting",
+        "IfcMechanicalFastener",
+        "IfcPipeFitting",
+        "IfcPipeSegment",
+        "IfcProject",
+        "IfcPump",
+        "IfcSensor",
+        "IfcSlab",
+        "IfcSpace",
+        "IfcUnitaryEquipment",
+        "IfcValve",
+        "IfcVirtualElement",
+        "IfcWall"
+      ]
+    },
+    "vector3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "number"}
+    },
+    "jsonValue": {
+      "type": ["string", "number", "integer", "boolean", "array", "object", "null"]
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/jsonValue"}
+    },
+    "exports": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id", "name", "description"],
+      "properties": {
+        "project_id": {"$ref": "#/$defs/id"},
+        "name": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_ifc_name",
+        "site_ifc_name",
+        "building_ifc_name",
+        "storey_ifc_name",
+        "storey_elevation_mm",
+        "space_type_id",
+        "space_occurrence_id",
+        "space_ifc_name",
+        "space_long_name",
+        "space_dimensions_mm",
+        "semantic_source_tool"
+      ],
+      "properties": {
+        "project_ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "site_ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "building_ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "storey_ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "storey_elevation_mm": {"type": "number"},
+        "space_type_id": {"$ref": "#/$defs/id"},
+        "space_occurrence_id": {"$ref": "#/$defs/id"},
+        "space_ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "space_long_name": {"$ref": "#/$defs/nonEmptyString"},
+        "space_dimensions_mm": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"$ref": "#/$defs/positiveNumber"}
+        },
+        "semantic_source_tool": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "long_name", "object_type", "description"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^System_[A-Za-z0-9]+$"},
+        "long_name": {"$ref": "#/$defs/nonEmptyString"},
+        "object_type": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "assetType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type_id",
+        "catalog_order",
+        "group",
+        "display_name",
+        "category",
+        "source_tool",
+        "ifc_class",
+        "parameters",
+        "exports",
+        "notes"
+      ],
+      "properties": {
+        "type_id": {"$ref": "#/$defs/id"},
+        "catalog_order": {"type": "integer", "minimum": 0},
+        "group": {"enum": ["bim", "ifc_detail", "cadquery", "openscad"]},
+        "display_name": {"$ref": "#/$defs/nonEmptyString"},
+        "category": {"$ref": "#/$defs/id"},
+        "source_tool": {"$ref": "#/$defs/nonEmptyString"},
+        "ifc_class": {"$ref": "#/$defs/ifcClass"},
+        "parameters": {"$ref": "#/$defs/parameters"},
+        "exports": {"$ref": "#/$defs/exports"},
+        "notes": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "occurrence_id",
+        "type_id",
+        "ifc_name",
+        "material",
+        "systems",
+        "object_type",
+        "geometry",
+        "origin_mm",
+        "dimensions_mm",
+        "extrusion_axis",
+        "ports",
+        "port_systems",
+        "properties"
+      ],
+      "properties": {
+        "occurrence_id": {"$ref": "#/$defs/id"},
+        "type_id": {"$ref": "#/$defs/id"},
+        "ifc_name": {"$ref": "#/$defs/nonEmptyString"},
+        "material": {"$ref": "#/$defs/nonEmptyString"},
+        "systems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^System_[A-Za-z0-9]+$"}
+        },
+        "object_type": {"type": "string"},
+        "geometry": {"enum": ["box", "cylinder"]},
+        "origin_mm": {"$ref": "#/$defs/vector3"},
+        "dimensions_mm": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {"$ref": "#/$defs/positiveNumber"}
+        },
+        "extrusion_axis": {"$ref": "#/$defs/vector3"},
+        "ports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "port_systems": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/id"},
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^System_[A-Za-z0-9]+$"
+          }
+        },
+        "properties": {"$ref": "#/$defs/parameters"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["geometry"],
+            "properties": {"geometry": {"const": "box"}}
+          },
+          "then": {"properties": {"dimensions_mm": {"minItems": 3, "maxItems": 3}}}
+        },
+        {
+          "if": {
+            "required": ["geometry"],
+            "properties": {"geometry": {"const": "cylinder"}}
+          },
+          "then": {"properties": {"dimensions_mm": {"minItems": 2, "maxItems": 2}}}
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "catalog_order",
+        "group",
+        "display_name",
+        "category",
+        "source_tool",
+        "ifc_class",
+        "parameters",
+        "exports",
+        "notes"
+      ],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/id"},
+        "catalog_order": {"type": "integer", "minimum": 0},
+        "group": {"enum": ["bim", "drawing", "report"]},
+        "display_name": {"$ref": "#/$defs/nonEmptyString"},
+        "category": {"$ref": "#/$defs/id"},
+        "source_tool": {"$ref": "#/$defs/nonEmptyString"},
+        "ifc_class": {"$ref": "#/$defs/ifcClass"},
+        "parameters": {"$ref": "#/$defs/parameters"},
+        "exports": {"$ref": "#/$defs/exports"},
+        "notes": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["occurrence_id", "port"],
+      "properties": {
+        "occurrence_id": {"$ref": "#/$defs/id"},
+        "port": {"$ref": "#/$defs/id"}
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connection_id", "system", "from", "to", "name"],
+      "properties": {
+        "connection_id": {"$ref": "#/$defs/id"},
+        "system": {"type": "string", "pattern": "^System_[A-Za-z0-9]+$"},
+        "from": {"$ref": "#/$defs/endpoint"},
+        "to": {"$ref": "#/$defs/endpoint"},
+        "name": {"$ref": "#/$defs/nonEmptyString"},
+        "realizing_occurrence_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categories", "asset_ids"],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "asset_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    }
+  }
+}

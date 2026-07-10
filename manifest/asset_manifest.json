@@ -19,7 +19,7 @@
         "freecad_bim": "freecad/mechanical_room_bim.FCStd",
         "step": "exports/step/mechanical_room_assembly.step"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Room volume and enclosing architectural shell."
     },
     {
@@ -37,7 +37,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Base slab for the mechanical room."
     },
     {
@@ -55,7 +55,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "North architectural boundary wall."
     },
     {
@@ -73,7 +73,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "South architectural boundary wall."
     },
     {
@@ -91,7 +91,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "East architectural boundary wall."
     },
     {
@@ -109,7 +109,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "West architectural boundary wall."
     },
     {
@@ -126,7 +126,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Primary access opening in the south wall."
     },
     {
@@ -144,7 +144,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Main packaged air-handling unit with filter, coil, fan, and service-access context in the IFC schedule."
     },
     {
@@ -161,7 +161,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWS supply pipe route coordinated with valves, support, and AHU coil connection."
     },
     {
@@ -178,7 +178,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWR return pipe route coordinated with valves, support, and AHU coil connection."
     },
     {
@@ -196,7 +196,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Rule-based transparent clearance volume for AHU service access."
     },
     {
@@ -212,7 +212,7 @@
         "semantic_inventory_csv": "bim/openbim_semantic_inventory.csv",
         "entity_summary_md": "bim/ifc_entity_summary.md"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Programmatic IFC export used for validation and review."
     },
     {
@@ -230,7 +230,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Filter section tracked as an individual IFC product."
     },
     {
@@ -248,7 +248,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Cooling coil section connected to CHWS/CHWR ports."
     },
     {
@@ -265,7 +265,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Fan section connected to the supply-air system."
     },
     {
@@ -282,7 +282,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Duty chilled-water pump with connected distribution ports."
     },
     {
@@ -299,7 +299,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Standby chilled-water pump tracked in the IFC product schedule."
     },
     {
@@ -316,7 +316,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Vertical CHWS drop connecting the overhead pipe rack to the AHU coil."
     },
     {
@@ -333,7 +333,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Vertical CHWR drop connecting the AHU coil back to the return rack."
     },
     {
@@ -350,7 +350,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWS isolation valve tracked as a flow controller."
     },
     {
@@ -367,7 +367,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWS balancing valve tracked as a flow controller."
     },
     {
@@ -384,7 +384,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWR isolation valve tracked as a flow controller."
     },
     {
@@ -401,7 +401,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWR balancing valve tracked as a flow controller."
     },
     {
@@ -418,7 +418,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWS elbow fitting at the pipe-drop transition."
     },
     {
@@ -435,7 +435,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "CHWR elbow fitting at the pipe-drop transition."
     },
     {
@@ -452,7 +452,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Pressure sensor on the CHWS rack."
     },
     {
@@ -470,7 +470,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Branch duct segment connected to the supply terminal."
     },
     {
@@ -488,7 +488,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Return-air duct segment connected to the AHU return path."
     },
     {
@@ -506,7 +506,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Fire damper tracked in the supply-air distribution system."
     },
     {
@@ -524,7 +524,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Supply diffuser terminal connected to the branch duct."
     },
     {
@@ -542,7 +542,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Return grille terminal connected to the return-air system."
     },
     {
@@ -560,7 +560,7 @@
       "exports": {
         "ifc": "bim/mechanical_room.ifc"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Vertical tray drop connected to the overhead cable tray route."
     },
     {
@@ -574,7 +574,11 @@
         "length_mm": 220,
         "width_mm": 120,
         "height_mm": 300,
+        "base_thickness_mm": 16,
+        "web_thickness_mm": 12,
         "pipe_diameter_mm": 60,
+        "clearance_mm": 8,
+        "bolt_diameter_mm": 14,
         "bolt_spacing_mm": 150,
         "material_tag": "painted_steel"
       },
@@ -582,7 +586,7 @@
         "step": "exports/step/support_pipe_bracket_type_a.step",
         "stl": "exports/stl/support_pipe_bracket_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Parametric floor-mounted support bracket for a horizontal pipe run."
     },
     {
@@ -597,13 +601,15 @@
         "duct_height_mm": 220,
         "height_mm": 520,
         "rod_diameter_mm": 12,
+        "strap_width_mm": 38,
+        "strap_thickness_mm": 8,
         "material_tag": "galvanized_steel"
       },
       "exports": {
         "step": "exports/step/support_duct_hanger_type_a.step",
         "stl": "exports/stl/support_duct_hanger_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Simple trapeze hanger assembly for rectangular ductwork."
     },
     {
@@ -618,13 +624,15 @@
         "width_mm": 220,
         "height_mm": 80,
         "thickness_mm": 4,
+        "hole_diameter_mm": 20,
+        "hole_pitch_mm": 110,
         "material_tag": "perforated_aluminum"
       },
       "exports": {
         "step": "exports/step/cable_tray_overhead_001.step",
         "stl": "exports/stl/cable_tray_overhead_001.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Perforated U-channel tray segment for control/electrical routing."
     },
     {
@@ -639,13 +647,14 @@
         "width_mm": 800,
         "height_mm": 160,
         "bolt_diameter_mm": 18,
+        "bolt_offset_mm": 120,
         "material_tag": "concrete"
       },
       "exports": {
         "step": "exports/step/equipment_base_type_a.step",
         "stl": "exports/stl/equipment_base_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Concrete housekeeping pad with anchor bolt holes."
     },
     {
@@ -660,13 +669,14 @@
         "width_mm": 520,
         "height_mm": 180,
         "rail_width_mm": 70,
+        "crossmember_count": 3,
         "material_tag": "painted_steel"
       },
       "exports": {
         "step": "exports/step/equipment_pump_skid_001.step",
         "stl": "exports/stl/equipment_pump_skid_001.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Steel skid frame placeholder for pump assembly support."
     },
     {
@@ -680,13 +690,16 @@
         "pipe_diameter_mm": 110,
         "wall_thickness_mm": 200,
         "clearance_mm": 30,
+        "sleeve_wall_mm": 6,
+        "flange_diameter_mm": 190,
+        "flange_thickness_mm": 8,
         "material_tag": "steel_sleeve"
       },
       "exports": {
         "step": "exports/step/sleeve_wall_penetration_type_a.step",
         "stl": "exports/stl/sleeve_wall_penetration_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Cylindrical sleeve for pipe or duct penetration through a wall."
     },
     {
@@ -700,6 +713,7 @@
         "pipe_diameter_mm": 60,
         "width_mm": 45,
         "thickness_mm": 10,
+        "ear_length_mm": 34,
         "bolt_diameter_mm": 10,
         "material_tag": "galvanized_steel"
       },
@@ -707,7 +721,7 @@
         "step": "exports/step/pipe_clamp_type_a.step",
         "stl": "exports/stl/pipe_clamp_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Ring clamp with mounting ears for small-diameter pipe support."
     },
     {
@@ -722,13 +736,14 @@
         "duct_width_mm": 420,
         "duct_height_mm": 220,
         "wall_thickness_mm": 6,
+        "flange_depth_mm": 26,
         "material_tag": "galvanized_sheet_metal"
       },
       "exports": {
         "step": "exports/step/duct_main_001.step",
         "stl": "exports/stl/duct_main_001.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Hollow rectangular duct segment for main air distribution route."
     },
     {
@@ -744,13 +759,14 @@
         "thickness_mm": 12,
         "bolt_diameter_mm": 14,
         "bolt_spacing_mm": 190,
+        "slot_length_mm": 34,
         "material_tag": "steel"
       },
       "exports": {
         "step": "exports/step/plate_mounting_type_a.step",
         "stl": "exports/stl/plate_mounting_type_a.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Generic slotted support plate for wall or floor mounting."
     },
     {
@@ -769,7 +785,7 @@
         "scad": "openscad/pipe_clamp.scad",
         "stl": "exports/stl/openscad_pipe_clamp_type_b.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Declarative OpenSCAD pipe clamp component example."
     },
     {
@@ -788,7 +804,7 @@
         "scad": "openscad/bracket_plate.scad",
         "stl": "exports/stl/openscad_bracket_plate_type_b.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Slotted bracket plate with top-level parameters."
     },
     {
@@ -807,7 +823,7 @@
         "scad": "openscad/cable_tray_segment.scad",
         "stl": "exports/stl/openscad_cable_tray_segment_type_b.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Simple U-channel cable tray with repeated perforations."
     },
     {
@@ -826,7 +842,7 @@
         "scad": "openscad/duct_connector.scad",
         "stl": "exports/stl/openscad_duct_connector_type_b.stl"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Flanged rectangular duct connector."
     },
     {
@@ -843,7 +859,7 @@
         "dxf": "qcad/floor_plan.dxf",
         "pdf": "qcad/pdf_exports/floor_plan.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Room layout with walls, door, major equipment, and clearance zones."
     },
     {
@@ -860,7 +876,7 @@
         "dxf": "qcad/equipment_layout.dxf",
         "pdf": "qcad/pdf_exports/equipment_layout.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Equipment arrangement and service zones."
     },
     {
@@ -877,7 +893,7 @@
         "dxf": "qcad/section_aa.dxf",
         "pdf": "qcad/pdf_exports/section_aa.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Coordinated section showing vertical separation, room height, clearance headroom, pipe rack, duct, and tray."
     },
     {
@@ -894,7 +910,7 @@
         "dxf": "qcad/system_riser.dxf",
         "pdf": "qcad/pdf_exports/system_riser.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Schematic riser/connectivity sheet documenting IFC distribution systems and port relationships."
     },
     {
@@ -911,7 +927,7 @@
         "dxf": "qcad/pipe_support_detail.dxf",
         "pdf": "qcad/pdf_exports/pipe_support_detail.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Pipe support bracket dimensions and anchor layout."
     },
     {
@@ -928,7 +944,7 @@
         "dxf": "qcad/wall_penetration_detail.dxf",
         "pdf": "qcad/pdf_exports/wall_penetration_detail.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Sleeve and wall penetration detail."
     },
     {
@@ -945,7 +961,7 @@
         "dxf": "qcad/duct_hanger_detail.dxf",
         "pdf": "qcad/pdf_exports/duct_hanger_detail.pdf"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Trapeze hanger and duct support dimensions."
     },
     {
@@ -956,12 +972,12 @@
       "units": "millimeters",
       "ifc_class": "IfcDocumentReference",
       "parameters": {
-        "source_of_truth": "tools/openbim_core.py"
+        "source_of_truth": "spec/mechanical_room.project.json"
       },
       "exports": {
         "md": "reports/coordination_report.md"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Generated source-of-truth summary tying IFC products, systems, connections, BOM, and clearance checks together."
     },
     {
@@ -972,12 +988,12 @@
       "units": "millimeters",
       "ifc_class": "IfcDocumentReference",
       "parameters": {
-        "source_of_truth": "tools/openbim_core.py"
+        "source_of_truth": "spec/mechanical_room.project.json"
       },
       "exports": {
         "csv": "reports/bill_of_materials.csv"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Generated BOM from the same semantic product schedule used for IFC output."
     },
     {
@@ -988,12 +1004,12 @@
       "units": "millimeters",
       "ifc_class": "IfcDocumentReference",
       "parameters": {
-        "source_of_truth": "tools/openbim_core.py"
+        "source_of_truth": "spec/mechanical_room.project.json"
       },
       "exports": {
         "csv": "reports/clash_clearance_report.csv"
       },
-      "validation_status": "passed",
+      "validation_status": "not_evaluated",
       "notes": "Generated bounding-box clearance and coordination checks for the mechanical-room layout."
     }
   ]

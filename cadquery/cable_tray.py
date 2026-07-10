@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-import cadquery as cq
+import math
 
 from asset_io import export_shape, merged
+
+import cadquery as cq
 
 ASSET_ID = "cable_tray_overhead_001"
 
@@ -43,6 +45,10 @@ def build(parameters: dict[str, object] | None = None) -> cq.Workplane:
 
 
 def _frange(start: float, stop: float, step: float) -> list[float]:
+    if not math.isfinite(step) or step <= 0:
+        raise ValueError("step must be a finite positive number")
+    if not math.isfinite(start) or not math.isfinite(stop):
+        raise ValueError("start and stop must be finite")
     values: list[float] = []
     value = start
     while value <= stop:

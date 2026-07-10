@@ -23,10 +23,14 @@ FreeCAD object names should follow:
 Category_System_Instance
 ```
 
-Manifest asset IDs should stay lowercase with underscores:
+ProjectSpec `type_id`, `occurrence_id`, and `artifact_id` values stay lowercase
+with underscores:
 
 ```text
 support_pipe_bracket_type_a
 ```
 
-The object name describes the CAD-visible object. The asset ID gives scripts, manifests, and validation a stable machine-readable key.
+The object name describes the CAD-visible object. Typed IDs give scripts and
+validation stable machine-readable keys without conflating a reusable definition
+with a placement. Flat manifest rows retain `asset_id` as a compatibility view of
+type and artifact IDs.

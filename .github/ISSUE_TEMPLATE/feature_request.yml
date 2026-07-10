@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose an asset, OpenBIM semantic improvement, validator, or integration.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Coordination problem
+      description: What user or interoperability problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed evidence contract
+      description: Describe source parameters, expected IFC semantics, exports, and validation criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -12,8 +12,21 @@ The drawings are generated technical coordination drawings and not a full constr
 
 The validation scripts check file structure, metadata completeness, IFC readability, MEP class coverage, distribution systems, port connectivity, property sets, and asset coverage. They do not perform full engineering compliance validation.
 
-QCAD PDF exports were generated through the installed QCAD command-line exporter. The installed cask exposes QCAD Professional trial messaging before each command-line export.
+QCAD is an optional desktop exporter, not part of the portable core. Its license
+and command-line availability depend on the installed edition; contributors
+must review those terms before redistributing it or automating hosted exports.
+The portable core writes ReportLab previews under `build/portable/`; only QCAD
+writes the canonical PDFs under `qcad/pdf_exports/`.
 
 OpenSCAD 2021.01 is an Intel macOS application distributed through Homebrew and may require Rosetta on Apple Silicon systems.
 
-`ghbalf/freecad-ai` is alpha software. Use it for guided FreeCAD modeling and review in Plan Mode, then commit only deterministic macro/source changes that can be regenerated and validated.
+The optional OpenCAD integration is experimental and pinned. CoordProof does not
+persist OpenCAD topology IDs, execute agent-generated code, or treat OpenCAD as
+the authority for IFC identity, systems, ports, or validation.
+
+Reusable asset-type parameters and placed occurrence dimensions are separated in
+the versioned ProjectSpec. Cross-format geometry is not yet fully reconciled:
+some coordination dimensions intentionally differ from reusable type defaults,
+and legacy values remain in CAD builders and FreeCAD macros. Those differences
+must be treated as explicit, reviewable overrides until the parameter-parity
+milestone on the [roadmap](roadmap.md) is complete.

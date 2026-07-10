@@ -56,9 +56,87 @@
       "type": "number",
       "minimum": 0
     },
+    "bolt_offset_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "base_thickness_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "web_thickness_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "strap_width_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "strap_thickness_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "rod_diameter_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "hole_diameter_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "hole_pitch_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "slot_length_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "ear_length_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "sleeve_wall_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "flange_diameter_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "flange_thickness_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "flange_depth_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "rail_width_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "pipe_radius_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "radius_mm": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "scale": {
+      "type": "string"
+    },
+    "source_of_truth": {
+      "type": "string"
+    },
     "mounting_hole_count": {
       "type": "integer",
       "minimum": 0
+    },
+    "crossmember_count": {
+      "type": "integer",
+      "minimum": 1
     },
     "clearance_mm": {
       "type": "number",

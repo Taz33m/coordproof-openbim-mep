@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If CoordProof supports your work, please cite the repository and release."
+title: "CoordProof: reproducible OpenBIM evidence for MEP coordination"
+type: software
+authors:
+  - name: "CoordProof contributors"
+repository-code: "https://github.com/Taz33m/coordproof-openbim-mep"
+url: "https://taz33m.github.io/coordproof-openbim-mep/"
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-07-10

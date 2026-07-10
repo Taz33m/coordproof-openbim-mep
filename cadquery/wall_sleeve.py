@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import cadquery as cq
-
 from asset_io import export_shape, merged
+
+import cadquery as cq
 
 ASSET_ID = "sleeve_wall_penetration_type_a"
 
