@@ -1,8 +1,8 @@
-"""Generate QCAD-ready DXF drawings and matching PDF review sheets."""
+"""Generate QCAD-ready DXF drawings and portable PDF previews."""
 
 from __future__ import annotations
 
-import math
+import argparse
 import sys
 from pathlib import Path
 
@@ -11,13 +11,17 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A3, landscape
 from reportlab.pdfgen import canvas
 
+# ezdxf otherwise embeds wall-clock timestamps and random document GUIDs on
+# every save. Fixed metadata keeps source-equivalent DXF rebuilds reviewable.
+ezdxf.options.write_fixed_meta_data_for_testing = True
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from openbim_core import ProductSpec, product_schedule  # noqa: E402
+from openbim_core import CONNECTIVITY, ProductSpec, product_schedule  # noqa: E402
 
 QCAD_DIR = ROOT / "qcad"
-PDF_DIR = QCAD_DIR / "pdf_exports"
+PORTABLE_PDF_DIR = ROOT / "build" / "portable" / "qcad_pdf_previews"
 SPECS = {spec.asset_id: spec for spec in product_schedule()}
 
 LAYERS = {
@@ -291,7 +295,14 @@ def equipment_layout(doc) -> None:
     pump_symbol(msp, 4080, 1030, "P-1")
     pump_symbol(msp, 4620, 1030, "P-2")
     dim_h(msp, 850, 2350, 560, "AHU casing 1500")
-    dim_h(msp, 3750, 4850, 520, "pump skid 1100")
+    skid_x, _, skid_length, _ = box_xywh("equipment_pump_skid_001")
+    dim_h(
+        msp,
+        skid_x,
+        skid_x + skid_length,
+        520,
+        f"pump skid {int(skid_length)}",
+    )
     dim_v(msp, 550, 780, 1630, "850")
     dim_v(msp, 5250, 650, 1450, "800")
     callout(msp, "filter access side", 900, 1610, 720, 3020)
@@ -430,7 +441,14 @@ def system_riser(doc) -> None:
         label(msp, text, x - 95, y - 25, 60, "ANNOTATIONS")
     msp.add_line((2550, 3050), (2550, 2700), dxfattribs={"layer": "M-PIPE-RETURN"})
     msp.add_line((3250, 2250), (3250, 1900), dxfattribs={"layer": "M-DUCT"})
-    callout(msp, "21 IFC port-to-port connections generated from source schedule", 3400, 2250, 3550, 3420)
+    callout(
+        msp,
+        f"{len(CONNECTIVITY)} IFC port-to-port connections generated from ProjectSpec",
+        3400,
+        2250,
+        3550,
+        3420,
+    )
     callout(msp, "5 IfcDistributionSystem groups validated", 3250, 1550, 3550, 3150)
     label(msp, "This sheet is a schematic connectivity view; IFC ports carry the machine-readable network.", 820, 980, 76)
     title_block(msp, "MEP SYSTEM RISER / IFC CONNECTIVITY", "NTS", "M-601")
@@ -447,9 +465,9 @@ DRAWINGS = {
 }
 
 
-def write_pdf(name: str, title: str) -> None:
-    PDF_DIR.mkdir(parents=True, exist_ok=True)
-    path = PDF_DIR / f"{name}.pdf"
+def write_pdf(name: str, title: str, output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{name}.pdf"
     c = canvas.Canvas(str(path), pagesize=landscape(A3))
     w, h = landscape(A3)
     c.setStrokeColor(colors.black)
@@ -458,22 +476,50 @@ def write_pdf(name: str, title: str) -> None:
     c.setFont("Helvetica-Bold", 18)
     c.drawString(60, h - 80, title)
     c.setFont("Helvetica", 10)
-    c.drawString(60, h - 105, "Generated QCAD-ready review sheet. See matching DXF for layers and model-space geometry.")
+    c.drawString(
+        60,
+        h - 105,
+        "Portable preview only. Use QCAD's exporter for the canonical PDF drawing.",
+    )
     c.drawString(60, 70, "CoordProof MEP Coordination Package")
     c.drawString(w - 210, 70, "Units: millimeters")
     c.showPage()
     c.save()
+    return path
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--pdf-output-dir",
+        type=Path,
+        default=PORTABLE_PDF_DIR,
+        help="portable preview directory (default: build/portable/qcad_pdf_previews)",
+    )
+    parser.add_argument(
+        "--skip-pdf",
+        action="store_true",
+        help="generate DXF sources only; the full build uses QCAD for canonical PDFs",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    pdf_output_dir = args.pdf_output_dir
+    if not pdf_output_dir.is_absolute():
+        pdf_output_dir = ROOT / pdf_output_dir
     QCAD_DIR.mkdir(parents=True, exist_ok=True)
     for name, (title, draw_fn) in DRAWINGS.items():
         doc = setup_doc()
         draw_fn(doc)
         dxf_path = QCAD_DIR / f"{name}.dxf"
         doc.saveas(dxf_path)
-        write_pdf(name, title)
-        print(f"Wrote {dxf_path} and {PDF_DIR / (name + '.pdf')}")
+        if args.skip_pdf:
+            print(f"Wrote {dxf_path}")
+            continue
+        pdf_path = write_pdf(name, title, pdf_output_dir)
+        print(f"Wrote {dxf_path} and portable preview {pdf_path}")
 
 
 if __name__ == "__main__":

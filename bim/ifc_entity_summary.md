@@ -2,7 +2,7 @@
 
 File: `bim/mechanical_room.ifc`
 
-This IFC is generated from `tools/openbim_core.py` as the semantic
+This IFC is generated from `spec/mechanical_room.project.json` as the semantic
 source of truth for the coordination package. FreeCAD/STEP artifacts are
 supporting CAD views of the same mechanical-room intent.
 
@@ -11,8 +11,8 @@ supporting CAD views of the same mechanical-room intent.
 - Schema: `IFC4`
 - Non-port product count: `43`
 - Distribution systems: `5`
-- Property sets: `79`
-- Connected port relationships: `21`
+- Property sets: `131`
+- Connected port relationships: `22`
 - Building element proxies: `0`
 
 ## Entity Counts
@@ -41,23 +41,23 @@ supporting CAD views of the same mechanical-room intent.
 | `IfcFooting` | 1 |
 | `IfcGeometricRepresentationContext` | 1 |
 | `IfcLocalPlacement` | 40 |
-| `IfcMaterial` | 17 |
+| `IfcMaterial` | 16 |
 | `IfcMechanicalFastener` | 4 |
 | `IfcPipeFitting` | 2 |
 | `IfcPipeSegment` | 4 |
 | `IfcProductDefinitionShape` | 40 |
 | `IfcProject` | 1 |
-| `IfcPropertySet` | 79 |
-| `IfcPropertySingleValue` | 318 |
+| `IfcPropertySet` | 131 |
+| `IfcPropertySingleValue` | 555 |
 | `IfcPump` | 2 |
 | `IfcRectangleProfileDef` | 24 |
 | `IfcRelAggregates` | 4 |
 | `IfcRelAssignsToGroup` | 5 |
-| `IfcRelAssociatesMaterial` | 39 |
+| `IfcRelAssociatesMaterial` | 38 |
 | `IfcRelConnectsPortToElement` | 51 |
-| `IfcRelConnectsPorts` | 21 |
+| `IfcRelConnectsPorts` | 22 |
 | `IfcRelContainedInSpatialStructure` | 1 |
-| `IfcRelDefinesByProperties` | 79 |
+| `IfcRelDefinesByProperties` | 131 |
 | `IfcSIUnit` | 3 |
 | `IfcSensor` | 1 |
 | `IfcShapeRepresentation` | 40 |
@@ -74,8 +74,8 @@ supporting CAD views of the same mechanical-room intent.
 
 | System | Members |
 | --- | ---: |
-| `System_CHWS` | 10 |
-| `System_CHWR` | 6 |
+| `System_CHWS` | 11 |
+| `System_CHWR` | 9 |
 | `System_SupplyAir` | 8 |
 | `System_ReturnAir` | 3 |
 | `System_ElectricalRouting` | 2 |

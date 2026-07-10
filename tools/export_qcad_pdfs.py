@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 from pathlib import Path
 
+from tooling import qcad_pdf_command
+
 ROOT = Path(__file__).resolve().parents[1]
-QCAD_DWG2PDF = Path("/Applications/QCAD.app/Contents/Resources/dwg2pdf")
 
 DRAWINGS = [
     "floor_plan",
@@ -21,14 +21,11 @@ DRAWINGS = [
 
 
 def main() -> int:
-    if not QCAD_DWG2PDF.exists():
-        fallback = shutil.which("dwg2pdf")
-        if fallback:
-            executable = Path(fallback)
-        else:
-            raise SystemExit("QCAD dwg2pdf command was not found.")
-    else:
-        executable = QCAD_DWG2PDF
+    executable = qcad_pdf_command()
+    if executable is None:
+        raise SystemExit(
+            "QCAD dwg2pdf was not found. Set QCAD_DWG2PDF or add dwg2pdf to PATH."
+        )
 
     out_dir = ROOT / "qcad" / "pdf_exports"
     out_dir.mkdir(parents=True, exist_ok=True)

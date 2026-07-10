@@ -327,7 +327,7 @@
 
       <div class="hero">
         <div>
-          <h1>OpenBIM coordination evidence, generated from one source layer.</h1>
+          <h1>OpenBIM coordination evidence, generated from a versioned project contract.</h1>
           <p class="lede">CoordProof produces a mechanical-room package across IFC4, FreeCAD, QCAD drawings, CAD exports, manifests, reports, and automated QA.</p>
           <div class="actions">
             <a class="button" href="https://github.com/Taz33m/coordproof-openbim-mep">Open repository</a>
@@ -344,7 +344,7 @@
     <main>
       <section>
         <h2>Generated Package</h2>
-        <p class="section-copy">Asset IDs, dimensions, locations, IFC classes, system membership, distribution ports, clearance zones, drawing annotations, exports, and validation rules are generated from shared source definitions.</p>
+        <p class="section-copy">A versioned ProjectSpec declares reusable asset types, placed occurrences, IFC classes, systems, ports, connections, artifacts, and required coverage before generators produce review evidence.</p>
         <img class="wide-image" src="https://raw.githubusercontent.com/Taz33m/coordproof-openbim-mep/main/screenshots/00_coordproof_system_overview.png" alt="CoordProof generated OpenBIM package overview">
       </section>
 
@@ -372,7 +372,7 @@
           <div class="metric"><strong>IFC4</strong><span>semantic model</span></div>
           <div class="metric"><strong>5</strong><span>distribution systems</span></div>
           <div class="metric"><strong>51</strong><span>distribution ports</span></div>
-          <div class="metric"><strong>21</strong><span>connected port pairs</span></div>
+          <div class="metric"><strong>22</strong><span>connected port pairs</span></div>
           <div class="metric"><strong>55</strong><span>manifest assets</span></div>
           <div class="metric"><strong>7+7</strong><span>DXF/PDF sheets</span></div>
           <div class="metric"><strong>0</strong><span>critical failures</span></div>
@@ -383,7 +383,8 @@
         <h2>Architecture</h2>
         <table>
           <tr><th>Layer</th><th>Generated artifacts</th></tr>
-          <tr><td><code>tools/openbim_core.py</code></td><td>Shared source definitions for products, systems, locations, ports, clearances, and validation rules.</td></tr>
+          <tr><td><code>spec/mechanical_room.project.json</code></td><td>Versioned source of truth for asset types, placed occurrences, systems, ports, connections, artifacts, and coverage requirements.</td></tr>
+          <tr><td>Python projections</td><td>Validated catalog and OpenBIM schedules consumed by generators without duplicating project declarations.</td></tr>
           <tr><td>IFC/OpenBIM</td><td>IFC4 model, distribution systems, ports, property sets, semantic inventory, and entity summary.</td></tr>
           <tr><td>CAD/Drawing package</td><td>FreeCAD review files, QCAD DXF sheets, PDF exports, CadQuery assets, and OpenSCAD assets.</td></tr>
           <tr><td>QA layer</td><td>Manifest coverage, export checks, IFC validation, BOM, clearance report, and public-package preflight.</td></tr>
@@ -394,9 +395,12 @@
         <h2>Validation</h2>
         <table>
           <tr><th>Check</th><th>Expected</th><th>Actual</th><th>Status</th></tr>
+          <tr><td>ProjectSpec schema + semantics</td><td>Version 1 valid</td><td>Version 1 valid</td><td>PASS</td></tr>
           <tr><td>IFC schema</td><td>IFC4</td><td>IFC4</td><td>PASS</td></tr>
           <tr><td>Distribution systems</td><td>&gt;= 5</td><td>5</td><td>PASS</td></tr>
-          <tr><td>Port connections</td><td>&gt;= 20</td><td>21</td><td>PASS</td></tr>
+          <tr><td>IFC EXPRESS validation errors</td><td>0</td><td>0</td><td>PASS</td></tr>
+          <tr><td>ProjectSpec-to-IFC parity</td><td>Exact</td><td>Exact</td><td>PASS</td></tr>
+          <tr><td>Port connections</td><td>&gt;= 20</td><td>22</td><td>PASS</td></tr>
           <tr><td>Building element proxies</td><td>0</td><td>0</td><td>PASS</td></tr>
           <tr><td>Required exports</td><td>35+</td><td>44</td><td>PASS</td></tr>
           <tr><td>Critical failures</td><td>0</td><td>0</td><td>PASS</td></tr>

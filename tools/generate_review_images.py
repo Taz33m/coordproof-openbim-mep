@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from openbim_core import ProductSpec, product_schedule  # noqa: E402
+from openbim_core import CONNECTIVITY, ProductSpec, product_schedule  # noqa: E402
 
 SCREENSHOTS = ROOT / "screenshots"
 MANIFEST = ROOT / "manifest" / "asset_manifest.json"
@@ -486,7 +486,12 @@ def section_and_riser_preview() -> None:
         for x, tag in [(1030, "P"), (1160, "V"), (1290, "AHU"), (1410, "T")]:
             draw.rectangle((x - 28, y - 22, x + 28, y + 22), fill=PAPER, outline=color, width=2)
             draw.text((x, y - 9), tag, fill=INK, font=font(13, True), anchor="ma")
-    draw.text((980, 720), "21 port-to-port relationships", fill=BLUE, font=font(22, True))
+    draw.text(
+        (980, 720),
+        f"{len(CONNECTIVITY)} port-to-port relationships",
+        fill=BLUE,
+        font=font(22, True),
+    )
     draw.text((980, 752), "5 IfcDistributionSystem groups", fill=BLUE, font=font(22, True))
     title_strip(draw, "M-301 / M-601", "SECTION AND IFC CONNECTIVITY", "1:25 / NTS")
     save(img, "07_qcad_section_and_riser.png")
@@ -527,7 +532,7 @@ def validation_status() -> None:
     panel(draw, (120, 585, 1510, 815), "Validation Evidence Table")
     columns = [145, 575, 820, 1045, 1295]
     headers = ["Check", "Expected", "Actual", "Status"]
-    for x, header in zip(columns, headers):
+    for x, header in zip(columns, headers, strict=False):
         draw.text((x, 640), header, fill=INK, font=font(18, True))
     table_rows = [
         ("IFC schema", "IFC4", validation_metric("schema") or "IFC4", "PASS"),
@@ -541,7 +546,7 @@ def validation_status() -> None:
         y = 662 + i * 25
         if i:
             draw.line((140, y - 8, 1485, y - 8), fill=(226, 231, 230), width=1)
-        for x, value in zip(columns, row):
+        for x, value in zip(columns, row, strict=False):
             color = GREEN if value == "PASS" else INK
             draw.text((x, y), value, fill=color, font=font(16, value == "PASS"))
     title_strip(draw, "QA-001", "VALIDATION AND TRACEABILITY", "NTS")

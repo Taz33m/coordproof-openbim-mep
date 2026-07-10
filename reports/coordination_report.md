@@ -12,7 +12,7 @@ because they are a bounding-box coordination screen, not a full clash engine.
 | --- | ---: |
 | BIM product specs | 39 |
 | Distribution systems | 5 |
-| Port connections | 21 |
+| Port connections | 22 |
 | Clash/clearance checks | 20 |
 | Failed checks | 0 |
 | Review checks | 15 |

@@ -1,0 +1,28 @@
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "opencad: slow optional tests requiring the pinned OpenCAD/OCCT integration",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["tools", "validation", "integrations"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["freecad/*.FCMacro"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tools/generate_review_images.py" = ["E402"]
+"validation/*.py" = ["E402"]
+"tests/*.py" = ["E402"]

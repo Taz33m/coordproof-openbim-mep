@@ -1,0 +1,2679 @@
+{
+  "$schema": "project.schema.json",
+  "schema_version": 1,
+  "project": {
+    "project_id": "coordproof_mechanical_room",
+    "name": "CoordProof Mechanical Room",
+    "description": "Deterministic openBIM MEP coordination reference project for a mechanical room."
+  },
+  "units": "millimeters",
+  "spatial": {
+    "project_ifc_name": "Project_CoordProof_MechanicalRoom",
+    "site_ifc_name": "Site_OpenBIM_Testbed",
+    "building_ifc_name": "Building_MechanicalLab",
+    "storey_ifc_name": "Storey_MechanicalLevel_01",
+    "storey_elevation_mm": 0.0,
+    "space_type_id": "room_shell_001",
+    "space_occurrence_id": "room_shell_001",
+    "space_ifc_name": "Space_MechanicalRoom_001",
+    "space_long_name": "Mechanical Room Coordination Space",
+    "space_dimensions_mm": [
+      6000.0,
+      4200.0,
+      3200.0
+    ],
+    "semantic_source_tool": "IfcOpenShell"
+  },
+  "systems": [
+    {
+      "name": "System_CHWS",
+      "long_name": "System CHWS",
+      "object_type": "chws",
+      "description": "Chilled-water supply distribution"
+    },
+    {
+      "name": "System_CHWR",
+      "long_name": "System CHWR",
+      "object_type": "chwr",
+      "description": "Chilled-water return distribution"
+    },
+    {
+      "name": "System_SupplyAir",
+      "long_name": "System SupplyAir",
+      "object_type": "supplyair",
+      "description": "Supply-air distribution"
+    },
+    {
+      "name": "System_ReturnAir",
+      "long_name": "System ReturnAir",
+      "object_type": "returnair",
+      "description": "Return-air distribution"
+    },
+    {
+      "name": "System_ElectricalRouting",
+      "long_name": "System ElectricalRouting",
+      "object_type": "electricalrouting",
+      "description": "Electrical cable-routing distribution"
+    }
+  ],
+  "asset_types": [
+    {
+      "type_id": "room_shell_001",
+      "catalog_order": 0,
+      "group": "bim",
+      "display_name": "Mechanical Room Shell",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcSpace",
+      "parameters": {
+        "length_mm": 6000,
+        "width_mm": 4200,
+        "height_mm": 3200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc",
+        "freecad_review_ifc": "bim/mechanical_room_freecad_review.ifc",
+        "freecad": "freecad/mechanical_room.FCStd",
+        "freecad_bim": "freecad/mechanical_room_bim.FCStd",
+        "step": "exports/step/mechanical_room_assembly.step"
+      },
+      "notes": "Room volume and enclosing architectural shell."
+    },
+    {
+      "type_id": "slab_concrete_base_001",
+      "catalog_order": 1,
+      "group": "bim",
+      "display_name": "Concrete Slab Base",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcSlab",
+      "parameters": {
+        "length_mm": 6000,
+        "width_mm": 4200,
+        "height_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Base slab for the mechanical room."
+    },
+    {
+      "type_id": "wall_north_001",
+      "catalog_order": 2,
+      "group": "bim",
+      "display_name": "North Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 6000,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "North architectural boundary wall."
+    },
+    {
+      "type_id": "wall_south_001",
+      "catalog_order": 3,
+      "group": "bim",
+      "display_name": "South Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 6000,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "South architectural boundary wall."
+    },
+    {
+      "type_id": "wall_east_001",
+      "catalog_order": 4,
+      "group": "bim",
+      "display_name": "East Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 4200,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "East architectural boundary wall."
+    },
+    {
+      "type_id": "wall_west_001",
+      "catalog_order": 5,
+      "group": "bim",
+      "display_name": "West Wall",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcWall",
+      "parameters": {
+        "length_mm": 4200,
+        "height_mm": 3200,
+        "thickness_mm": 200
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "West architectural boundary wall."
+    },
+    {
+      "type_id": "door_access_001",
+      "catalog_order": 6,
+      "group": "bim",
+      "display_name": "Access Door",
+      "category": "architectural_shell",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcDoor",
+      "parameters": {
+        "width_mm": 1000,
+        "height_mm": 2100
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Primary access opening in the south wall."
+    },
+    {
+      "type_id": "equipment_ahu_001",
+      "catalog_order": 7,
+      "group": "bim",
+      "display_name": "Air Handling Unit AHU-1",
+      "category": "mechanical_equipment",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcUnitaryEquipment",
+      "parameters": {
+        "length_mm": 1500,
+        "width_mm": 850,
+        "height_mm": 1100
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Main packaged air-handling unit with filter, coil, fan, and service-access context in the IFC schedule."
+    },
+    {
+      "type_id": "pipe_supply_001",
+      "catalog_order": 8,
+      "group": "bim",
+      "display_name": "Supply Pipe Run",
+      "category": "flow_segment",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_diameter_mm": 80,
+        "length_mm": 3600
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWS supply pipe route coordinated with valves, support, and AHU coil connection."
+    },
+    {
+      "type_id": "pipe_return_001",
+      "catalog_order": 9,
+      "group": "bim",
+      "display_name": "Return Pipe Run",
+      "category": "flow_segment",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_diameter_mm": 80,
+        "length_mm": 3600
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWR return pipe route coordinated with valves, support, and AHU coil connection."
+    },
+    {
+      "type_id": "clearance_ahu_service_zone_001",
+      "catalog_order": 10,
+      "group": "bim",
+      "display_name": "AHU Service Clearance Zone",
+      "category": "clearance_zone",
+      "source_tool": "FreeCAD BIM",
+      "ifc_class": "IfcVirtualElement",
+      "parameters": {
+        "length_mm": 1800,
+        "width_mm": 1000,
+        "height_mm": 1900
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Rule-based transparent clearance volume for AHU service access."
+    },
+    {
+      "type_id": "ahu_filter_001",
+      "catalog_order": 12,
+      "group": "ifc_detail",
+      "display_name": "AHU Filter 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcFilter",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 800,
+        "height_mm": 760
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Filter section tracked as an individual IFC product."
+    },
+    {
+      "type_id": "ahu_coil_001",
+      "catalog_order": 13,
+      "group": "ifc_detail",
+      "display_name": "AHU Coil 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcCoil",
+      "parameters": {
+        "length_mm": 160,
+        "width_mm": 800,
+        "height_mm": 760
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Cooling coil section connected to CHWS/CHWR ports."
+    },
+    {
+      "type_id": "ahu_fan_001",
+      "catalog_order": 14,
+      "group": "ifc_detail",
+      "display_name": "AHU Fan 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcFan",
+      "parameters": {
+        "radius_mm": 260,
+        "length_mm": 420
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Fan section connected to the supply-air system."
+    },
+    {
+      "type_id": "pump_chws_duty_001",
+      "catalog_order": 15,
+      "group": "ifc_detail",
+      "display_name": "Pump CHWS Duty 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPump",
+      "parameters": {
+        "radius_mm": 170,
+        "length_mm": 460
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Duty chilled-water pump with connected distribution ports."
+    },
+    {
+      "type_id": "pump_chws_standby_001",
+      "catalog_order": 16,
+      "group": "ifc_detail",
+      "display_name": "Pump CHWS Standby 01",
+      "category": "mechanical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPump",
+      "parameters": {
+        "radius_mm": 170,
+        "length_mm": 460
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Standby chilled-water pump tracked in the IFC product schedule."
+    },
+    {
+      "type_id": "pipe_supply_drop_001",
+      "catalog_order": 17,
+      "group": "ifc_detail",
+      "display_name": "Pipe Supply Drop 01",
+      "category": "flow_segment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_radius_mm": 40,
+        "length_mm": 800
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Vertical CHWS drop connecting the overhead pipe rack to the AHU coil."
+    },
+    {
+      "type_id": "pipe_return_drop_001",
+      "catalog_order": 18,
+      "group": "ifc_detail",
+      "display_name": "Pipe Return Drop 01",
+      "category": "flow_segment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPipeSegment",
+      "parameters": {
+        "pipe_radius_mm": 40,
+        "length_mm": 810
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Vertical CHWR drop connecting the AHU coil back to the return rack."
+    },
+    {
+      "type_id": "valve_chws_isolation_001",
+      "catalog_order": 19,
+      "group": "ifc_detail",
+      "display_name": "Valve CHWS Isolation 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWS isolation valve tracked as a flow controller."
+    },
+    {
+      "type_id": "valve_chws_balancing_001",
+      "catalog_order": 20,
+      "group": "ifc_detail",
+      "display_name": "Valve CHWS Balancing 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWS balancing valve tracked as a flow controller."
+    },
+    {
+      "type_id": "valve_chwr_isolation_001",
+      "catalog_order": 21,
+      "group": "ifc_detail",
+      "display_name": "Valve CHWR Isolation 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWR isolation valve tracked as a flow controller."
+    },
+    {
+      "type_id": "valve_chwr_balancing_001",
+      "catalog_order": 22,
+      "group": "ifc_detail",
+      "display_name": "Valve CHWR Balancing 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcValve",
+      "parameters": {
+        "radius_mm": 80,
+        "length_mm": 140
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWR balancing valve tracked as a flow controller."
+    },
+    {
+      "type_id": "pipe_fitting_chws_elbow_001",
+      "catalog_order": 23,
+      "group": "ifc_detail",
+      "display_name": "Pipe Fitting CHWS Elbow 01",
+      "category": "flow_fitting",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPipeFitting",
+      "parameters": {
+        "radius_mm": 60,
+        "length_mm": 120
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWS elbow fitting at the pipe-drop transition."
+    },
+    {
+      "type_id": "pipe_fitting_chwr_elbow_001",
+      "catalog_order": 24,
+      "group": "ifc_detail",
+      "display_name": "Pipe Fitting CHWR Elbow 01",
+      "category": "flow_fitting",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcPipeFitting",
+      "parameters": {
+        "radius_mm": 60,
+        "length_mm": 120
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "CHWR elbow fitting at the pipe-drop transition."
+    },
+    {
+      "type_id": "sensor_chws_pressure_001",
+      "catalog_order": 25,
+      "group": "ifc_detail",
+      "display_name": "Sensor CHWS Pressure 01",
+      "category": "instrumentation",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcSensor",
+      "parameters": {
+        "radius_mm": 55,
+        "length_mm": 80
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Pressure sensor on the CHWS rack."
+    },
+    {
+      "type_id": "duct_branch_001",
+      "catalog_order": 26,
+      "group": "ifc_detail",
+      "display_name": "Duct Branch 01",
+      "category": "ductwork",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 650,
+        "width_mm": 360,
+        "height_mm": 180
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Branch duct segment connected to the supply terminal."
+    },
+    {
+      "type_id": "duct_return_001",
+      "catalog_order": 27,
+      "group": "ifc_detail",
+      "display_name": "Duct Return 01",
+      "category": "ductwork",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 1350,
+        "width_mm": 340,
+        "height_mm": 180
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Return-air duct segment connected to the AHU return path."
+    },
+    {
+      "type_id": "damper_fire_001",
+      "catalog_order": 28,
+      "group": "ifc_detail",
+      "display_name": "Damper Fire 01",
+      "category": "flow_controller",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcDamper",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 420,
+        "height_mm": 220
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Fire damper tracked in the supply-air distribution system."
+    },
+    {
+      "type_id": "air_terminal_supply_001",
+      "catalog_order": 29,
+      "group": "ifc_detail",
+      "display_name": "Air Terminal Supply Diffuser 01",
+      "category": "terminal",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcAirTerminal",
+      "parameters": {
+        "length_mm": 450,
+        "width_mm": 450,
+        "height_mm": 60
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Supply diffuser terminal connected to the branch duct."
+    },
+    {
+      "type_id": "air_terminal_return_001",
+      "catalog_order": 30,
+      "group": "ifc_detail",
+      "display_name": "Air Terminal Return Grille 01",
+      "category": "terminal",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcAirTerminal",
+      "parameters": {
+        "length_mm": 420,
+        "width_mm": 420,
+        "height_mm": 60
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Return grille terminal connected to the return-air system."
+    },
+    {
+      "type_id": "cable_tray_drop_001",
+      "catalog_order": 31,
+      "group": "ifc_detail",
+      "display_name": "Cable Tray Drop 01",
+      "category": "electrical_routing",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 120,
+        "width_mm": 120,
+        "height_mm": 520
+      },
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc"
+      },
+      "notes": "Vertical tray drop connected to the overhead cable tray route."
+    },
+    {
+      "type_id": "support_pipe_bracket_type_a",
+      "catalog_order": 32,
+      "group": "cadquery",
+      "display_name": "Pipe Support Bracket Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 220,
+        "width_mm": 120,
+        "height_mm": 300,
+        "base_thickness_mm": 16,
+        "web_thickness_mm": 12,
+        "pipe_diameter_mm": 60,
+        "clearance_mm": 8,
+        "bolt_diameter_mm": 14,
+        "bolt_spacing_mm": 150,
+        "material_tag": "painted_steel"
+      },
+      "exports": {
+        "step": "exports/step/support_pipe_bracket_type_a.step",
+        "stl": "exports/stl/support_pipe_bracket_type_a.stl"
+      },
+      "notes": "Parametric floor-mounted support bracket for a horizontal pipe run."
+    },
+    {
+      "type_id": "support_duct_hanger_type_a",
+      "catalog_order": 33,
+      "group": "cadquery",
+      "display_name": "Duct Hanger Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "duct_width_mm": 420,
+        "duct_height_mm": 220,
+        "height_mm": 520,
+        "rod_diameter_mm": 12,
+        "strap_width_mm": 38,
+        "strap_thickness_mm": 8,
+        "material_tag": "galvanized_steel"
+      },
+      "exports": {
+        "step": "exports/step/support_duct_hanger_type_a.step",
+        "stl": "exports/stl/support_duct_hanger_type_a.stl"
+      },
+      "notes": "Simple trapeze hanger assembly for rectangular ductwork."
+    },
+    {
+      "type_id": "cable_tray_overhead_001",
+      "catalog_order": 34,
+      "group": "cadquery",
+      "display_name": "Overhead Cable Tray Segment",
+      "category": "electrical_routing",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 900,
+        "width_mm": 220,
+        "height_mm": 80,
+        "thickness_mm": 4,
+        "hole_diameter_mm": 20,
+        "hole_pitch_mm": 110,
+        "material_tag": "perforated_aluminum"
+      },
+      "exports": {
+        "step": "exports/step/cable_tray_overhead_001.step",
+        "stl": "exports/stl/cable_tray_overhead_001.stl"
+      },
+      "notes": "Perforated U-channel tray segment for control/electrical routing."
+    },
+    {
+      "type_id": "equipment_base_type_a",
+      "catalog_order": 35,
+      "group": "cadquery",
+      "display_name": "Equipment Base Type A",
+      "category": "mechanical_equipment",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcFooting",
+      "parameters": {
+        "length_mm": 1200,
+        "width_mm": 800,
+        "height_mm": 160,
+        "bolt_diameter_mm": 18,
+        "bolt_offset_mm": 120,
+        "material_tag": "concrete"
+      },
+      "exports": {
+        "step": "exports/step/equipment_base_type_a.step",
+        "stl": "exports/stl/equipment_base_type_a.stl"
+      },
+      "notes": "Concrete housekeeping pad with anchor bolt holes."
+    },
+    {
+      "type_id": "equipment_pump_skid_001",
+      "catalog_order": 36,
+      "group": "cadquery",
+      "display_name": "Pump Skid Frame",
+      "category": "mechanical_equipment",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcElementAssembly",
+      "parameters": {
+        "length_mm": 1100,
+        "width_mm": 520,
+        "height_mm": 180,
+        "rail_width_mm": 70,
+        "crossmember_count": 3,
+        "material_tag": "painted_steel"
+      },
+      "exports": {
+        "step": "exports/step/equipment_pump_skid_001.step",
+        "stl": "exports/stl/equipment_pump_skid_001.stl"
+      },
+      "notes": "Steel skid frame placeholder for pump assembly support."
+    },
+    {
+      "type_id": "sleeve_wall_penetration_type_a",
+      "catalog_order": 37,
+      "group": "cadquery",
+      "display_name": "Wall Penetration Sleeve Type A",
+      "category": "penetration",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcBuildingElementPart",
+      "parameters": {
+        "pipe_diameter_mm": 110,
+        "wall_thickness_mm": 200,
+        "clearance_mm": 30,
+        "sleeve_wall_mm": 6,
+        "flange_diameter_mm": 190,
+        "flange_thickness_mm": 8,
+        "material_tag": "steel_sleeve"
+      },
+      "exports": {
+        "step": "exports/step/sleeve_wall_penetration_type_a.step",
+        "stl": "exports/stl/sleeve_wall_penetration_type_a.stl"
+      },
+      "notes": "Cylindrical sleeve for pipe or duct penetration through a wall."
+    },
+    {
+      "type_id": "pipe_clamp_type_a",
+      "catalog_order": 38,
+      "group": "cadquery",
+      "display_name": "Pipe Clamp Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "pipe_diameter_mm": 60,
+        "width_mm": 45,
+        "thickness_mm": 10,
+        "ear_length_mm": 34,
+        "bolt_diameter_mm": 10,
+        "material_tag": "galvanized_steel"
+      },
+      "exports": {
+        "step": "exports/step/pipe_clamp_type_a.step",
+        "stl": "exports/stl/pipe_clamp_type_a.stl"
+      },
+      "notes": "Ring clamp with mounting ears for small-diameter pipe support."
+    },
+    {
+      "type_id": "duct_main_001",
+      "catalog_order": 39,
+      "group": "cadquery",
+      "display_name": "Main Rectangular Duct Segment",
+      "category": "ductwork",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcDuctSegment",
+      "parameters": {
+        "length_mm": 900,
+        "duct_width_mm": 420,
+        "duct_height_mm": 220,
+        "wall_thickness_mm": 6,
+        "flange_depth_mm": 26,
+        "material_tag": "galvanized_sheet_metal"
+      },
+      "exports": {
+        "step": "exports/step/duct_main_001.step",
+        "stl": "exports/stl/duct_main_001.stl"
+      },
+      "notes": "Hollow rectangular duct segment for main air distribution route."
+    },
+    {
+      "type_id": "plate_mounting_type_a",
+      "catalog_order": 40,
+      "group": "cadquery",
+      "display_name": "Mounting Plate Type A",
+      "category": "mechanical_support",
+      "source_tool": "CadQuery",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 260,
+        "width_mm": 160,
+        "thickness_mm": 12,
+        "bolt_diameter_mm": 14,
+        "bolt_spacing_mm": 190,
+        "slot_length_mm": 34,
+        "material_tag": "steel"
+      },
+      "exports": {
+        "step": "exports/step/plate_mounting_type_a.step",
+        "stl": "exports/stl/plate_mounting_type_a.stl"
+      },
+      "notes": "Generic slotted support plate for wall or floor mounting."
+    },
+    {
+      "type_id": "openscad_pipe_clamp_type_b",
+      "catalog_order": 41,
+      "group": "openscad",
+      "display_name": "OpenSCAD Pipe Clamp Type B",
+      "category": "mechanical_support",
+      "source_tool": "OpenSCAD",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "pipe_diameter_mm": 50,
+        "thickness_mm": 8,
+        "width_mm": 35
+      },
+      "exports": {
+        "scad": "openscad/pipe_clamp.scad",
+        "stl": "exports/stl/openscad_pipe_clamp_type_b.stl"
+      },
+      "notes": "Declarative OpenSCAD pipe clamp component example."
+    },
+    {
+      "type_id": "openscad_bracket_plate_type_b",
+      "catalog_order": 42,
+      "group": "openscad",
+      "display_name": "OpenSCAD Bracket Plate Type B",
+      "category": "mechanical_support",
+      "source_tool": "OpenSCAD",
+      "ifc_class": "IfcMechanicalFastener",
+      "parameters": {
+        "length_mm": 180,
+        "width_mm": 90,
+        "thickness_mm": 10
+      },
+      "exports": {
+        "scad": "openscad/bracket_plate.scad",
+        "stl": "exports/stl/openscad_bracket_plate_type_b.stl"
+      },
+      "notes": "Slotted bracket plate with top-level parameters."
+    },
+    {
+      "type_id": "openscad_cable_tray_segment_type_b",
+      "catalog_order": 43,
+      "group": "openscad",
+      "display_name": "OpenSCAD Cable Tray Segment Type B",
+      "category": "electrical_routing",
+      "source_tool": "OpenSCAD",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "length_mm": 500,
+        "width_mm": 160,
+        "height_mm": 60
+      },
+      "exports": {
+        "scad": "openscad/cable_tray_segment.scad",
+        "stl": "exports/stl/openscad_cable_tray_segment_type_b.stl"
+      },
+      "notes": "Simple U-channel cable tray with repeated perforations."
+    },
+    {
+      "type_id": "openscad_duct_connector_type_b",
+      "catalog_order": 44,
+      "group": "openscad",
+      "display_name": "OpenSCAD Duct Connector Type B",
+      "category": "ductwork",
+      "source_tool": "OpenSCAD",
+      "ifc_class": "IfcFlowFitting",
+      "parameters": {
+        "duct_width_mm": 360,
+        "duct_height_mm": 180,
+        "thickness_mm": 5
+      },
+      "exports": {
+        "scad": "openscad/duct_connector.scad",
+        "stl": "exports/stl/openscad_duct_connector_type_b.stl"
+      },
+      "notes": "Flanged rectangular duct connector."
+    }
+  ],
+  "occurrences": [
+    {
+      "occurrence_id": "room_shell_001",
+      "type_id": "room_shell_001",
+      "ifc_name": "Space_MechanicalRoom_001",
+      "material": "space_volume",
+      "systems": [],
+      "object_type": "mechanical_room",
+      "geometry": "box",
+      "origin_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions_mm": [
+        6000.0,
+        4200.0,
+        3200.0
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "slab_concrete_base_001",
+      "type_id": "slab_concrete_base_001",
+      "ifc_name": "Slab_Concrete_Base",
+      "material": "cast_in_place_concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions_mm": [
+        6000,
+        4200,
+        200
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "wall_north_001",
+      "type_id": "wall_north_001",
+      "ifc_name": "Wall_North_01",
+      "material": "concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        0,
+        4000,
+        200
+      ],
+      "dimensions_mm": [
+        6000,
+        200,
+        3000
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "wall_south_001",
+      "type_id": "wall_south_001",
+      "ifc_name": "Wall_South_01",
+      "material": "concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        0,
+        0,
+        200
+      ],
+      "dimensions_mm": [
+        6000,
+        200,
+        3000
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "wall_east_001",
+      "type_id": "wall_east_001",
+      "ifc_name": "Wall_East_01",
+      "material": "concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        5800,
+        0,
+        200
+      ],
+      "dimensions_mm": [
+        200,
+        4200,
+        3000
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "wall_west_001",
+      "type_id": "wall_west_001",
+      "ifc_name": "Wall_West_01",
+      "material": "concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        0,
+        0,
+        200
+      ],
+      "dimensions_mm": [
+        200,
+        4200,
+        3000
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "door_access_001",
+      "type_id": "door_access_001",
+      "ifc_name": "Door_Access_01",
+      "material": "painted_hollow_metal",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        2500,
+        0,
+        200
+      ],
+      "dimensions_mm": [
+        1000,
+        70,
+        2100
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "equipment_base_type_a",
+      "type_id": "equipment_base_type_a",
+      "ifc_name": "EquipmentPad_AHU_01",
+      "material": "concrete",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        650,
+        580,
+        200
+      ],
+      "dimensions_mm": [
+        1800,
+        1100,
+        160
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "equipment_ahu_001",
+      "type_id": "equipment_ahu_001",
+      "ifc_name": "Equipment_AHU_01",
+      "material": "painted_steel",
+      "systems": [
+        "System_SupplyAir",
+        "System_ReturnAir",
+        "System_CHWS",
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        850,
+        780,
+        360
+      ],
+      "dimensions_mm": [
+        1500,
+        850,
+        1100
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "return_air_in",
+        "supply_air_out",
+        "chws_in",
+        "chwr_out"
+      ],
+      "port_systems": {
+        "return_air_in": "System_ReturnAir",
+        "supply_air_out": "System_SupplyAir",
+        "chws_in": "System_CHWS",
+        "chwr_out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "ahu_filter_001",
+      "type_id": "ahu_filter_001",
+      "ifc_name": "AHU_Filter_01",
+      "material": "filter_media",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        890,
+        805,
+        500
+      ],
+      "dimensions_mm": [
+        120,
+        800,
+        760
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "air_in",
+        "air_out"
+      ],
+      "port_systems": {
+        "air_in": "System_SupplyAir",
+        "air_out": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "ahu_coil_001",
+      "type_id": "ahu_coil_001",
+      "ifc_name": "AHU_Coil_01",
+      "material": "copper_aluminum_coil",
+      "systems": [
+        "System_SupplyAir",
+        "System_CHWS",
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        1040,
+        805,
+        500
+      ],
+      "dimensions_mm": [
+        160,
+        800,
+        760
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "air_in",
+        "air_out",
+        "water_in",
+        "water_out"
+      ],
+      "port_systems": {
+        "air_in": "System_SupplyAir",
+        "air_out": "System_SupplyAir",
+        "water_in": "System_CHWS",
+        "water_out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "ahu_fan_001",
+      "type_id": "ahu_fan_001",
+      "ifc_name": "AHU_Fan_01",
+      "material": "painted_steel",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        1280,
+        1175,
+        760
+      ],
+      "dimensions_mm": [
+        260,
+        420
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "air_in",
+        "air_out"
+      ],
+      "port_systems": {
+        "air_in": "System_SupplyAir",
+        "air_out": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "equipment_pump_skid_001",
+      "type_id": "equipment_pump_skid_001",
+      "ifc_name": "Equipment_PumpSkid_01",
+      "material": "painted_steel",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        3600,
+        650,
+        220
+      ],
+      "dimensions_mm": [
+        1400,
+        800,
+        180
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pump_chws_duty_001",
+      "type_id": "pump_chws_duty_001",
+      "ifc_name": "Pump_CHWS_Duty_01",
+      "material": "painted_steel",
+      "systems": [
+        "System_CHWS",
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4050,
+        930,
+        560
+      ],
+      "dimensions_mm": [
+        170,
+        460
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "suction",
+        "discharge"
+      ],
+      "port_systems": {
+        "suction": "System_CHWR",
+        "discharge": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pump_chws_standby_001",
+      "type_id": "pump_chws_standby_001",
+      "ifc_name": "Pump_CHWS_Standby_01",
+      "material": "painted_steel",
+      "systems": [
+        "System_CHWS",
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4050,
+        1160,
+        560
+      ],
+      "dimensions_mm": [
+        170,
+        460
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "suction",
+        "discharge"
+      ],
+      "port_systems": {
+        "suction": "System_CHWR",
+        "discharge": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_supply_001",
+      "type_id": "pipe_supply_001",
+      "ifc_name": "Pipe_Supply_01",
+      "material": "carbon_steel_chws",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        900,
+        2860,
+        1560
+      ],
+      "dimensions_mm": [
+        40,
+        3600
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWS",
+        "out": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_return_001",
+      "type_id": "pipe_return_001",
+      "ifc_name": "Pipe_Return_01",
+      "material": "carbon_steel_chwr",
+      "systems": [
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        900,
+        3060,
+        1410
+      ],
+      "dimensions_mm": [
+        40,
+        3920
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWR",
+        "out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_supply_drop_001",
+      "type_id": "pipe_supply_drop_001",
+      "ifc_name": "Pipe_Supply_Drop_01",
+      "material": "carbon_steel_chws",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4500,
+        1320,
+        760
+      ],
+      "dimensions_mm": [
+        40,
+        800
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "top",
+        "bottom"
+      ],
+      "port_systems": {
+        "top": "System_CHWS",
+        "bottom": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_return_drop_001",
+      "type_id": "pipe_return_drop_001",
+      "ifc_name": "Pipe_Return_Drop_01",
+      "material": "carbon_steel_chwr",
+      "systems": [
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4820,
+        1320,
+        600
+      ],
+      "dimensions_mm": [
+        40,
+        810
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "top",
+        "bottom"
+      ],
+      "port_systems": {
+        "top": "System_CHWR",
+        "bottom": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "valve_chws_isolation_001",
+      "type_id": "valve_chws_isolation_001",
+      "ifc_name": "Valve_CHWS_Isolation_01",
+      "material": "bronze_valve_body",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        2550,
+        2860,
+        1560
+      ],
+      "dimensions_mm": [
+        80,
+        140
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWS",
+        "out": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "valve_chws_balancing_001",
+      "type_id": "valve_chws_balancing_001",
+      "ifc_name": "Valve_CHWS_Balancing_01",
+      "material": "bronze_valve_body",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        3120,
+        2860,
+        1560
+      ],
+      "dimensions_mm": [
+        80,
+        140
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWS",
+        "out": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "valve_chwr_isolation_001",
+      "type_id": "valve_chwr_isolation_001",
+      "ifc_name": "Valve_CHWR_Isolation_01",
+      "material": "bronze_valve_body",
+      "systems": [
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        3020,
+        3060,
+        1410
+      ],
+      "dimensions_mm": [
+        80,
+        140
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWR",
+        "out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "valve_chwr_balancing_001",
+      "type_id": "valve_chwr_balancing_001",
+      "ifc_name": "Valve_CHWR_Balancing_01",
+      "material": "bronze_valve_body",
+      "systems": [
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        3650,
+        3060,
+        1410
+      ],
+      "dimensions_mm": [
+        80,
+        140
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWR",
+        "out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_fitting_chws_elbow_001",
+      "type_id": "pipe_fitting_chws_elbow_001",
+      "ifc_name": "PipeFitting_CHWS_Elbow_01",
+      "material": "carbon_steel_chws",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4480,
+        2860,
+        1540
+      ],
+      "dimensions_mm": [
+        60,
+        120
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWS",
+        "out": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_fitting_chwr_elbow_001",
+      "type_id": "pipe_fitting_chwr_elbow_001",
+      "ifc_name": "PipeFitting_CHWR_Elbow_01",
+      "material": "carbon_steel_chwr",
+      "systems": [
+        "System_CHWR"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        4800,
+        3060,
+        1390
+      ],
+      "dimensions_mm": [
+        60,
+        120
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_CHWR",
+        "out": "System_CHWR"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "sensor_chws_pressure_001",
+      "type_id": "sensor_chws_pressure_001",
+      "ifc_name": "Sensor_CHWS_Pressure_01",
+      "material": "stainless_steel",
+      "systems": [
+        "System_CHWS"
+      ],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        2100,
+        2860,
+        1650
+      ],
+      "dimensions_mm": [
+        55,
+        80
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "process"
+      ],
+      "port_systems": {
+        "process": "System_CHWS"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "duct_main_001",
+      "type_id": "duct_main_001",
+      "ifc_name": "Duct_Main_01",
+      "material": "galvanized_sheet_metal",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        900,
+        3300,
+        1800
+      ],
+      "dimensions_mm": [
+        3600,
+        420,
+        220
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_SupplyAir",
+        "out": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "duct_branch_001",
+      "type_id": "duct_branch_001",
+      "ifc_name": "Duct_Branch_01",
+      "material": "galvanized_sheet_metal",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        2550,
+        2920,
+        1710
+      ],
+      "dimensions_mm": [
+        650,
+        360,
+        180
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_SupplyAir",
+        "out": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "duct_return_001",
+      "type_id": "duct_return_001",
+      "ifc_name": "Duct_Return_01",
+      "material": "galvanized_sheet_metal",
+      "systems": [
+        "System_ReturnAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        760,
+        3060,
+        1640
+      ],
+      "dimensions_mm": [
+        1350,
+        340,
+        180
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_ReturnAir",
+        "out": "System_ReturnAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "damper_fire_001",
+      "type_id": "damper_fire_001",
+      "ifc_name": "Damper_Fire_01",
+      "material": "galvanized_sheet_metal",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        2400,
+        3300,
+        1800
+      ],
+      "dimensions_mm": [
+        120,
+        420,
+        220
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_SupplyAir",
+        "out": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "air_terminal_supply_001",
+      "type_id": "air_terminal_supply_001",
+      "ifc_name": "AirTerminal_SupplyDiffuser_01",
+      "material": "powder_coated_steel",
+      "systems": [
+        "System_SupplyAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        3130,
+        2920,
+        1680
+      ],
+      "dimensions_mm": [
+        450,
+        450,
+        60
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in"
+      ],
+      "port_systems": {
+        "in": "System_SupplyAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "air_terminal_return_001",
+      "type_id": "air_terminal_return_001",
+      "ifc_name": "AirTerminal_ReturnGrille_01",
+      "material": "powder_coated_steel",
+      "systems": [
+        "System_ReturnAir"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        790,
+        3060,
+        1620
+      ],
+      "dimensions_mm": [
+        420,
+        420,
+        60
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "out"
+      ],
+      "port_systems": {
+        "out": "System_ReturnAir"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "cable_tray_overhead_001",
+      "type_id": "cable_tray_overhead_001",
+      "ifc_name": "CableTray_Overhead_01",
+      "material": "perforated_aluminum",
+      "systems": [
+        "System_ElectricalRouting"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        1200,
+        2200,
+        2150
+      ],
+      "dimensions_mm": [
+        3200,
+        220,
+        80
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "in",
+        "out"
+      ],
+      "port_systems": {
+        "in": "System_ElectricalRouting",
+        "out": "System_ElectricalRouting"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "cable_tray_drop_001",
+      "type_id": "cable_tray_drop_001",
+      "ifc_name": "CableTray_Drop_01",
+      "material": "perforated_aluminum",
+      "systems": [
+        "System_ElectricalRouting"
+      ],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        4320,
+        2140,
+        1650
+      ],
+      "dimensions_mm": [
+        120,
+        120,
+        520
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [
+        "top",
+        "bottom"
+      ],
+      "port_systems": {
+        "top": "System_ElectricalRouting",
+        "bottom": "System_ElectricalRouting"
+      },
+      "properties": {}
+    },
+    {
+      "occurrence_id": "support_pipe_bracket_type_a",
+      "type_id": "support_pipe_bracket_type_a",
+      "ifc_name": "Support_PipeBracket_01",
+      "material": "painted_steel",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        1800,
+        2780,
+        200
+      ],
+      "dimensions_mm": [
+        220,
+        120,
+        300
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "support_duct_hanger_type_a",
+      "type_id": "support_duct_hanger_type_a",
+      "ifc_name": "Support_DuctHanger_01",
+      "material": "galvanized_steel",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        1950,
+        3260,
+        1750
+      ],
+      "dimensions_mm": [
+        520,
+        60,
+        520
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "pipe_clamp_type_a",
+      "type_id": "pipe_clamp_type_a",
+      "ifc_name": "PipeClamp_TypeA_01",
+      "material": "galvanized_steel",
+      "systems": [],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        1880,
+        2820,
+        1500
+      ],
+      "dimensions_mm": [
+        55,
+        45
+      ],
+      "extrusion_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "plate_mounting_type_a",
+      "type_id": "plate_mounting_type_a",
+      "ifc_name": "Plate_Mounting_01",
+      "material": "steel",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        3380,
+        2640,
+        200
+      ],
+      "dimensions_mm": [
+        260,
+        160,
+        12
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "sleeve_wall_penetration_type_a",
+      "type_id": "sleeve_wall_penetration_type_a",
+      "ifc_name": "Sleeve_WallPenetration_01",
+      "material": "steel_sleeve",
+      "systems": [],
+      "object_type": "",
+      "geometry": "cylinder",
+      "origin_mm": [
+        5800,
+        2600,
+        1440
+      ],
+      "dimensions_mm": [
+        85,
+        220
+      ],
+      "extrusion_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {}
+    },
+    {
+      "occurrence_id": "clearance_ahu_service_zone_001",
+      "type_id": "clearance_ahu_service_zone_001",
+      "ifc_name": "Clearance_ServiceZone_AHU_01",
+      "material": "clearance_volume",
+      "systems": [],
+      "object_type": "",
+      "geometry": "box",
+      "origin_mm": [
+        650,
+        1700,
+        200
+      ],
+      "dimensions_mm": [
+        1800,
+        1000,
+        1900
+      ],
+      "extrusion_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "IsClearanceZone": true,
+        "Rule": "1000 mm AHU service zone with 1900 mm clear headroom"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "mechanical_room_ifc_001",
+      "catalog_order": 11,
+      "group": "bim",
+      "display_name": "Mechanical Room IFC Export",
+      "category": "bim_export",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcProject",
+      "parameters": {},
+      "exports": {
+        "ifc": "bim/mechanical_room.ifc",
+        "semantic_inventory_csv": "bim/openbim_semantic_inventory.csv",
+        "entity_summary_md": "bim/ifc_entity_summary.md"
+      },
+      "notes": "Programmatic IFC export used for validation and review."
+    },
+    {
+      "artifact_id": "drawing_floor_plan_001",
+      "catalog_order": 45,
+      "group": "drawing",
+      "display_name": "Floor Plan Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:50"
+      },
+      "exports": {
+        "dxf": "qcad/floor_plan.dxf",
+        "pdf": "qcad/pdf_exports/floor_plan.pdf"
+      },
+      "notes": "Room layout with walls, door, major equipment, and clearance zones."
+    },
+    {
+      "artifact_id": "drawing_equipment_layout_001",
+      "catalog_order": 46,
+      "group": "drawing",
+      "display_name": "Equipment Layout Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:50"
+      },
+      "exports": {
+        "dxf": "qcad/equipment_layout.dxf",
+        "pdf": "qcad/pdf_exports/equipment_layout.pdf"
+      },
+      "notes": "Equipment arrangement and service zones."
+    },
+    {
+      "artifact_id": "drawing_section_aa_001",
+      "catalog_order": 47,
+      "group": "drawing",
+      "display_name": "Section A-A Coordination Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:25"
+      },
+      "exports": {
+        "dxf": "qcad/section_aa.dxf",
+        "pdf": "qcad/pdf_exports/section_aa.pdf"
+      },
+      "notes": "Coordinated section showing vertical separation, room height, clearance headroom, pipe rack, duct, and tray."
+    },
+    {
+      "artifact_id": "drawing_system_riser_001",
+      "catalog_order": 48,
+      "group": "drawing",
+      "display_name": "MEP System Riser Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "NTS"
+      },
+      "exports": {
+        "dxf": "qcad/system_riser.dxf",
+        "pdf": "qcad/pdf_exports/system_riser.pdf"
+      },
+      "notes": "Schematic riser/connectivity sheet documenting IFC distribution systems and port relationships."
+    },
+    {
+      "artifact_id": "drawing_pipe_support_detail_001",
+      "catalog_order": 49,
+      "group": "drawing",
+      "display_name": "Pipe Support Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/pipe_support_detail.dxf",
+        "pdf": "qcad/pdf_exports/pipe_support_detail.pdf"
+      },
+      "notes": "Pipe support bracket dimensions and anchor layout."
+    },
+    {
+      "artifact_id": "drawing_wall_penetration_detail_001",
+      "catalog_order": 50,
+      "group": "drawing",
+      "display_name": "Wall Penetration Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/wall_penetration_detail.dxf",
+        "pdf": "qcad/pdf_exports/wall_penetration_detail.pdf"
+      },
+      "notes": "Sleeve and wall penetration detail."
+    },
+    {
+      "artifact_id": "drawing_duct_hanger_detail_001",
+      "catalog_order": 51,
+      "group": "drawing",
+      "display_name": "Duct Hanger Detail Drawing",
+      "category": "drawing",
+      "source_tool": "QCAD-compatible DXF",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "scale": "1:10"
+      },
+      "exports": {
+        "dxf": "qcad/duct_hanger_detail.dxf",
+        "pdf": "qcad/pdf_exports/duct_hanger_detail.pdf"
+      },
+      "notes": "Trapeze hanger and duct support dimensions."
+    },
+    {
+      "artifact_id": "report_coordination_001",
+      "catalog_order": 52,
+      "group": "report",
+      "display_name": "Coordination Report",
+      "category": "report",
+      "source_tool": "Python",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "spec/mechanical_room.project.json"
+      },
+      "exports": {
+        "md": "reports/coordination_report.md"
+      },
+      "notes": "Generated source-of-truth summary tying IFC products, systems, connections, BOM, and clearance checks together."
+    },
+    {
+      "artifact_id": "report_bom_001",
+      "catalog_order": 53,
+      "group": "report",
+      "display_name": "Bill of Materials",
+      "category": "report",
+      "source_tool": "Python",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "spec/mechanical_room.project.json"
+      },
+      "exports": {
+        "csv": "reports/bill_of_materials.csv"
+      },
+      "notes": "Generated BOM from the same semantic product schedule used for IFC output."
+    },
+    {
+      "artifact_id": "report_clash_clearance_001",
+      "catalog_order": 54,
+      "group": "report",
+      "display_name": "Clash and Clearance Report",
+      "category": "report",
+      "source_tool": "Python",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "spec/mechanical_room.project.json"
+      },
+      "exports": {
+        "csv": "reports/clash_clearance_report.csv"
+      },
+      "notes": "Generated bounding-box clearance and coordination checks for the mechanical-room layout."
+    }
+  ],
+  "connections": [
+    {
+      "connection_id": "connection_001",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "pump_chws_duty_001",
+        "port": "discharge"
+      },
+      "to": {
+        "occurrence_id": "pipe_supply_001",
+        "port": "in"
+      },
+      "name": "Duty pump feeds CHWS supply"
+    },
+    {
+      "connection_id": "connection_002",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "pipe_supply_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "valve_chws_isolation_001",
+        "port": "in"
+      },
+      "name": "CHWS supply enters isolation valve"
+    },
+    {
+      "connection_id": "connection_003",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "valve_chws_isolation_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "valve_chws_balancing_001",
+        "port": "in"
+      },
+      "name": "CHWS isolation to balance valve"
+    },
+    {
+      "connection_id": "connection_004",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "valve_chws_balancing_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "pipe_fitting_chws_elbow_001",
+        "port": "in"
+      },
+      "name": "CHWS balance valve to elbow"
+    },
+    {
+      "connection_id": "connection_005",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "pipe_fitting_chws_elbow_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "pipe_supply_drop_001",
+        "port": "top"
+      },
+      "name": "CHWS elbow to drop"
+    },
+    {
+      "connection_id": "connection_006",
+      "system": "System_CHWS",
+      "from": {
+        "occurrence_id": "pipe_supply_drop_001",
+        "port": "bottom"
+      },
+      "to": {
+        "occurrence_id": "ahu_coil_001",
+        "port": "water_in"
+      },
+      "name": "CHWS drop to coil"
+    },
+    {
+      "connection_id": "connection_007",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "ahu_coil_001",
+        "port": "water_out"
+      },
+      "to": {
+        "occurrence_id": "pipe_return_drop_001",
+        "port": "bottom"
+      },
+      "name": "Coil return to CHWR drop"
+    },
+    {
+      "connection_id": "connection_008",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "pipe_return_drop_001",
+        "port": "top"
+      },
+      "to": {
+        "occurrence_id": "pipe_fitting_chwr_elbow_001",
+        "port": "in"
+      },
+      "name": "CHWR drop to elbow"
+    },
+    {
+      "connection_id": "connection_009",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "pipe_fitting_chwr_elbow_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "valve_chwr_isolation_001",
+        "port": "in"
+      },
+      "name": "CHWR elbow to isolation valve"
+    },
+    {
+      "connection_id": "connection_010",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "valve_chwr_isolation_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "valve_chwr_balancing_001",
+        "port": "in"
+      },
+      "name": "CHWR isolation to balance valve"
+    },
+    {
+      "connection_id": "connection_011",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "valve_chwr_balancing_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "pipe_return_001",
+        "port": "in"
+      },
+      "name": "CHWR balance valve to return pipe"
+    },
+    {
+      "connection_id": "connection_012",
+      "system": "System_CHWR",
+      "from": {
+        "occurrence_id": "pipe_return_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "pump_chws_duty_001",
+        "port": "suction"
+      },
+      "name": "CHWR return to pump suction"
+    },
+    {
+      "connection_id": "connection_013",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "equipment_ahu_001",
+        "port": "supply_air_out"
+      },
+      "to": {
+        "occurrence_id": "ahu_filter_001",
+        "port": "air_in"
+      },
+      "name": "AHU supply path starts at filter"
+    },
+    {
+      "connection_id": "connection_014",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "ahu_filter_001",
+        "port": "air_out"
+      },
+      "to": {
+        "occurrence_id": "ahu_coil_001",
+        "port": "air_in"
+      },
+      "name": "Filter to coil"
+    },
+    {
+      "connection_id": "connection_015",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "ahu_coil_001",
+        "port": "air_out"
+      },
+      "to": {
+        "occurrence_id": "ahu_fan_001",
+        "port": "air_in"
+      },
+      "name": "Coil to fan"
+    },
+    {
+      "connection_id": "connection_016",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "ahu_fan_001",
+        "port": "air_out"
+      },
+      "to": {
+        "occurrence_id": "damper_fire_001",
+        "port": "in"
+      },
+      "name": "Fan to fire damper"
+    },
+    {
+      "connection_id": "connection_017",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "damper_fire_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "duct_main_001",
+        "port": "in"
+      },
+      "name": "Fire damper to main duct"
+    },
+    {
+      "connection_id": "connection_018",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "duct_main_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "duct_branch_001",
+        "port": "in"
+      },
+      "name": "Main duct to branch"
+    },
+    {
+      "connection_id": "connection_019",
+      "system": "System_SupplyAir",
+      "from": {
+        "occurrence_id": "duct_branch_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "air_terminal_supply_001",
+        "port": "in"
+      },
+      "name": "Branch duct to diffuser"
+    },
+    {
+      "connection_id": "connection_020",
+      "system": "System_ReturnAir",
+      "from": {
+        "occurrence_id": "air_terminal_return_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "duct_return_001",
+        "port": "in"
+      },
+      "name": "Return grille to return duct"
+    },
+    {
+      "connection_id": "connection_021",
+      "system": "System_ReturnAir",
+      "from": {
+        "occurrence_id": "duct_return_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "equipment_ahu_001",
+        "port": "return_air_in"
+      },
+      "name": "Return duct to AHU"
+    },
+    {
+      "connection_id": "connection_022",
+      "system": "System_ElectricalRouting",
+      "from": {
+        "occurrence_id": "cable_tray_overhead_001",
+        "port": "out"
+      },
+      "to": {
+        "occurrence_id": "cable_tray_drop_001",
+        "port": "top"
+      },
+      "name": "Overhead tray to drop"
+    }
+  ],
+  "requirements": {
+    "categories": [
+      "architectural_shell",
+      "bim_export",
+      "clearance_zone",
+      "drawing",
+      "ductwork",
+      "electrical_routing",
+      "flow_controller",
+      "flow_fitting",
+      "flow_segment",
+      "instrumentation",
+      "mechanical_equipment",
+      "mechanical_support",
+      "penetration",
+      "report",
+      "terminal"
+    ],
+    "asset_ids": [
+      "cable_tray_overhead_001",
+      "clearance_ahu_service_zone_001",
+      "door_access_001",
+      "duct_main_001",
+      "equipment_ahu_001",
+      "equipment_pump_skid_001",
+      "pipe_return_001",
+      "pipe_supply_001",
+      "plate_mounting_type_a",
+      "room_shell_001",
+      "slab_concrete_base_001",
+      "sleeve_wall_penetration_type_a",
+      "support_duct_hanger_type_a",
+      "support_pipe_bracket_type_a",
+      "wall_north_001"
+    ]
+  }
+}

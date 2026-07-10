@@ -8,24 +8,37 @@ MEP classes, systems, properties, ports, and validation-friendly inventory.
 from __future__ import annotations
 
 import csv
+import json
+import math
+import os
+import uuid
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 import ifcopenshell
 import ifcopenshell.guid
-
+from project_spec import ProjectSpec, load_project_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 IFC_PATH = ROOT / "bim" / "mechanical_room.ifc"
 SUMMARY_PATH = ROOT / "bim" / "ifc_entity_summary.md"
 BIM_MAP_PATH = ROOT / "bim" / "bim_object_map.csv"
 INVENTORY_PATH = ROOT / "bim" / "openbim_semantic_inventory.csv"
+CONNECTION_DESCRIPTION_PREFIX = "ProjectSpecConnection:"
+
+PROJECT_SPEC = load_project_spec()
 
 
-def guid() -> str:
-    return ifcopenshell.guid.new()
+GUID_NAMESPACE = uuid.UUID("aecb7935-dd13-5b74-93af-50a8a7c9a89c")
+
+
+def guid(key: str) -> str:
+    """Return a stable IFC GUID for a semantic project key."""
+
+    return ifcopenshell.guid.compress(uuid.uuid5(GUID_NAMESPACE, key).hex)
 
 
 @dataclass(frozen=True)
@@ -43,12 +56,37 @@ class ProductSpec:
     dimensions_mm: tuple[float, ...] = (100.0, 100.0, 100.0)
     extrusion_axis: tuple[float, float, float] = (0.0, 0.0, 1.0)
     ports: tuple[str, ...] = ()
+    type_id: str = ""
+    port_systems: dict[str, str] = field(default_factory=dict)
     properties: dict[str, object] = field(default_factory=dict)
+
+
+def connection_description(
+    connection_id: str,
+    system: str,
+    realizing_occurrence_id: str | None,
+) -> str:
+    """Encode ProjectSpec connection identity as deterministic IFC evidence."""
+
+    payload = {
+        "connection_id": connection_id,
+        "realizing_occurrence_id": realizing_occurrence_id,
+        "system": system,
+    }
+    return CONNECTION_DESCRIPTION_PREFIX + json.dumps(
+        payload, separators=(",", ":"), sort_keys=True
+    )
 
 
 class OpenBIMBuilder:
     def __init__(self) -> None:
         self.model = ifcopenshell.file(schema="IFC4")
+        source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+        if source_date_epoch is not None:
+            timestamp = datetime.fromtimestamp(
+                int(source_date_epoch), tz=UTC
+            ).strftime("%Y-%m-%dT%H:%M:%S")
+            self.model.header.file_name.time_stamp = timestamp
         self.body_context = None
         self.materials: dict[str, object] = {}
         self.products_by_asset: dict[str, object] = {}
@@ -60,10 +98,10 @@ class OpenBIMBuilder:
     def entity(self, ifc_class: str, *args, **kwargs):
         return self.model.create_entity(ifc_class, *args, **kwargs)
 
-    def root(self, ifc_class: str, name: str, **kwargs):
+    def root(self, ifc_class: str, name: str, *, guid_key: str | None = None, **kwargs):
         return self.entity(
             ifc_class,
-            GlobalId=guid(),
+            GlobalId=guid(guid_key or f"root:{ifc_class}:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=kwargs.pop("Description", None),
@@ -89,6 +127,27 @@ class OpenBIMBuilder:
             RefDirection=self.direction(ref),
         )
 
+    @staticmethod
+    def perpendicular_reference(
+        axis: tuple[float, float, float],
+    ) -> tuple[float, float, float]:
+        """Return a stable unit vector perpendicular to an extrusion axis."""
+
+        magnitude = math.sqrt(sum(value * value for value in axis))
+        normalized = tuple(value / magnitude for value in axis)
+        candidate = (1.0, 0.0, 0.0)
+        if abs(normalized[0]) > 0.9:
+            candidate = (0.0, 1.0, 0.0)
+        projection = sum(
+            left * right for left, right in zip(candidate, normalized, strict=True)
+        )
+        perpendicular = tuple(
+            left - projection * right
+            for left, right in zip(candidate, normalized, strict=True)
+        )
+        reference_magnitude = math.sqrt(sum(value * value for value in perpendicular))
+        return tuple(value / reference_magnitude for value in perpendicular)
+
     def placement(self, xyz: tuple[float, float, float]):
         return self.entity(
             "IfcLocalPlacement",
@@ -106,6 +165,9 @@ class OpenBIMBuilder:
         return self.entity("IfcLabel", str(raw))
 
     def setup_project(self) -> tuple[object, object, object, object, object]:
+        spatial = PROJECT_SPEC.spatial
+        room_type = PROJECT_SPEC.asset_types_by_id[spatial.space_type_id]
+        room = PROJECT_SPEC.occurrences_by_id[spatial.space_occurrence_id]
         length_unit = self.entity(
             "IfcSIUnit", UnitType="LENGTHUNIT", Prefix="MILLI", Name="METRE"
         )
@@ -123,27 +185,35 @@ class OpenBIMBuilder:
             WorldCoordinateSystem=self.axis3d(),
         )
 
-        project = self.root("IfcProject", "Project_CoordProof_MechanicalRoom")
+        project = self.root("IfcProject", spatial.project_ifc_name)
         project.RepresentationContexts = [self.body_context]
         project.UnitsInContext = unit_assignment
 
-        site = self.root("IfcSite", "Site_OpenBIM_Testbed", CompositionType="ELEMENT")
+        site = self.root("IfcSite", spatial.site_ifc_name, CompositionType="ELEMENT")
         building = self.root(
-            "IfcBuilding", "Building_MechanicalLab", CompositionType="ELEMENT"
+            "IfcBuilding", spatial.building_ifc_name, CompositionType="ELEMENT"
         )
         storey = self.root(
             "IfcBuildingStorey",
-            "Storey_MechanicalLevel_01",
+            spatial.storey_ifc_name,
             CompositionType="ELEMENT",
-            Elevation=0.0,
+            Elevation=spatial.storey_elevation_mm,
         )
+        room_length, room_width, room_height = spatial.space_dimensions_mm
         space = self.root(
             "IfcSpace",
-            "Space_MechanicalRoom_001",
-            ObjectType="mechanical_room",
-            ObjectPlacement=self.placement((0.0, 0.0, 0.0)),
-            Representation=self.box_representation("Space_MechanicalRoom_001", 6000, 4200, 3200),
-            LongName="Mechanical Room Coordination Space",
+            spatial.space_ifc_name,
+            guid_key=f"root:occurrence:{room.occurrence_id}",
+            ObjectType=room.object_type,
+            ObjectPlacement=self.placement(room.origin_mm),
+            Representation=self.box_representation(
+                spatial.space_ifc_name,
+                room_length,
+                room_width,
+                room_height,
+                room.extrusion_axis,
+            ),
+            LongName=spatial.space_long_name,
             CompositionType="ELEMENT",
             PredefinedType="INTERNAL",
             ElevationWithFlooring=0.0,
@@ -152,25 +222,39 @@ class OpenBIMBuilder:
             space,
             "Pset_OpenBIMAsset",
             {
-                "AssetID": "room_shell_001",
-                "Category": "architectural_shell",
-                "SourceTool": "IfcOpenShell",
+                "AssetID": room.occurrence_id,
+                "TypeID": room.type_id,
+                "Category": room_type.category,
+                "SourceTool": spatial.semantic_source_tool,
+                "SystemName": "",
+                "MaterialName": room.material,
                 "MachineReadable": True,
+                **room.properties,
             },
         )
-
+        self.add_pset(
+            space,
+            "Pset_AssetGeometry",
+            {
+                "GeometryKind": room.geometry,
+                "DimensionScheduleMM": " x ".join(
+                    str(value) for value in room.dimensions_mm
+                ),
+                "PlacementMM": ", ".join(str(value) for value in room.origin_mm),
+            },
+        )
         self.rel_aggregates("Project contains site", project, [site])
         self.rel_aggregates("Site contains building", site, [building])
         self.rel_aggregates("Building contains storey", building, [storey])
         self.rel_aggregates("Storey contains mechanical room space", storey, [space])
-        self.products_by_asset["room_shell_001"] = space
+        self.products_by_asset[room.occurrence_id] = space
         self.products_by_name[space.Name] = space
         return project, site, building, storey, space
 
     def rel_aggregates(self, name: str, parent, children: list[object]) -> None:
         self.entity(
             "IfcRelAggregates",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-aggregates:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=None,
@@ -181,7 +265,7 @@ class OpenBIMBuilder:
     def rel_contained(self, name: str, structure, products: list[object]) -> None:
         self.entity(
             "IfcRelContainedInSpatialStructure",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-contained:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=None,
@@ -205,7 +289,14 @@ class OpenBIMBuilder:
             ],
         )
 
-    def box_representation(self, name: str, length: float, width: float, height: float):
+    def box_representation(
+        self,
+        name: str,
+        length: float,
+        width: float,
+        height: float,
+        axis: tuple[float, float, float] = (0.0, 0.0, 1.0),
+    ):
         profile = self.entity(
             "IfcRectangleProfileDef",
             ProfileType="AREA",
@@ -217,7 +308,9 @@ class OpenBIMBuilder:
         solid = self.entity(
             "IfcExtrudedAreaSolid",
             SweptArea=profile,
-            Position=self.axis3d(),
+            Position=self.axis3d(
+                axis=axis, ref=self.perpendicular_reference(axis)
+            ),
             ExtrudedDirection=self.direction((0.0, 0.0, 1.0)),
             Depth=float(height),
         )
@@ -240,8 +333,10 @@ class OpenBIMBuilder:
         solid = self.entity(
             "IfcExtrudedAreaSolid",
             SweptArea=profile,
-            Position=self.axis3d(),
-            ExtrudedDirection=self.direction(axis),
+            Position=self.axis3d(
+                axis=axis, ref=self.perpendicular_reference(axis)
+            ),
+            ExtrudedDirection=self.direction((0.0, 0.0, 1.0)),
             Depth=float(depth),
         )
         return self.shape_representation(solid)
@@ -251,7 +346,9 @@ class OpenBIMBuilder:
             radius, depth = spec.dimensions_mm
             return self.cylinder_representation(spec.name, radius, depth, spec.extrusion_axis)
         length, width, height = spec.dimensions_mm
-        return self.box_representation(spec.name, length, width, height)
+        return self.box_representation(
+            spec.name, length, width, height, spec.extrusion_axis
+        )
 
     def add_pset(self, product, pset_name: str, properties: dict[str, object]) -> None:
         props = [
@@ -266,7 +363,7 @@ class OpenBIMBuilder:
         ]
         pset = self.entity(
             "IfcPropertySet",
-            GlobalId=guid(),
+            GlobalId=guid(f"pset:{product.GlobalId}:{pset_name}"),
             OwnerHistory=None,
             Name=pset_name,
             Description=None,
@@ -274,7 +371,7 @@ class OpenBIMBuilder:
         )
         self.entity(
             "IfcRelDefinesByProperties",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-pset:{product.GlobalId}:{pset_name}"),
             OwnerHistory=None,
             Name=f"{pset_name} -> {product.Name}",
             Description=None,
@@ -290,7 +387,7 @@ class OpenBIMBuilder:
     def assign_material(self, product, material_name: str) -> None:
         self.entity(
             "IfcRelAssociatesMaterial",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-material:{product.GlobalId}:{material_name}"),
             OwnerHistory=None,
             Name=f"Material -> {product.Name}",
             Description=None,
@@ -302,6 +399,7 @@ class OpenBIMBuilder:
         product = self.root(
             spec.ifc_class,
             spec.name,
+            guid_key=f"root:occurrence:{spec.asset_id}",
             ObjectType=spec.object_type or spec.category,
             ObjectPlacement=self.placement(spec.origin_mm),
             Representation=self.representation_for(spec),
@@ -310,15 +408,18 @@ class OpenBIMBuilder:
         self.products_by_asset[spec.asset_id] = product
         self.products_by_name[spec.name] = product
         self.product_specs.append(spec)
-        self.assign_material(product, spec.material)
+        if not product.is_a("IfcVirtualElement"):
+            self.assign_material(product, spec.material)
         self.add_pset(
             product,
             "Pset_OpenBIMAsset",
             {
                 "AssetID": spec.asset_id,
+                "TypeID": spec.type_id,
                 "Category": spec.category,
                 "SourceTool": spec.source_tool,
-                "SystemName": ", ".join(spec.system) if spec.system else "Architectural",
+                "SystemName": ", ".join(spec.system),
+                "MaterialName": spec.material,
                 "MachineReadable": True,
                 **spec.properties,
             },
@@ -333,13 +434,25 @@ class OpenBIMBuilder:
             },
         )
         for port_name in spec.ports:
-            self.add_port(product, spec.asset_id, port_name)
+            self.add_port(
+                product,
+                spec.asset_id,
+                port_name,
+                spec.port_systems[port_name],
+            )
         return product
 
-    def add_port(self, product, asset_id: str, port_name: str) -> None:
+    def add_port(
+        self,
+        product,
+        asset_id: str,
+        port_name: str,
+        system_name: str,
+    ) -> None:
         port = self.root(
             "IfcDistributionPort",
             f"{product.Name}_{port_name}",
+            guid_key=f"root:port:{asset_id}:{port_name}",
             ObjectType="distribution_port",
             ObjectPlacement=None,
             Representation=None,
@@ -348,9 +461,18 @@ class OpenBIMBuilder:
             SystemType=None,
         )
         self.ports[(asset_id, port_name)] = port
+        self.add_pset(
+            port,
+            "Pset_OpenBIMPort",
+            {
+                "OccurrenceID": asset_id,
+                "PortName": port_name,
+                "SystemName": system_name,
+            },
+        )
         self.entity(
             "IfcRelConnectsPortToElement",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-port-element:{asset_id}:{port_name}"),
             OwnerHistory=None,
             Name=f"{port.Name} -> {product.Name}",
             Description=None,
@@ -359,12 +481,15 @@ class OpenBIMBuilder:
         )
 
     def add_systems(self, names: Iterable[str]) -> None:
+        definitions = {system.name: system for system in PROJECT_SPEC.systems}
         for name in names:
+            definition = definitions[name]
             self.systems[name] = self.root(
                 "IfcDistributionSystem",
                 name,
-                ObjectType=name.replace("System_", "").lower(),
-                LongName=name.replace("_", " "),
+                Description=definition.description,
+                ObjectType=definition.object_type,
+                LongName=definition.long_name,
                 PredefinedType=None,
             )
 
@@ -376,7 +501,7 @@ class OpenBIMBuilder:
         for system_name, products in members.items():
             self.entity(
                 "IfcRelAssignsToGroup",
-                GlobalId=guid(),
+                GlobalId=guid(f"rel-system-members:{system_name}"),
                 OwnerHistory=None,
                 Name=f"{system_name} members",
                 Description=None,
@@ -390,14 +515,18 @@ class OpenBIMBuilder:
         left: tuple[str, str],
         right: tuple[str, str],
         name: str,
+        connection_id: str,
+        system: str,
         realizing_asset_id: str | None = None,
     ) -> None:
         self.entity(
             "IfcRelConnectsPorts",
-            GlobalId=guid(),
+            GlobalId=guid(f"rel-port-connection:{connection_id}"),
             OwnerHistory=None,
             Name=name,
-            Description=None,
+            Description=connection_description(
+                connection_id, system, realizing_asset_id
+            ),
             RelatingPort=self.ports[left],
             RelatedPort=self.ports[right],
             RealizingElement=self.products_by_asset.get(realizing_asset_id)
@@ -406,89 +535,50 @@ class OpenBIMBuilder:
         )
 
 
-SYSTEMS = (
-    "System_CHWS",
-    "System_CHWR",
-    "System_SupplyAir",
-    "System_ReturnAir",
-    "System_ElectricalRouting",
-)
+SYSTEMS = PROJECT_SPEC.system_names
 
 
-def product_schedule() -> list[ProductSpec]:
-    return [
-        ProductSpec(
-            "slab_concrete_base_001",
-            "Slab_Concrete_Base",
-            "IfcSlab",
-            "architectural_shell",
-            "FreeCAD BIM",
-            "cast_in_place_concrete",
-            dimensions_mm=(6000, 4200, 200),
-        ),
-        ProductSpec("wall_north_001", "Wall_North_01", "IfcWall", "architectural_shell", "FreeCAD BIM", "concrete", origin_mm=(0, 4000, 200), dimensions_mm=(6000, 200, 3000)),
-        ProductSpec("wall_south_001", "Wall_South_01", "IfcWall", "architectural_shell", "FreeCAD BIM", "concrete", origin_mm=(0, 0, 200), dimensions_mm=(6000, 200, 3000)),
-        ProductSpec("wall_east_001", "Wall_East_01", "IfcWall", "architectural_shell", "FreeCAD BIM", "concrete", origin_mm=(5800, 0, 200), dimensions_mm=(200, 4200, 3000)),
-        ProductSpec("wall_west_001", "Wall_West_01", "IfcWall", "architectural_shell", "FreeCAD BIM", "concrete", origin_mm=(0, 0, 200), dimensions_mm=(200, 4200, 3000)),
-        ProductSpec("door_access_001", "Door_Access_01", "IfcDoor", "architectural_shell", "FreeCAD BIM", "painted_hollow_metal", origin_mm=(2500, 0, 200), dimensions_mm=(1000, 70, 2100)),
-        ProductSpec("equipment_base_type_a", "EquipmentPad_AHU_01", "IfcFooting", "mechanical_equipment", "CadQuery", "concrete", origin_mm=(650, 580, 200), dimensions_mm=(1800, 1100, 160)),
-        ProductSpec("equipment_ahu_001", "Equipment_AHU_01", "IfcUnitaryEquipment", "mechanical_equipment", "FreeCAD BIM", "painted_steel", system=("System_SupplyAir", "System_ReturnAir"), origin_mm=(850, 780, 360), dimensions_mm=(1500, 850, 1100), ports=("return_air_in", "supply_air_out", "chws_in", "chwr_out")),
-        ProductSpec("ahu_filter_001", "AHU_Filter_01", "IfcFilter", "mechanical_equipment", "IfcOpenShell", "filter_media", system=("System_SupplyAir",), origin_mm=(890, 805, 500), dimensions_mm=(120, 800, 760), ports=("air_in", "air_out")),
-        ProductSpec("ahu_coil_001", "AHU_Coil_01", "IfcCoil", "mechanical_equipment", "IfcOpenShell", "copper_aluminum_coil", system=("System_SupplyAir", "System_CHWS", "System_CHWR"), origin_mm=(1040, 805, 500), dimensions_mm=(160, 800, 760), ports=("air_in", "air_out", "water_in", "water_out")),
-        ProductSpec("ahu_fan_001", "AHU_Fan_01", "IfcFan", "mechanical_equipment", "IfcOpenShell", "painted_steel", system=("System_SupplyAir",), geometry="cylinder", origin_mm=(1280, 1175, 760), dimensions_mm=(260, 420), extrusion_axis=(1.0, 0.0, 0.0), ports=("air_in", "air_out")),
-        ProductSpec("equipment_pump_skid_001", "Equipment_PumpSkid_01", "IfcElementAssembly", "mechanical_equipment", "CadQuery", "painted_steel", system=("System_CHWS",), origin_mm=(3600, 650, 220), dimensions_mm=(1400, 800, 180)),
-        ProductSpec("pump_chws_duty_001", "Pump_CHWS_Duty_01", "IfcPump", "mechanical_equipment", "IfcOpenShell", "painted_steel", system=("System_CHWS",), geometry="cylinder", origin_mm=(4050, 930, 560), dimensions_mm=(170, 460), extrusion_axis=(1.0, 0.0, 0.0), ports=("suction", "discharge")),
-        ProductSpec("pump_chws_standby_001", "Pump_CHWS_Standby_01", "IfcPump", "mechanical_equipment", "IfcOpenShell", "painted_steel", system=("System_CHWS",), geometry="cylinder", origin_mm=(4050, 1160, 560), dimensions_mm=(170, 460), extrusion_axis=(1.0, 0.0, 0.0), ports=("suction", "discharge")),
-        ProductSpec("pipe_supply_001", "Pipe_Supply_01", "IfcPipeSegment", "flow_segment", "FreeCAD BIM", "carbon_steel_chws", system=("System_CHWS",), geometry="cylinder", origin_mm=(900, 2860, 1560), dimensions_mm=(40, 3600), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("pipe_return_001", "Pipe_Return_01", "IfcPipeSegment", "flow_segment", "FreeCAD BIM", "carbon_steel_chwr", system=("System_CHWR",), geometry="cylinder", origin_mm=(900, 3060, 1410), dimensions_mm=(40, 3920), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("pipe_supply_drop_001", "Pipe_Supply_Drop_01", "IfcPipeSegment", "flow_segment", "IfcOpenShell", "carbon_steel_chws", system=("System_CHWS",), geometry="cylinder", origin_mm=(4500, 1320, 760), dimensions_mm=(40, 800), ports=("top", "bottom")),
-        ProductSpec("pipe_return_drop_001", "Pipe_Return_Drop_01", "IfcPipeSegment", "flow_segment", "IfcOpenShell", "carbon_steel_chwr", system=("System_CHWR",), geometry="cylinder", origin_mm=(4820, 1320, 600), dimensions_mm=(40, 810), ports=("top", "bottom")),
-        ProductSpec("valve_chws_isolation_001", "Valve_CHWS_Isolation_01", "IfcValve", "flow_controller", "IfcOpenShell", "bronze_valve_body", system=("System_CHWS",), geometry="cylinder", origin_mm=(2550, 2860, 1560), dimensions_mm=(80, 140), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("valve_chws_balancing_001", "Valve_CHWS_Balancing_01", "IfcValve", "flow_controller", "IfcOpenShell", "bronze_valve_body", system=("System_CHWS",), geometry="cylinder", origin_mm=(3120, 2860, 1560), dimensions_mm=(80, 140), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("valve_chwr_isolation_001", "Valve_CHWR_Isolation_01", "IfcValve", "flow_controller", "IfcOpenShell", "bronze_valve_body", system=("System_CHWR",), geometry="cylinder", origin_mm=(3020, 3060, 1410), dimensions_mm=(80, 140), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("valve_chwr_balancing_001", "Valve_CHWR_Balancing_01", "IfcValve", "flow_controller", "IfcOpenShell", "bronze_valve_body", system=("System_CHWR",), geometry="cylinder", origin_mm=(3650, 3060, 1410), dimensions_mm=(80, 140), extrusion_axis=(1.0, 0.0, 0.0), ports=("in", "out")),
-        ProductSpec("pipe_fitting_chws_elbow_001", "PipeFitting_CHWS_Elbow_01", "IfcPipeFitting", "flow_fitting", "IfcOpenShell", "carbon_steel_chws", system=("System_CHWS",), geometry="cylinder", origin_mm=(4480, 2860, 1540), dimensions_mm=(60, 120), ports=("in", "out")),
-        ProductSpec("pipe_fitting_chwr_elbow_001", "PipeFitting_CHWR_Elbow_01", "IfcPipeFitting", "flow_fitting", "IfcOpenShell", "carbon_steel_chwr", system=("System_CHWR",), geometry="cylinder", origin_mm=(4800, 3060, 1390), dimensions_mm=(60, 120), ports=("in", "out")),
-        ProductSpec("sensor_chws_pressure_001", "Sensor_CHWS_Pressure_01", "IfcSensor", "instrumentation", "IfcOpenShell", "stainless_steel", system=("System_CHWS",), geometry="cylinder", origin_mm=(2100, 2860, 1650), dimensions_mm=(55, 80), ports=("process",)),
-        ProductSpec("duct_main_001", "Duct_Main_01", "IfcDuctSegment", "ductwork", "CadQuery", "galvanized_sheet_metal", system=("System_SupplyAir",), origin_mm=(900, 3300, 1800), dimensions_mm=(3600, 420, 220), ports=("in", "out")),
-        ProductSpec("duct_branch_001", "Duct_Branch_01", "IfcDuctSegment", "ductwork", "IfcOpenShell", "galvanized_sheet_metal", system=("System_SupplyAir",), origin_mm=(2550, 2920, 1710), dimensions_mm=(650, 360, 180), ports=("in", "out")),
-        ProductSpec("duct_return_001", "Duct_Return_01", "IfcDuctSegment", "ductwork", "IfcOpenShell", "galvanized_sheet_metal", system=("System_ReturnAir",), origin_mm=(760, 3060, 1640), dimensions_mm=(1350, 340, 180), ports=("in", "out")),
-        ProductSpec("damper_fire_001", "Damper_Fire_01", "IfcDamper", "flow_controller", "IfcOpenShell", "galvanized_sheet_metal", system=("System_SupplyAir",), origin_mm=(2400, 3300, 1800), dimensions_mm=(120, 420, 220), ports=("in", "out")),
-        ProductSpec("air_terminal_supply_001", "AirTerminal_SupplyDiffuser_01", "IfcAirTerminal", "terminal", "IfcOpenShell", "powder_coated_steel", system=("System_SupplyAir",), origin_mm=(3130, 2920, 1680), dimensions_mm=(450, 450, 60), ports=("in",)),
-        ProductSpec("air_terminal_return_001", "AirTerminal_ReturnGrille_01", "IfcAirTerminal", "terminal", "IfcOpenShell", "powder_coated_steel", system=("System_ReturnAir",), origin_mm=(790, 3060, 1620), dimensions_mm=(420, 420, 60), ports=("out",)),
-        ProductSpec("cable_tray_overhead_001", "CableTray_Overhead_01", "IfcCableCarrierSegment", "electrical_routing", "CadQuery", "perforated_aluminum", system=("System_ElectricalRouting",), origin_mm=(1200, 2200, 2150), dimensions_mm=(3200, 220, 80), ports=("in", "out")),
-        ProductSpec("cable_tray_drop_001", "CableTray_Drop_01", "IfcCableCarrierSegment", "electrical_routing", "IfcOpenShell", "perforated_aluminum", system=("System_ElectricalRouting",), origin_mm=(4320, 2140, 1650), dimensions_mm=(120, 120, 520), ports=("top", "bottom")),
-        ProductSpec("support_pipe_bracket_type_a", "Support_PipeBracket_01", "IfcMechanicalFastener", "mechanical_support", "CadQuery", "painted_steel", origin_mm=(1800, 2780, 200), dimensions_mm=(220, 120, 300)),
-        ProductSpec("support_duct_hanger_type_a", "Support_DuctHanger_01", "IfcMechanicalFastener", "mechanical_support", "CadQuery", "galvanized_steel", origin_mm=(1950, 3260, 1750), dimensions_mm=(520, 60, 520)),
-        ProductSpec("pipe_clamp_type_a", "PipeClamp_TypeA_01", "IfcMechanicalFastener", "mechanical_support", "CadQuery", "galvanized_steel", origin_mm=(1880, 2820, 1500), geometry="cylinder", dimensions_mm=(55, 45), extrusion_axis=(0.0, 1.0, 0.0)),
-        ProductSpec("plate_mounting_type_a", "Plate_Mounting_01", "IfcMechanicalFastener", "mechanical_support", "CadQuery", "steel", origin_mm=(3380, 2640, 200), dimensions_mm=(260, 160, 12)),
-        ProductSpec("sleeve_wall_penetration_type_a", "Sleeve_WallPenetration_01", "IfcBuildingElementPart", "penetration", "CadQuery", "steel_sleeve", origin_mm=(5800, 2600, 1440), geometry="cylinder", dimensions_mm=(85, 220), extrusion_axis=(1.0, 0.0, 0.0)),
-        ProductSpec("clearance_ahu_service_zone_001", "Clearance_ServiceZone_AHU_01", "IfcVirtualElement", "clearance_zone", "FreeCAD BIM", "clearance_volume", origin_mm=(650, 1700, 200), dimensions_mm=(1800, 1000, 1900), properties={"IsClearanceZone": True, "Rule": "1000 mm AHU service zone with 1900 mm clear headroom"}),
-    ]
+def product_schedule(project_spec: ProjectSpec | None = None) -> list[ProductSpec]:
+    """Project placed products onto the legacy generator-facing schedule."""
+
+    project = project_spec or PROJECT_SPEC
+    type_by_id = project.asset_types_by_id
+    room_occurrence_id = project.spatial.space_occurrence_id
+    schedule: list[ProductSpec] = []
+    for occurrence in project.occurrences:
+        if occurrence.occurrence_id == room_occurrence_id:
+            continue
+        asset_type = type_by_id[occurrence.type_id]
+        schedule.append(
+            ProductSpec(
+                asset_id=occurrence.occurrence_id,
+                type_id=occurrence.type_id,
+                name=occurrence.ifc_name,
+                ifc_class=asset_type.ifc_class,
+                category=asset_type.category,
+                source_tool=asset_type.source_tool,
+                material=occurrence.material,
+                system=occurrence.systems,
+                object_type=occurrence.object_type,
+                geometry=occurrence.geometry,
+                origin_mm=occurrence.origin_mm,
+                dimensions_mm=occurrence.dimensions_mm,
+                extrusion_axis=occurrence.extrusion_axis,
+                ports=occurrence.ports,
+                port_systems=dict(occurrence.port_systems),
+                properties=dict(occurrence.properties),
+            )
+        )
+    return schedule
 
 
 CONNECTIVITY = [
-    (("pump_chws_duty_001", "discharge"), ("pipe_supply_001", "in"), "Duty pump feeds CHWS supply"),
-    (("pipe_supply_001", "out"), ("valve_chws_isolation_001", "in"), "CHWS supply enters isolation valve"),
-    (("valve_chws_isolation_001", "out"), ("valve_chws_balancing_001", "in"), "CHWS isolation to balance valve"),
-    (("valve_chws_balancing_001", "out"), ("pipe_fitting_chws_elbow_001", "in"), "CHWS balance valve to elbow"),
-    (("pipe_fitting_chws_elbow_001", "out"), ("pipe_supply_drop_001", "top"), "CHWS elbow to drop"),
-    (("pipe_supply_drop_001", "bottom"), ("ahu_coil_001", "water_in"), "CHWS drop to coil"),
-    (("ahu_coil_001", "water_out"), ("pipe_return_drop_001", "bottom"), "Coil return to CHWR drop"),
-    (("pipe_return_drop_001", "top"), ("pipe_fitting_chwr_elbow_001", "in"), "CHWR drop to elbow"),
-    (("pipe_fitting_chwr_elbow_001", "out"), ("valve_chwr_isolation_001", "in"), "CHWR elbow to isolation valve"),
-    (("valve_chwr_isolation_001", "out"), ("pipe_return_001", "in"), "CHWR valve to return pipe"),
-    (("pipe_return_001", "out"), ("pump_chws_duty_001", "suction"), "CHWR return to pump suction"),
-    (("equipment_ahu_001", "supply_air_out"), ("ahu_filter_001", "air_in"), "AHU supply path starts at filter"),
-    (("ahu_filter_001", "air_out"), ("ahu_coil_001", "air_in"), "Filter to coil"),
-    (("ahu_coil_001", "air_out"), ("ahu_fan_001", "air_in"), "Coil to fan"),
-    (("ahu_fan_001", "air_out"), ("damper_fire_001", "in"), "Fan to fire damper"),
-    (("damper_fire_001", "out"), ("duct_main_001", "in"), "Fire damper to main duct"),
-    (("duct_main_001", "out"), ("duct_branch_001", "in"), "Main duct to branch"),
-    (("duct_branch_001", "out"), ("air_terminal_supply_001", "in"), "Branch duct to diffuser"),
-    (("air_terminal_return_001", "out"), ("duct_return_001", "in"), "Return grille to return duct"),
-    (("duct_return_001", "out"), ("equipment_ahu_001", "return_air_in"), "Return duct to AHU"),
-    (("cable_tray_overhead_001", "out"), ("cable_tray_drop_001", "top"), "Overhead tray to drop"),
+    (
+        (connection.source.occurrence_id, connection.source.port),
+        (connection.target.occurrence_id, connection.target.port),
+        connection.name,
+    )
+    for connection in PROJECT_SPEC.connections
 ]
 
 
@@ -499,8 +589,15 @@ def build_openbim_model() -> ifcopenshell.file:
     products = [builder.add_product(spec) for spec in product_schedule()]
     builder.rel_contained("Storey contains OpenBIM mechanical room products", storey, products)
     builder.assign_systems()
-    for left, right, name in CONNECTIVITY:
-        builder.connect_ports(left, right, name)
+    for connection in PROJECT_SPEC.connections:
+        builder.connect_ports(
+            (connection.source.occurrence_id, connection.source.port),
+            (connection.target.occurrence_id, connection.target.port),
+            connection.name,
+            connection.connection_id,
+            connection.system,
+            connection.realizing_occurrence_id,
+        )
     return builder.model
 
 
@@ -530,7 +627,7 @@ def write_summary(model: ifcopenshell.file) -> None:
         "",
         f"File: `{IFC_PATH.relative_to(ROOT)}`",
         "",
-        "This IFC is generated from `tools/openbim_core.py` as the semantic",
+        "This IFC is generated from `spec/mechanical_room.project.json` as the semantic",
         "source of truth for the coordination package. FreeCAD/STEP artifacts are",
         "supporting CAD views of the same mechanical-room intent.",
         "",
@@ -578,8 +675,8 @@ def write_inventory(model: ifcopenshell.file) -> None:
             if any(product.is_a(ifc_class) for ifc_class in ("IfcSite", "IfcBuilding", "IfcBuildingStorey")):
                 continue
             asset_id = getattr(product, "Tag", None) or ""
-            if product.is_a("IfcSpace") and product.Name == "Space_MechanicalRoom_001":
-                asset_id = "room_shell_001"
+            if product.is_a("IfcSpace") and product.Name == PROJECT_SPEC.spatial.space_ifc_name:
+                asset_id = PROJECT_SPEC.spatial.space_occurrence_id
             if not asset_id:
                 continue
             category = ""
@@ -611,7 +708,9 @@ def patch_bim_map_from_ifc(model: ifcopenshell.file) -> None:
         if getattr(product, "Tag", None)
     }
     products_by_tag["room_shell_001"] = next(
-        product for product in model.by_type("IfcSpace") if product.Name == "Space_MechanicalRoom_001"
+        product
+        for product in model.by_type("IfcSpace")
+        if product.Name == PROJECT_SPEC.spatial.space_ifc_name
     )
     rows: list[dict[str, str]] = []
     with BIM_MAP_PATH.open(newline="", encoding="utf-8") as handle:

@@ -5,20 +5,33 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+from tooling import freecad_command
+
 ROOT = Path(__file__).resolve().parents[1]
-FREECADCMD = Path("/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd")
 
 
 def main() -> int:
-    if not FREECADCMD.exists():
-        raise SystemExit("FreeCAD command was not found at /Applications/FreeCAD.app.")
-    for macro in [
-        ROOT / "freecad" / "build_mechanical_room.FCMacro",
-        ROOT / "freecad" / "export_bim_ifc.FCMacro",
-    ]:
-        cmd = [str(FREECADCMD), str(macro)]
-        print("$", " ".join(cmd), flush=True)
-        subprocess.run(cmd, cwd=ROOT, check=True)
+    executable = freecad_command()
+    if executable is None:
+        raise SystemExit(
+            "FreeCAD command was not found. Set FREECAD_CMD or add freecadcmd/FreeCADCmd to PATH."
+        )
+    freecad_dir = ROOT / "freecad"
+    backups_before = set(freecad_dir.glob("*.FCBak"))
+    try:
+        for macro in [
+            freecad_dir / "build_mechanical_room.FCMacro",
+            freecad_dir / "export_bim_ifc.FCMacro",
+        ]:
+            cmd = [str(executable), str(macro)]
+            print("$", " ".join(cmd), flush=True)
+            subprocess.run(cmd, cwd=ROOT, check=True)
+    finally:
+        # FreeCAD creates timestamped backups when deterministic targets are
+        # overwritten. Remove only backups created by this invocation; preserve
+        # anything that existed before the automated build.
+        for backup in set(freecad_dir.glob("*.FCBak")) - backups_before:
+            backup.unlink()
     return 0
 
 

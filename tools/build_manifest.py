@@ -7,32 +7,17 @@ import json
 from pathlib import Path
 
 from asset_catalog import ALL_ASSETS
+from project_spec import load_project_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 
+PROJECT_SPEC = load_project_spec()
+
 FREECAD_OBJECT_NAMES = {
-    "room_shell_001": "Space_MechanicalRoom_001",
-    "slab_concrete_base_001": "Slab_Concrete_Base",
-    "wall_north_001": "Wall_North_01",
-    "wall_south_001": "Wall_South_01",
-    "wall_east_001": "Wall_East_01",
-    "wall_west_001": "Wall_West_01",
-    "door_access_001": "Door_Access_01",
-    "equipment_ahu_001": "Equipment_AHU_01",
-    "equipment_base_type_a": "EquipmentPad_AHU_01",
-    "equipment_pump_skid_001": "Equipment_PumpSkid_01",
-    "pipe_supply_001": "Pipe_Supply_01",
-    "pipe_return_001": "Pipe_Return_01",
-    "duct_main_001": "Duct_Main_01",
-    "cable_tray_overhead_001": "CableTray_Overhead_01",
-    "support_pipe_bracket_type_a": "Support_PipeBracket_01",
-    "support_duct_hanger_type_a": "Support_DuctHanger_01",
-    "sleeve_wall_penetration_type_a": "Sleeve_WallPenetration_01",
-    "pipe_clamp_type_a": "PipeClamp_TypeA_01",
-    "plate_mounting_type_a": "Plate_Mounting_01",
-    "clearance_ahu_service_zone_001": "Clearance_ServiceZone_AHU_01",
-    "mechanical_room_ifc_001": "Project_CoordProof_MechanicalRoom",
+    occurrence.occurrence_id: occurrence.ifc_name
+    for occurrence in PROJECT_SPEC.occurrences
 }
+FREECAD_OBJECT_NAMES["mechanical_room_ifc_001"] = PROJECT_SPEC.spatial.project_ifc_name
 
 
 def manifest_entries() -> list[dict[str, object]]:
@@ -44,11 +29,11 @@ def manifest_entries() -> list[dict[str, object]]:
                 "display_name": asset.display_name,
                 "category": asset.category,
                 "source_tool": asset.source_tool,
-                "units": "millimeters",
+                "units": PROJECT_SPEC.units,
                 "ifc_class": asset.ifc_class,
                 "parameters": asset.parameters,
                 "exports": asset.exports,
-                "validation_status": "pending",
+                "validation_status": "not_evaluated",
                 "notes": asset.notes,
             }
         )
@@ -81,7 +66,27 @@ def write_parameter_schema() -> None:
             "duct_height_mm": {"type": "number", "minimum": 0},
             "bolt_diameter_mm": {"type": "number", "minimum": 0},
             "bolt_spacing_mm": {"type": "number", "minimum": 0},
+            "bolt_offset_mm": {"type": "number", "exclusiveMinimum": 0},
+            "base_thickness_mm": {"type": "number", "exclusiveMinimum": 0},
+            "web_thickness_mm": {"type": "number", "exclusiveMinimum": 0},
+            "strap_width_mm": {"type": "number", "exclusiveMinimum": 0},
+            "strap_thickness_mm": {"type": "number", "exclusiveMinimum": 0},
+            "rod_diameter_mm": {"type": "number", "exclusiveMinimum": 0},
+            "hole_diameter_mm": {"type": "number", "exclusiveMinimum": 0},
+            "hole_pitch_mm": {"type": "number", "exclusiveMinimum": 0},
+            "slot_length_mm": {"type": "number", "exclusiveMinimum": 0},
+            "ear_length_mm": {"type": "number", "exclusiveMinimum": 0},
+            "sleeve_wall_mm": {"type": "number", "exclusiveMinimum": 0},
+            "flange_diameter_mm": {"type": "number", "exclusiveMinimum": 0},
+            "flange_thickness_mm": {"type": "number", "exclusiveMinimum": 0},
+            "flange_depth_mm": {"type": "number", "exclusiveMinimum": 0},
+            "rail_width_mm": {"type": "number", "exclusiveMinimum": 0},
+            "pipe_radius_mm": {"type": "number", "exclusiveMinimum": 0},
+            "radius_mm": {"type": "number", "exclusiveMinimum": 0},
+            "scale": {"type": "string"},
+            "source_of_truth": {"type": "string"},
             "mounting_hole_count": {"type": "integer", "minimum": 0},
+            "crossmember_count": {"type": "integer", "minimum": 1},
             "clearance_mm": {"type": "number", "minimum": 0},
             "material_tag": {"type": "string"},
             "export_formats": {"type": "array", "items": {"type": "string"}},

@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import csv
 import json
+import struct
+import zipfile
 from pathlib import Path
+
+import ezdxf
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPORT_INDEX = ROOT / "manifest" / "export_index.csv"
@@ -57,6 +61,61 @@ REQUIRED_FILES = [
 ]
 
 
+def artifact_structure_error(path: Path) -> str | None:
+    """Return a concise error when a supported artifact is structurally invalid."""
+
+    suffix = path.suffix.lower()
+    if suffix in {".step", ".stp"}:
+        data = path.read_bytes()
+        if not data.startswith(b"ISO-10303-21;") or b"END-ISO-10303-21;" not in data[-256:]:
+            return "invalid ISO-10303 STEP envelope"
+        if data.startswith(b"OPENCAD-MOCK"):
+            return "analytic OpenCAD mock is not a STEP file"
+
+    elif suffix == ".stl":
+        data = path.read_bytes()
+        if len(data) < 15:
+            return "STL is too short"
+        if data.lstrip().lower().startswith(b"solid") and b"endsolid" in data[-512:].lower():
+            if b"facet normal" not in data.lower():
+                return "ASCII STL contains no facets"
+        else:
+            if len(data) < 84:
+                return "binary STL header is truncated"
+            triangle_count = struct.unpack("<I", data[80:84])[0]
+            if triangle_count == 0:
+                return "binary STL contains no triangles"
+            expected_size = 84 + triangle_count * 50
+            if len(data) != expected_size:
+                return f"binary STL size/count mismatch ({len(data)} != {expected_size})"
+
+    elif suffix == ".dxf":
+        try:
+            document = ezdxf.readfile(path)
+        except Exception as exc:  # pragma: no cover - parser exception type varies
+            return f"DXF parse failed: {exc}"
+        if len(document.modelspace()) == 0:
+            return "DXF modelspace is empty"
+        auditor = document.audit()
+        if auditor.errors:
+            return f"DXF audit found {len(auditor.errors)} unrecoverable error(s)"
+
+    elif suffix == ".pdf":
+        data = path.read_bytes()
+        if not data.startswith(b"%PDF-") or b"%%EOF" not in data[-1024:]:
+            return "invalid PDF envelope"
+        if path.parent == ROOT / "qcad" / "pdf_exports" and b"ReportLab" in data:
+            return "portable ReportLab preview found where a canonical QCAD export is required"
+
+    elif suffix == ".fcstd":
+        if not zipfile.is_zipfile(path):
+            return "FCStd is not a valid ZIP container"
+        with zipfile.ZipFile(path) as archive:
+            if "Document.xml" not in archive.namelist():
+                return "FCStd is missing Document.xml"
+    return None
+
+
 def validate() -> dict[str, object]:
     failures: list[str] = []
     warnings: list[str] = []
@@ -84,6 +143,14 @@ def validate() -> dict[str, object]:
                     failures.append(f"Indexed export missing: {row['path']}")
                 elif path.stat().st_size == 0:
                     failures.append(f"Indexed export is zero bytes: {row['path']}")
+
+    for rel_path in sorted(set(REQUIRED_FILES) | indexed_paths):
+        path = ROOT / rel_path
+        if not path.is_file() or path.stat().st_size == 0:
+            continue
+        error = artifact_structure_error(path)
+        if error:
+            failures.append(f"Invalid generated artifact {rel_path}: {error}")
 
     unindexed_required = sorted(set(REQUIRED_FILES) - indexed_paths)
     if unindexed_required:

@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import csv
 import math
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
 from openbim_core import CONNECTIVITY, SYSTEMS, ProductSpec, product_schedule
-
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_DIR = ROOT / "reports"
@@ -27,7 +26,7 @@ class Box:
     max_y: float
     max_z: float
 
-    def intersects(self, other: "Box") -> bool:
+    def intersects(self, other: Box) -> bool:
         return not (
             self.max_x <= other.min_x
             or self.min_x >= other.max_x
@@ -37,7 +36,7 @@ class Box:
             or self.min_z >= other.max_z
         )
 
-    def separation(self, other: "Box") -> float:
+    def separation(self, other: Box) -> float:
         dx = max(other.min_x - self.max_x, self.min_x - other.max_x, 0.0)
         dy = max(other.min_y - self.max_y, self.min_y - other.max_y, 0.0)
         dz = max(other.min_z - self.max_z, self.min_z - other.max_z, 0.0)

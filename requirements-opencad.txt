@@ -1,0 +1,5 @@
+# Optional OpenCAD pilot dependency. The commit is pinned because the pilot
+# currently uses a small compatibility bridge around OpenCAD's headless OCCT
+# runtime. Revalidate geometry parity before changing this revision.
+-r requirements.txt
+opencad[occt] @ git+https://github.com/caid-technologies/OpenCAD.git@be5bbfe915f98bc61e5ea62f3c88bc6d28b96d54

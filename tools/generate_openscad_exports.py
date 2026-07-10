@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 from pathlib import Path
+
+from tooling import openscad_command
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,15 +18,15 @@ ASSETS = {
 
 
 def main() -> int:
-    executable = shutil.which("openscad")
+    executable = openscad_command()
     if executable is None:
-        raise SystemExit("OpenSCAD command was not found.")
+        raise SystemExit("OpenSCAD was not found. Set OPENSCAD_CMD or add openscad to PATH.")
     out_dir = ROOT / "exports" / "stl"
     out_dir.mkdir(parents=True, exist_ok=True)
     for asset_id, source in ASSETS.items():
         output = out_dir / f"{asset_id}.stl"
         source_path = ROOT / "openscad" / source
-        cmd = [executable, "-o", str(output), str(source_path)]
+        cmd = [str(executable), "-o", str(output), str(source_path)]
         print("$", " ".join(cmd), flush=True)
         subprocess.run(cmd, cwd=ROOT, check=True)
     return 0

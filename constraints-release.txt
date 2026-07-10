@@ -1,0 +1,11 @@
+# Exact direct package versions used for the committed golden evidence.
+# Compatibility CI installs requirements.txt without this file; release
+# regeneration should use both files so the CAD/IFC serialization toolchain is
+# deliberate. The key runtime versions are recorded in build provenance.
+cadquery==2.5.2
+cadquery-ocp==7.7.2
+ifcopenshell==0.8.5
+ezdxf==1.4.4
+reportlab==5.0.0
+Pillow==12.3.0
+jsonschema==4.26.0

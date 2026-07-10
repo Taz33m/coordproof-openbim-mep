@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-and-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install development dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Validate versioned ProjectSpec
+        run: python tools/project_spec.py validate
+      - name: Lint
+        run: python -m ruff check .
+      - name: Test portable core
+        run: python -m pytest -m "not opencad" --cov --cov-report=term-missing
+      - name: Regenerate portable semantic evidence
+        if: matrix.python-version == '3.11'
+        env:
+          SOURCE_DATE_EPOCH: "0"
+        run: |
+          python tools/build_manifest.py
+          python tools/generate_ifc.py
+          python tools/generate_coordination_reports.py
+          python validation/run_all.py
+      - name: Reject semantic evidence drift
+        if: matrix.python-version == '3.11'
+        run: >-
+          git diff --exit-code --
+          manifest/asset_manifest.json
+          manifest/parameter_schema.json
+          manifest/export_index.csv
+          bim/bim_object_map.csv
+          bim/mechanical_room.ifc
+          bim/openbim_semantic_inventory.csv
+          bim/ifc_entity_summary.md
+          reports/coordination_report.md
+          reports/bill_of_materials.csv
+          reports/clash_clearance_report.csv
+          validation/validation_report.md
+      - name: Validate committed evidence package
+        run: python validation/run_all.py
+      - name: Public-package preflight
+        run: python tools/preflight_public_package.py
+
+  opencad-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-opencad.txt
+      - name: Install pinned OpenCAD integration
+        run: python -m pip install -r requirements-opencad.txt
+      - name: Verify real STEP and feature-tree reconstruction parity
+        run: python integrations/opencad/pilot.py

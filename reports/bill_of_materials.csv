@@ -6,13 +6,13 @@ wall_east_001,Wall_East_01,IfcWall,architectural_shell,,concrete,200 x 4200 x 30
 wall_west_001,Wall_West_01,IfcWall,architectural_shell,,concrete,200 x 4200 x 3000,FreeCAD BIM
 door_access_001,Door_Access_01,IfcDoor,architectural_shell,,painted_hollow_metal,1000 x 70 x 2100,FreeCAD BIM
 equipment_base_type_a,EquipmentPad_AHU_01,IfcFooting,mechanical_equipment,,concrete,1800 x 1100 x 160,CadQuery
-equipment_ahu_001,Equipment_AHU_01,IfcUnitaryEquipment,mechanical_equipment,System_SupplyAir;System_ReturnAir,painted_steel,1500 x 850 x 1100,FreeCAD BIM
+equipment_ahu_001,Equipment_AHU_01,IfcUnitaryEquipment,mechanical_equipment,System_SupplyAir;System_ReturnAir;System_CHWS;System_CHWR,painted_steel,1500 x 850 x 1100,FreeCAD BIM
 ahu_filter_001,AHU_Filter_01,IfcFilter,mechanical_equipment,System_SupplyAir,filter_media,120 x 800 x 760,IfcOpenShell
 ahu_coil_001,AHU_Coil_01,IfcCoil,mechanical_equipment,System_SupplyAir;System_CHWS;System_CHWR,copper_aluminum_coil,160 x 800 x 760,IfcOpenShell
 ahu_fan_001,AHU_Fan_01,IfcFan,mechanical_equipment,System_SupplyAir,painted_steel,dia 520 x 420,IfcOpenShell
 equipment_pump_skid_001,Equipment_PumpSkid_01,IfcElementAssembly,mechanical_equipment,System_CHWS,painted_steel,1400 x 800 x 180,CadQuery
-pump_chws_duty_001,Pump_CHWS_Duty_01,IfcPump,mechanical_equipment,System_CHWS,painted_steel,dia 340 x 460,IfcOpenShell
-pump_chws_standby_001,Pump_CHWS_Standby_01,IfcPump,mechanical_equipment,System_CHWS,painted_steel,dia 340 x 460,IfcOpenShell
+pump_chws_duty_001,Pump_CHWS_Duty_01,IfcPump,mechanical_equipment,System_CHWS;System_CHWR,painted_steel,dia 340 x 460,IfcOpenShell
+pump_chws_standby_001,Pump_CHWS_Standby_01,IfcPump,mechanical_equipment,System_CHWS;System_CHWR,painted_steel,dia 340 x 460,IfcOpenShell
 pipe_supply_001,Pipe_Supply_01,IfcPipeSegment,flow_segment,System_CHWS,carbon_steel_chws,dia 80 x 3600,FreeCAD BIM
 pipe_return_001,Pipe_Return_01,IfcPipeSegment,flow_segment,System_CHWR,carbon_steel_chwr,dia 80 x 3920,FreeCAD BIM
 pipe_supply_drop_001,Pipe_Supply_Drop_01,IfcPipeSegment,flow_segment,System_CHWS,carbon_steel_chws,dia 80 x 800,IfcOpenShell

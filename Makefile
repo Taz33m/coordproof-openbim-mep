@@ -1,16 +1,43 @@
-.PHONY: all install build manifest drawings qcad-pdfs openscad freecad ifc cadquery validate preflight clean-pycache
+.PHONY: all install install-release install-dev install-opencad build core doctor doctor-full spec-validate spec-summary manifest drawings qcad-pdfs openscad freecad ifc cadquery opencad-pilot provenance test lint validate preflight clean-pycache
 
 PYTHON := .venv/bin/python
+VENV_PYTHON ?= python3.11
 
 all: build
 
 install:
-	python3 -m venv .venv
+	$(VENV_PYTHON) -m venv .venv
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.txt
 
-build:
+install-release:
+	$(VENV_PYTHON) -m venv .venv
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt -c constraints-release.txt
+
+install-dev: install
+	$(PYTHON) -m pip install -r requirements-dev.txt
+
+install-opencad: install
+	$(PYTHON) -m pip install -r requirements-opencad.txt
+
+build: spec-validate
 	$(PYTHON) tools/build_all.py
+
+core: spec-validate
+	$(PYTHON) tools/build_all.py --profile core
+
+doctor:
+	$(PYTHON) tools/doctor.py --profile core
+
+doctor-full:
+	$(PYTHON) tools/doctor.py --profile full
+
+spec-validate:
+	$(PYTHON) tools/project_spec.py validate
+
+spec-summary:
+	$(PYTHON) tools/project_spec.py summary
 
 manifest:
 	$(PYTHON) tools/build_manifest.py
@@ -33,10 +60,22 @@ ifc:
 cadquery:
 	$(PYTHON) cadquery/generate_all.py
 
-validate:
+opencad-pilot:
+	$(PYTHON) integrations/opencad/pilot.py
+
+provenance:
+	$(PYTHON) tools/build_provenance.py
+
+test:
+	$(PYTHON) -m pytest
+
+lint:
+	$(PYTHON) -m ruff check .
+
+validate: spec-validate
 	$(PYTHON) validation/run_all.py
 
-preflight:
+preflight: spec-validate
 	$(PYTHON) tools/preflight_public_package.py
 
 clean-pycache:

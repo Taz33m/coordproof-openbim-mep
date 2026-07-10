@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 
 from validate_exports import validate as validate_exports
 from validate_ifc import validate as validate_ifc
 from validate_manifest import validate as validate_manifest
+from validate_sources import validate as validate_sources
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "validation" / "validation_report.md"
-MANIFEST = ROOT / "manifest" / "asset_manifest.json"
 DEFAULT_VALIDATION_LABEL = "deterministic report; set VALIDATION_DATE to stamp a release"
 
 
@@ -50,13 +49,8 @@ def render_section(result: dict[str, object]) -> list[str]:
 
 
 def main() -> int:
-    results = [validate_ifc(), validate_manifest(), validate_exports()]
+    results = [validate_sources(), validate_ifc(), validate_manifest(), validate_exports()]
     overall = "passed" if all(result["status"] == "passed" for result in results) else "failed"
-    if MANIFEST.exists():
-        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
-        for asset in data.get("assets", []):
-            asset["validation_status"] = overall
-        MANIFEST.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     lines = [
         "# Validation Report",
         "",
