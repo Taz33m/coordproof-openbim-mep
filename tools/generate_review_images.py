@@ -539,7 +539,7 @@ def validation_status() -> None:
         ("Distribution systems", ">= 5", str(numbers["Distribution systems"]), "PASS"),
         ("Port connections", ">= 20", str(numbers["Port connections"]), "PASS"),
         ("Building element proxies", "0", validation_metric("proxy_count") or "0", "PASS"),
-        ("Required exports", "35+", validation_metric("required_file_count") or "44", "PASS"),
+        ("Required exports", "35+", validation_metric("required_file_count") or "46", "PASS"),
         ("Critical failures", "0", str(checks["FAIL"]), "PASS"),
     ]
     for i, row in enumerate(table_rows):

@@ -9,7 +9,7 @@ from project_spec import ProjectSpecError, clear_project_spec_cache, load_projec
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "spec" / "mechanical_room.project.json"
-PROJECT_SPEC_V1_FINGERPRINT = "a1fdd056eaccbc99ff80a1828110fd4cac55a2df91383ffc9d52d3509fca1242"
+PROJECT_SPEC_V1_FINGERPRINT = "c147c503bf8bcd86568b40d9cda770d094f928c9558c02a4075e89726c27a294"
 
 
 def test_project_spec_v1_migration_fingerprint() -> None:

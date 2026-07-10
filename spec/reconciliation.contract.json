@@ -1,0 +1,256 @@
+{
+  "$schema": "./reconciliation.schema.json",
+  "schema_version": 1,
+  "project_spec": "mechanical_room.project.json",
+  "default_tolerance_mm": 0,
+  "producers": [
+    {
+      "producer_id": "cadquery.pipe_support",
+      "adapter": "python_mapping",
+      "path": "cadquery/pipe_support.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "support_pipe_bracket_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.duct_hanger",
+      "adapter": "python_mapping",
+      "path": "cadquery/duct_hanger.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "support_duct_hanger_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.cable_tray",
+      "adapter": "python_mapping",
+      "path": "cadquery/cable_tray.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "cable_tray_overhead_001"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.equipment_base",
+      "adapter": "python_mapping",
+      "path": "cadquery/equipment_base.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "equipment_base_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.pump_skid_frame",
+      "adapter": "python_mapping",
+      "path": "cadquery/pump_skid_frame.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "equipment_pump_skid_001"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.wall_sleeve",
+      "adapter": "python_mapping",
+      "path": "cadquery/wall_sleeve.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "sleeve_wall_penetration_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.pipe_clamp",
+      "adapter": "python_mapping",
+      "path": "cadquery/pipe_clamp.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "pipe_clamp_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.rectangular_duct",
+      "adapter": "python_mapping",
+      "path": "cadquery/rectangular_duct.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "duct_main_001"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "cadquery.mounting_plate",
+      "adapter": "python_mapping",
+      "path": "cadquery/mounting_plate.py",
+      "selector": "DEFAULT_PARAMETERS",
+      "subject": {"kind": "asset_type", "id": "plate_mounting_type_a"},
+      "parameter_map": {"*": "*"}
+    },
+    {
+      "producer_id": "openscad.pipe_clamp",
+      "adapter": "openscad_assignments",
+      "path": "openscad/pipe_clamp.scad",
+      "subject": {"kind": "asset_type", "id": "openscad_pipe_clamp_type_b"},
+      "parameter_map": {
+        "pipe_diameter_mm": "pipe_diameter_mm",
+        "thickness_mm": "clamp_thickness_mm",
+        "width_mm": "clamp_width_mm",
+        "ear_length_mm": "ear_length_mm",
+        "bolt_diameter_mm": "bolt_diameter_mm"
+      },
+      "excluded_parameters": {
+        "$fn": "OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension."
+      }
+    },
+    {
+      "producer_id": "openscad.bracket_plate",
+      "adapter": "openscad_assignments",
+      "path": "openscad/bracket_plate.scad",
+      "subject": {"kind": "asset_type", "id": "openscad_bracket_plate_type_b"},
+      "parameter_map": {
+        "length_mm": "plate_length_mm",
+        "width_mm": "plate_width_mm",
+        "thickness_mm": "plate_thickness_mm",
+        "slot_length_mm": "slot_length_mm",
+        "slot_width_mm": "slot_width_mm",
+        "slot_spacing_mm": "slot_spacing_mm"
+      },
+      "excluded_parameters": {
+        "$fn": "OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension."
+      }
+    },
+    {
+      "producer_id": "openscad.cable_tray",
+      "adapter": "openscad_assignments",
+      "path": "openscad/cable_tray_segment.scad",
+      "subject": {"kind": "asset_type", "id": "openscad_cable_tray_segment_type_b"},
+      "parameter_map": {
+        "length_mm": "tray_length_mm",
+        "width_mm": "tray_width_mm",
+        "height_mm": "tray_height_mm",
+        "wall_thickness_mm": "wall_thickness_mm",
+        "hole_diameter_mm": "hole_diameter_mm",
+        "hole_pitch_mm": "hole_pitch_mm"
+      },
+      "excluded_parameters": {
+        "$fn": "OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension."
+      }
+    },
+    {
+      "producer_id": "openscad.duct_connector",
+      "adapter": "openscad_assignments",
+      "path": "openscad/duct_connector.scad",
+      "subject": {"kind": "asset_type", "id": "openscad_duct_connector_type_b"},
+      "parameter_map": {
+        "duct_width_mm": "duct_width_mm",
+        "duct_height_mm": "duct_height_mm",
+        "thickness_mm": "wall_thickness_mm",
+        "connector_depth_mm": "connector_depth_mm",
+        "flange_extra_mm": "flange_extra_mm"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "relation_id": "pipe_supply_diameter_to_radius",
+      "from": {"kind": "asset_type", "id": "pipe_supply_001", "path": "parameters.pipe_diameter_mm"},
+      "to": {"kind": "occurrence", "id": "pipe_supply_001", "path": "dimensions_mm[0]"},
+      "classification": "derived",
+      "transform": {"operator": "divide", "operand": 2}
+    },
+    {
+      "relation_id": "pipe_supply_length",
+      "from": {"kind": "asset_type", "id": "pipe_supply_001", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "pipe_supply_001", "path": "dimensions_mm[1]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "pipe_return_diameter_to_radius",
+      "from": {"kind": "asset_type", "id": "pipe_return_001", "path": "parameters.pipe_diameter_mm"},
+      "to": {"kind": "occurrence", "id": "pipe_return_001", "path": "dimensions_mm[0]"},
+      "classification": "derived",
+      "transform": {"operator": "divide", "operand": 2}
+    },
+    {
+      "relation_id": "pipe_return_length_override",
+      "from": {"kind": "asset_type", "id": "pipe_return_001", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "pipe_return_001", "path": "dimensions_mm[1]"},
+      "classification": "override",
+      "reason": "The placed return route extends to the duty-pump connection."
+    },
+    {
+      "relation_id": "ahu_pad_length_override",
+      "from": {"kind": "asset_type", "id": "equipment_base_type_a", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "equipment_base_type_a", "path": "dimensions_mm[0]"},
+      "classification": "override",
+      "reason": "The placed AHU housekeeping pad is larger than the reusable base type."
+    },
+    {
+      "relation_id": "ahu_pad_width_override",
+      "from": {"kind": "asset_type", "id": "equipment_base_type_a", "path": "parameters.width_mm"},
+      "to": {"kind": "occurrence", "id": "equipment_base_type_a", "path": "dimensions_mm[1]"},
+      "classification": "override",
+      "reason": "The placed AHU housekeeping pad is larger than the reusable base type."
+    },
+    {
+      "relation_id": "pump_skid_length_override",
+      "from": {"kind": "asset_type", "id": "equipment_pump_skid_001", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "equipment_pump_skid_001", "path": "dimensions_mm[0]"},
+      "classification": "override",
+      "reason": "The placed skid coordination envelope includes service and connection space."
+    },
+    {
+      "relation_id": "pump_skid_width_override",
+      "from": {"kind": "asset_type", "id": "equipment_pump_skid_001", "path": "parameters.width_mm"},
+      "to": {"kind": "occurrence", "id": "equipment_pump_skid_001", "path": "dimensions_mm[1]"},
+      "classification": "override",
+      "reason": "The placed skid coordination envelope includes service and connection space."
+    },
+    {
+      "relation_id": "duct_main_length_override",
+      "from": {"kind": "asset_type", "id": "duct_main_001", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "duct_main_001", "path": "dimensions_mm[0]"},
+      "classification": "override",
+      "reason": "The placed main duct run is assembled from repeated reusable segments."
+    },
+    {
+      "relation_id": "duct_main_width",
+      "from": {"kind": "asset_type", "id": "duct_main_001", "path": "parameters.duct_width_mm"},
+      "to": {"kind": "occurrence", "id": "duct_main_001", "path": "dimensions_mm[1]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "duct_main_height",
+      "from": {"kind": "asset_type", "id": "duct_main_001", "path": "parameters.duct_height_mm"},
+      "to": {"kind": "occurrence", "id": "duct_main_001", "path": "dimensions_mm[2]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "cable_tray_length_override",
+      "from": {"kind": "asset_type", "id": "cable_tray_overhead_001", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "cable_tray_overhead_001", "path": "dimensions_mm[0]"},
+      "classification": "override",
+      "reason": "The placed overhead route is assembled from repeated reusable tray segments."
+    },
+    {
+      "relation_id": "cable_tray_width",
+      "from": {"kind": "asset_type", "id": "cable_tray_overhead_001", "path": "parameters.width_mm"},
+      "to": {"kind": "occurrence", "id": "cable_tray_overhead_001", "path": "dimensions_mm[1]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "cable_tray_height",
+      "from": {"kind": "asset_type", "id": "cable_tray_overhead_001", "path": "parameters.height_mm"},
+      "to": {"kind": "occurrence", "id": "cable_tray_overhead_001", "path": "dimensions_mm[2]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "mounting_plate_length",
+      "from": {"kind": "asset_type", "id": "plate_mounting_type_a", "path": "parameters.length_mm"},
+      "to": {"kind": "occurrence", "id": "plate_mounting_type_a", "path": "dimensions_mm[0]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "mounting_plate_width",
+      "from": {"kind": "asset_type", "id": "plate_mounting_type_a", "path": "parameters.width_mm"},
+      "to": {"kind": "occurrence", "id": "plate_mounting_type_a", "path": "dimensions_mm[1]"},
+      "classification": "equal"
+    },
+    {
+      "relation_id": "mounting_plate_thickness",
+      "from": {"kind": "asset_type", "id": "plate_mounting_type_a", "path": "parameters.thickness_mm"},
+      "to": {"kind": "occurrence", "id": "plate_mounting_type_a", "path": "dimensions_mm[2]"},
+      "classification": "equal"
+    }
+  ]
+}

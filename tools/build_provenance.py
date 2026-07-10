@@ -27,6 +27,8 @@ PACKAGE_NAMES = (
 ADDITIONAL_ARTIFACTS = (
     "spec/mechanical_room.project.json",
     "spec/project.schema.json",
+    "spec/reconciliation.contract.json",
+    "spec/reconciliation.schema.json",
     "bim/mechanical_room.ifc",
     "bim/mechanical_room_freecad_review.ifc",
     "bim/bim_object_map.csv",
@@ -36,6 +38,8 @@ ADDITIONAL_ARTIFACTS = (
     "reports/coordination_report.md",
     "reports/bill_of_materials.csv",
     "reports/clash_clearance_report.csv",
+    "reports/parameter_reconciliation.csv",
+    "reports/parameter_reconciliation.md",
     "validation/validation_report.md",
 )
 

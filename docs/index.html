@@ -344,7 +344,7 @@
     <main>
       <section>
         <h2>Generated Package</h2>
-        <p class="section-copy">A versioned ProjectSpec declares reusable asset types, placed occurrences, IFC classes, systems, ports, connections, artifacts, and required coverage before generators produce review evidence.</p>
+        <p class="section-copy">A versioned ProjectSpec declares reusable asset types, placed occurrences, IFC classes, systems, ports, connections, artifacts, and required coverage. A separate reconciliation contract binds those values to producer inputs without copying expected geometry.</p>
         <img class="wide-image" src="https://raw.githubusercontent.com/Taz33m/coordproof-openbim-mep/main/screenshots/00_coordproof_system_overview.png" alt="CoordProof generated OpenBIM package overview">
       </section>
 
@@ -353,7 +353,7 @@
         <div class="artifact-grid">
           <figure class="artifact">
             <img src="https://raw.githubusercontent.com/Taz33m/coordproof-openbim-mep/main/screenshots/01_freecad_mechanical_room_overview.png" alt="FreeCAD mechanical room overview">
-            <figcaption><strong>3D coordination review</strong>FreeCAD/BIM review model aligned to the generated IFC schedule and drawing package.</figcaption>
+            <figcaption><strong>3D coordination review</strong>Supporting FreeCAD/BIM review model; its legacy placements and dimensions remain outside the enforced reconciliation scope.</figcaption>
           </figure>
           <figure class="artifact">
             <img src="https://raw.githubusercontent.com/Taz33m/coordproof-openbim-mep/main/screenshots/04_qcad_floor_plan.png" alt="QCAD floor plan preview">
@@ -373,10 +373,12 @@
           <div class="metric"><strong>5</strong><span>distribution systems</span></div>
           <div class="metric"><strong>51</strong><span>distribution ports</span></div>
           <div class="metric"><strong>22</strong><span>connected port pairs</span></div>
-          <div class="metric"><strong>55</strong><span>manifest assets</span></div>
-          <div class="metric"><strong>7+7</strong><span>DXF/PDF sheets</span></div>
+          <div class="metric"><strong>56</strong><span>manifest assets</span></div>
+          <div class="metric"><strong>75/75</strong><span>engineering parameters</span></div>
+          <div class="metric"><strong>78/78</strong><span>producer inputs accounted</span></div>
           <div class="metric"><strong>0</strong><span>critical failures</span></div>
         </div>
+        <p class="section-copy">The 78 observed top-level producer inputs comprise 75 mapped engineering values and three explicitly excluded OpenSCAD <code>$fn</code> facet controls.</p>
       </section>
 
       <section>
@@ -384,10 +386,11 @@
         <table>
           <tr><th>Layer</th><th>Generated artifacts</th></tr>
           <tr><td><code>spec/mechanical_room.project.json</code></td><td>Versioned source of truth for asset types, placed occurrences, systems, ports, connections, artifacts, and coverage requirements.</td></tr>
+          <tr><td><code>spec/reconciliation.contract.json</code></td><td>Versioned selectors, safe derived relations, and justified occurrence overrides for cross-format parameter evidence.</td></tr>
           <tr><td>Python projections</td><td>Validated catalog and OpenBIM schedules consumed by generators without duplicating project declarations.</td></tr>
           <tr><td>IFC/OpenBIM</td><td>IFC4 model, distribution systems, ports, property sets, semantic inventory, and entity summary.</td></tr>
           <tr><td>CAD/Drawing package</td><td>FreeCAD review files, QCAD DXF sheets, PDF exports, CadQuery assets, and OpenSCAD assets.</td></tr>
-          <tr><td>QA layer</td><td>Manifest coverage, export checks, IFC validation, BOM, clearance report, and public-package preflight.</td></tr>
+          <tr><td>QA layer</td><td>Parameter reconciliation, manifest coverage, export checks, IFC validation, BOM, clearance report, and public-package preflight.</td></tr>
         </table>
       </section>
 
@@ -400,9 +403,13 @@
           <tr><td>Distribution systems</td><td>&gt;= 5</td><td>5</td><td>PASS</td></tr>
           <tr><td>IFC EXPRESS validation errors</td><td>0</td><td>0</td><td>PASS</td></tr>
           <tr><td>ProjectSpec-to-IFC parity</td><td>Exact</td><td>Exact</td><td>PASS</td></tr>
+          <tr><td>Canonical engineering parameters</td><td>75 / 75</td><td>75 / 75</td><td>PASS</td></tr>
+          <tr><td>Observed producer numeric inputs accounted</td><td>78 / 78</td><td>78 / 78</td><td>PASS</td></tr>
+          <tr><td>Explicit technical exclusions</td><td>3 OpenSCAD <code>$fn</code> controls</td><td>3</td><td>PASS</td></tr>
+          <tr><td>Reconciliation evidence rows</td><td>92 passing</td><td>92 passing</td><td>PASS</td></tr>
           <tr><td>Port connections</td><td>&gt;= 20</td><td>22</td><td>PASS</td></tr>
           <tr><td>Building element proxies</td><td>0</td><td>0</td><td>PASS</td></tr>
-          <tr><td>Required exports</td><td>35+</td><td>44</td><td>PASS</td></tr>
+          <tr><td>Required exports</td><td>35+</td><td>46</td><td>PASS</td></tr>
           <tr><td>Critical failures</td><td>0</td><td>0</td><td>PASS</td></tr>
         </table>
         <div class="actions">

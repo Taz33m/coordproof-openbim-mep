@@ -43,3 +43,4 @@ plate_mounting_type_a,Plate_Mounting_01,IfcMechanicalFastener,mechanical_support
 report_coordination_001,Coordination_Report,IfcDocumentReference,report,"Generated source-of-truth summary tying IFC products, systems, connections, BOM, and clearance checks together."
 report_bom_001,Bill_of_Materials,IfcDocumentReference,report,Generated BOM from the same semantic product schedule used for IFC output.
 report_clash_clearance_001,Clash_and_Clearance_Report,IfcDocumentReference,report,Generated bounding-box clearance and coordination checks for the mechanical-room layout.
+report_parameter_reconciliation_001,Parameter_Reconciliation_Report,IfcDocumentReference,report,Deterministic evidence for declared producer inputs and type-to-occurrence parameter relationships.

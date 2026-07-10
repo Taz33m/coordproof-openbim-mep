@@ -58,6 +58,8 @@ REQUIRED_FILES = [
     "reports/coordination_report.md",
     "reports/bill_of_materials.csv",
     "reports/clash_clearance_report.csv",
+    "reports/parameter_reconciliation.csv",
+    "reports/parameter_reconciliation.md",
 ]
 
 

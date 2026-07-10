@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CORE_STEPS = [
     ["tools/project_spec.py", "validate"],
+    ["tools/reconcile_parameters.py"],
     ["tools/build_manifest.py"],
     ["tools/generate_drawings.py"],
     ["cadquery/generate_all.py"],
@@ -48,6 +49,7 @@ def steps_for(profile: str) -> list[list[str]]:
     # a successfully refreshed evidence package.
     return [
         ["tools/project_spec.py", "validate"],
+        ["tools/reconcile_parameters.py"],
         ["tools/build_manifest.py"],
         ["tools/generate_drawings.py", "--skip-pdf"],
         ["tools/export_qcad_pdfs.py"],

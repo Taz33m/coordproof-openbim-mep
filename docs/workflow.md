@@ -20,7 +20,30 @@ loader also enforces semantic rules such as reference integrity, safe export
 paths, and complete port-to-system bindings. Both `make core` and `make all`
 validate this contract before running generators.
 
-## 2. Generate Structured Metadata
+## 2. Reconcile Producer Parameters
+
+```bash
+make reconcile
+```
+
+`spec/reconciliation.contract.json` binds 75 canonical ProjectSpec engineering
+parameters to producer inputs and to explicit type-to-occurrence relations. It
+also accounts for all 78 observed top-level producer numeric inputs: 75 mapped
+values plus three explicitly excluded OpenSCAD `$fn` facet controls. Those
+controls affect tessellation rather than engineering dimensions. The contract
+never repeats expected engineering values. The reconciler rejects unmapped
+inputs, unexplained exclusions or differences, unsafe transforms, and overrides
+without a rationale, then writes:
+
+- `reports/parameter_reconciliation.csv`
+- `reports/parameter_reconciliation.md`
+
+The first enforced scope covers all required CadQuery and OpenSCAD producers,
+75/75 canonical engineering parameters, 78/78 observed top-level numeric inputs,
+and selected occurrence relations. FreeCAD and drawing adapters remain an
+explicit follow-up boundary.
+
+## 3. Generate Structured Metadata
 
 ```bash
 .venv/bin/python tools/build_manifest.py
@@ -33,7 +56,7 @@ Outputs:
 - `manifest/export_index.csv`
 - `bim/bim_object_map.csv`
 
-## 3. Generate Parametric CAD Assets
+## 4. Generate Parametric CAD Assets
 
 ```bash
 .venv/bin/python cadquery/generate_all.py
@@ -45,7 +68,11 @@ Outputs:
 - STEP files in `exports/step/`
 - STL files in `exports/stl/`
 
-## 4. Generate Review Drawings
+CadQuery builders receive ProjectSpec parameters explicitly. OpenSCAD commands
+inject every mapped value through deterministic `-D` arguments; source-file
+assignments remain readable defaults, not an independent build authority.
+
+## 5. Generate Review Drawings
 
 ```bash
 .venv/bin/python tools/generate_drawings.py
@@ -63,7 +90,7 @@ previews. The second command uses QCAD's `dwg2pdf` command-line exporter to
 produce the final PDFs. Portable/core builds never overwrite canonical QCAD
 exports.
 
-## 5. Create the FreeCAD Model
+## 6. Create the FreeCAD Model
 
 Use the deterministic macro at `freecad/build_mechanical_room.FCMacro`.
 
@@ -79,7 +106,7 @@ Target outputs:
 - `freecad/mechanical_room_bim.FCStd`
 - screenshots in `screenshots/`
 
-## 6. Generate IFC-First OpenBIM
+## 7. Generate IFC-First OpenBIM
 
 The primary IFC is generated from the semantic OpenBIM core:
 
@@ -99,15 +126,16 @@ treats the ProjectSpec as the source of truth for IFC classes, systems, ports,
 connections, properties, and manifest coverage. `tools/openbim_core.py` is its
 typed generator-facing projection.
 
-## 7. Validate
+## 8. Validate
 
 ```bash
 .venv/bin/python validation/run_all.py
 ```
 
-The report is written to `validation/validation_report.md`.
+The report is written to `validation/validation_report.md` and includes the
+live reconciliation result.
 
-## 8. Record Provenance
+## 9. Record Provenance
 
 ```bash
 .venv/bin/python tools/build_provenance.py
@@ -116,7 +144,7 @@ The report is written to `validation/validation_report.md`.
 This writes hashes and tool versions to `manifest/build_provenance.json`.
 Set `SOURCE_DATE_EPOCH` when producing a reproducibly timestamped release.
 
-## 9. Optional OpenCAD Feature-Tree Pilot
+## 10. Optional OpenCAD Feature-Tree Pilot
 
 ```bash
 make install-opencad

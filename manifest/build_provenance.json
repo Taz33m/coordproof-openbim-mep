@@ -1,8 +1,8 @@
 {
   "artifacts": {
     "bim/bim_object_map.csv": {
-      "bytes": 5743,
-      "sha256": "b0a4a786d5ed8a531f2b60a5ae8ebcfe8a229dc726da512c6ef0134592c757d8"
+      "bytes": 5939,
+      "sha256": "659ef8ee1df88a5eb411c63e5da34caf2aebfb8597ce096d96e2761f50f35a12"
     },
     "bim/ifc_entity_summary.md": {
       "bytes": 2074,
@@ -121,16 +121,16 @@
       "sha256": "20e007dcef4fa02e48429fddb3c2c9b06ac4c86fcacb35cff93d849dff53b1ff"
     },
     "manifest/asset_manifest.json": {
-      "bytes": 31838,
-      "sha256": "eefd6b42d60b4a93bcabe1ff5ba56c99933a6464bb423a4129edd3929da159c5"
+      "bytes": 32868,
+      "sha256": "c8c126432fdd2b557bcdecd8002eb45de80b3e9e75fdb6a44890bd5001a25609"
     },
     "manifest/export_index.csv": {
-      "bytes": 4832,
-      "sha256": "aeefe09399e60704b73249fd4c6ad5178eac2df8ef8001ed1a6d2404731b6045"
+      "bytes": 4984,
+      "sha256": "19fbd7d1cfdc95f4a917bdd10791b7276b4ba5a2a6ab00691d6f5c4bc52eea82"
     },
     "manifest/parameter_schema.json": {
-      "bytes": 2990,
-      "sha256": "90dc9f07adb2aa151c60471b7a13c0056770acb4cbf85965d4213d96f910e487"
+      "bytes": 3390,
+      "sha256": "fb7fc4ad7d02c1e8688e1fe34e375e14d2b39bcebc420069ed50e6e31cf66e84"
     },
     "openscad/bracket_plate.scad": {
       "bytes": 727,
@@ -216,6 +216,14 @@
       "bytes": 2137,
       "sha256": "6ad24dda3a400c6c4d135c4841edad2a87723d5d58dc1d99c0fac23e33e48069"
     },
+    "reports/parameter_reconciliation.csv": {
+      "bytes": 22602,
+      "sha256": "f55bd81b79d5f18a9de87f8c02b5499e4a619cc562cfb5a8b617ebc173889d67"
+    },
+    "reports/parameter_reconciliation.md": {
+      "bytes": 22835,
+      "sha256": "70bb89d46225b6f8a6627bf1db61bff5841163c2e1687334fbedda194ecccf9f"
+    },
     "screenshots/00_coordproof_system_overview.png": {
       "bytes": 466504,
       "sha256": "c23406002fc8291663665e942b992c18e7b1bb5edd92e14473713308853c6fdf"
@@ -237,28 +245,36 @@
       "sha256": "3b1e7a3ab41ec5c08a51a45ed9019b497faeedf14b8a14efcbfa064157d7cb48"
     },
     "screenshots/05_ifc_validation_report.png": {
-      "bytes": 94012,
-      "sha256": "142deb6b53ce417c6b010c24c99bdc0b54b6fdfccaace2c278debdc1f0eaadec"
+      "bytes": 94752,
+      "sha256": "f23869f937a9422404495e4f11d5d9711ec28c117ef46b2c89a4734cff88c8a2"
     },
     "screenshots/06_export_formats_overview.png": {
-      "bytes": 73442,
-      "sha256": "f74953a5de6a0ecfb58e8b0c7eac500dda80b5ea1de8bd0742f1b303dd7be2a7"
+      "bytes": 74078,
+      "sha256": "db4a71a8cfa01bd60c46dbdcc573344bd657f7b7280b425d2392ae0a7409719d"
     },
     "screenshots/07_qcad_section_and_riser.png": {
       "bytes": 76598,
       "sha256": "a9cf01aca9f30d4e816a918ed0685598694564aee679034e103b98216055110f"
     },
     "spec/mechanical_room.project.json": {
-      "bytes": 65550,
-      "sha256": "e8f9b93bb7abb5745b6e1799354f084fd78185725ac03529c9467f35a6c82beb"
+      "bytes": 66561,
+      "sha256": "558b564c35c21fb95c1007b30a58a0927c055c6fc9c45d2bbff2f649412f179f"
     },
     "spec/project.schema.json": {
       "bytes": 9912,
       "sha256": "75873744e45e04ad760b9a1a1f3b6da5f4e0656d7815721ad5f3c93118660ce4"
     },
+    "spec/reconciliation.contract.json": {
+      "bytes": 10866,
+      "sha256": "acb7fba50f74d1b885a867c12eb90e64f7246200c2aa9126b4d54c94be9f919c"
+    },
+    "spec/reconciliation.schema.json": {
+      "bytes": 4884,
+      "sha256": "c9bde378ed7f5f80c59ad8efa4072e7635d2e39ba86c2e68ec87bda8a76953b4"
+    },
     "validation/validation_report.md": {
-      "bytes": 2796,
-      "sha256": "71801a921a5bf2acfa3d631bd648d00a2115d78056d250929975896da6f8f375"
+      "bytes": 3634,
+      "sha256": "86a6a12b65d47c0652858e5c470da78476d6faf3439a54ee338f1682b4ae890b"
     }
   },
   "environment": {

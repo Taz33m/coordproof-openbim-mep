@@ -9,6 +9,10 @@ Run the full validation suite from the project root:
 Validators:
 
 - `validate_sources.py`: checks asset IDs, positive parameters, schema coverage, safe paths, and catalog/CadQuery default parity.
+- `validate_reconciliation.py`: checks the required producer inventory, 75/75
+  canonical engineering-parameter bindings, accounting for 78/78 observed
+  top-level numeric inputs (including three explicit OpenSCAD `$fn` technical
+  exclusions), safe derived relations, and justified occurrence overrides.
 - `validate_ifc.py`: opens the IFC with IfcOpenShell and checks hierarchy, semantics, stable identity, millimetre units, ports, and connectivity.
 - `validate_manifest.py`: checks required fields, categories, asset IDs, export references, and file sizes.
 - `validate_exports.py`: parses STEP, STL, DXF, PDF, and FCStd structure and checks indexed deliverables.

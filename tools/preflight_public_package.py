@@ -57,6 +57,8 @@ REQUIRED_FILES = [
     "constraints-release.txt",
     "spec/mechanical_room.project.json",
     "spec/project.schema.json",
+    "spec/reconciliation.contract.json",
+    "spec/reconciliation.schema.json",
     "bim/mechanical_room.ifc",
     "bim/mechanical_room_freecad_review.ifc",
     "bim/openbim_semantic_inventory.csv",
@@ -66,6 +68,8 @@ REQUIRED_FILES = [
     "reports/coordination_report.md",
     "reports/bill_of_materials.csv",
     "reports/clash_clearance_report.csv",
+    "reports/parameter_reconciliation.csv",
+    "reports/parameter_reconciliation.md",
     "validation/validation_report.md",
     "screenshots/00_coordproof_system_overview.png",
     "screenshots/02_freecad_bim_structure.png",
@@ -145,6 +149,7 @@ def check_validation_report() -> list[str]:
     required = [
         "Overall Status: **PASSED**",
         "Sources Validation\n\nStatus: **PASSED**",
+        "Parameter Reconciliation Validation\n\nStatus: **PASSED**",
         "IFC Validation\n\nStatus: **PASSED**",
         "Manifest Validation\n\nStatus: **PASSED**",
         "Exports Validation\n\nStatus: **PASSED**",
@@ -207,11 +212,15 @@ def check_provenance() -> list[str]:
     required_coverage = {
         "spec/mechanical_room.project.json",
         "spec/project.schema.json",
+        "spec/reconciliation.contract.json",
+        "spec/reconciliation.schema.json",
         "manifest/asset_manifest.json",
         "manifest/export_index.csv",
         "manifest/parameter_schema.json",
         "bim/bim_object_map.csv",
         "validation/validation_report.md",
+        "reports/parameter_reconciliation.csv",
+        "reports/parameter_reconciliation.md",
         *(rel(path) for path in (ROOT / "screenshots").glob("*.png")),
     }
     failures = [
@@ -269,13 +278,15 @@ def run_project_spec_validation() -> list[str]:
 
 def main() -> int:
     failures: list[str] = []
+    # Refresh the deterministic validation report before inspecting it or its
+    # provenance record. This keeps one preflight invocation authoritative.
+    failures.extend(run_project_spec_validation())
+    failures.extend(run_validation())
     failures.extend(check_required_files())
     failures.extend(check_expected_counts())
     failures.extend(check_backups())
     failures.extend(check_git_ignored())
     failures.extend(check_validation_report())
-    failures.extend(run_project_spec_validation())
-    failures.extend(run_validation())
     failures.extend(check_provenance())
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room.ifc", min_products=43))
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room_freecad_review.ifc", min_products=40))
