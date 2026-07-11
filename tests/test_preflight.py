@@ -36,31 +36,47 @@ def test_preflight_checks_committed_evidence_before_live_validation(
 ) -> None:
     events: list[str] = []
 
-    def required_files() -> list[str]:
-        events.append("required")
-        return ["missing required file: validation/validation_report.md"]
+    def record(
+        name: str,
+        failures: tuple[str, ...] = (),
+    ):
+        def check() -> list[str]:
+            events.append(name)
+            return list(failures)
 
-    def live_validation() -> list[str]:
-        events.append("validation")
-        return []
+        return check
 
-    def provenance() -> list[str]:
-        events.append("provenance")
-        return []
-
-    monkeypatch.setattr(preflight, "check_required_files", required_files)
-    monkeypatch.setattr(preflight, "run_validation", live_validation)
-    monkeypatch.setattr(preflight, "check_expected_counts", lambda: [])
-    monkeypatch.setattr(preflight, "check_backups", lambda: [])
-    monkeypatch.setattr(preflight, "check_git_ignored", lambda: [])
-    monkeypatch.setattr(preflight, "check_validation_report", lambda: [])
-    monkeypatch.setattr(preflight, "run_project_spec_validation", lambda: [])
-    monkeypatch.setattr(preflight, "check_provenance", provenance)
+    monkeypatch.setattr(
+        preflight,
+        "check_required_files",
+        record("required", ("missing required file: validation/validation_report.md",)),
+    )
+    monkeypatch.setattr(preflight, "check_expected_counts", record("counts"))
+    monkeypatch.setattr(preflight, "check_backups", record("backups"))
+    monkeypatch.setattr(preflight, "check_git_ignored", record("git-ignored"))
+    monkeypatch.setattr(preflight, "check_repository_symlinks", record("symlinks"))
+    monkeypatch.setattr(preflight, "check_scan_safety", record("scan-safety"))
+    monkeypatch.setattr(preflight, "check_validation_report", record("report"))
+    monkeypatch.setattr(preflight, "run_project_spec_validation", record("project-spec"))
+    monkeypatch.setattr(preflight, "check_provenance", record("provenance"))
+    monkeypatch.setattr(preflight, "run_validation", record("validation"))
     monkeypatch.setattr(preflight, "check_ifc", lambda path, min_products: [])
     monkeypatch.setattr(preflight, "scan_patterns", lambda patterns, **_kwargs: [])
 
     assert preflight.main() == 1
-    assert events == ["required", "provenance", "validation", "provenance"]
+    assert events == [
+        "required",
+        "counts",
+        "backups",
+        "git-ignored",
+        "symlinks",
+        "scan-safety",
+        "report",
+        "project-spec",
+        "provenance",
+        "validation",
+        "provenance",
+    ]
     assert "missing required file" in capsys.readouterr().out
 
 
