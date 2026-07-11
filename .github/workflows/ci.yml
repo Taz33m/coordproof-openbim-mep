@@ -43,13 +43,15 @@ jobs:
           python tools/build_manifest.py
           python tools/reconcile_parameters.py
           python tools/generate_drawings.py --skip-pdf
-          python cadquery/generate_all.py
           python tools/generate_ifc.py
           python tools/generate_coordination_reports.py
           python validation/run_all.py
-          python tools/generate_review_images.py
       - name: Reject semantic evidence drift
         if: matrix.python-version == '3.11'
+        # STEP/STL topology and PNG encoding are producer-platform artifacts.
+        # Their release gate is the full native build, canonical validation,
+        # and provenance; portable CI byte-compares only semantic evidence.
+        # Geometry and screenshot metrics remain asserted by the test suite.
         run: >-
           git diff --exit-code --
           manifest/asset_manifest.json
@@ -66,9 +68,6 @@ jobs:
           reports/parameter_reconciliation.md
           validation/validation_report.md
           qcad
-          exports/step
-          exports/stl
-          screenshots
       - name: Validate committed evidence package
         run: python validation/run_all.py
       - name: Public-package preflight
