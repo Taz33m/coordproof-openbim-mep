@@ -112,12 +112,14 @@ def _validate_facet(
         left[2] * right[0] - left[0] * right[2],
         left[0] * right[1] - left[1] * right[0],
     )
-    magnitude = math.sqrt(sum(float(value) ** 2 for value in cross))
-    if not math.isfinite(magnitude) or magnitude == 0:
+    cross_scale = max(abs(value) for value in cross)
+    if cross_scale == 0:
         raise ValueError("ASCII STL facet is degenerate")
-    computed = tuple(float(value) / magnitude for value in cross)
+    scaled_cross = tuple(float(value / cross_scale) for value in cross)
+    magnitude = math.hypot(*scaled_cross)
+    computed = tuple(value / magnitude for value in scaled_cross)
     declared = tuple(float(value) for value in facet.normal)
-    declared_magnitude = math.sqrt(sum(value**2 for value in declared))
+    declared_magnitude = math.hypot(*declared)
     if abs(declared_magnitude - 1.0) > 1e-5 or any(
         abs(actual - expected) > 1e-5
         for actual, expected in zip(declared, computed, strict=True)

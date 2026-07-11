@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import shutil
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -87,6 +88,28 @@ def _scaled_tetra_facets(
             for normal, vertices in definitions
         ]
     return [_facet(normal, vertices) for normal, vertices in definitions]
+
+
+def _decimal_scaled_tetra_facets(size_token: str) -> list[str]:
+    zero = Decimal(0)
+    size = Decimal(size_token)
+
+    def vertex(point: tuple[Decimal, Decimal, Decimal]) -> str:
+        return " ".join(str(coordinate) for coordinate in point)
+
+    a = vertex((zero, zero, zero))
+    b = vertex((size, zero, zero))
+    c = vertex((zero, size, zero))
+    d = vertex((zero, zero, size))
+    return [
+        _facet("0 0 -1", (a, c, b)),
+        _facet("0 -1 0", (a, b, d)),
+        _facet("-1 0 0", (a, d, c)),
+        _facet(
+            "0.5773502691896258 0.5773502691896258 0.5773502691896258",
+            (b, c, d),
+        ),
+    ]
 
 
 def test_ascii_stl_normalization_is_order_and_cycle_independent(tmp_path: Path) -> None:
@@ -225,6 +248,26 @@ def test_ascii_stl_rejects_oversized_number_tokens(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="number token exceeds length limit"):
         normalize_ascii_stl(path, solid_name="oversized-number")
+
+
+@pytest.mark.parametrize("size_token", ["1e100", "1e-100"])
+def test_ascii_stl_normal_validation_is_stable_across_supported_exponents(
+    tmp_path: Path,
+    size_token: str,
+) -> None:
+    path = tmp_path / "scaled.stl"
+    path.write_text(
+        "solid scaled\n"
+        + "".join(_decimal_scaled_tetra_facets(size_token))
+        + "endsolid scaled\n",
+        encoding="ascii",
+    )
+
+    normalize_ascii_stl(path, solid_name="scaled")
+    once = path.read_bytes()
+    normalize_ascii_stl(path, solid_name="scaled")
+
+    assert path.read_bytes() == once
 
 
 def test_ascii_stl_normalization_rejects_open_surface(tmp_path: Path) -> None:
