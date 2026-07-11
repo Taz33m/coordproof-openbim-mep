@@ -31,9 +31,6 @@ from tools.generate_openscad_exports import (
     PARAMETER_ALIASES,
     build_openscad_command,
 )
-from tools.generate_openscad_exports import (
-    parameters_for_asset as openscad_parameters_for_asset,
-)
 
 ROW_FIELDS = {
     "relation_id",
@@ -230,7 +227,7 @@ def test_reconciliation_rows_are_complete_deterministic_and_passing() -> None:
     )
     assert all(set(row) == ROW_FIELDS for row in first["rows"])
     assert all(row["status"] == "passed" for row in first["rows"])
-    assert {"equal", "derived", "override"} <= {
+    assert {"equal", "derived", "excluded", "override"} <= {
         row["relation"] for row in first["rows"]
     }
     assert all(
@@ -256,6 +253,29 @@ def test_reconciliation_rows_are_complete_deterministic_and_passing() -> None:
         for row in first["rows"]
     ]
     assert len(identities) == len(set(identities))
+
+
+def test_excluded_inputs_are_explicit_auditable_evidence_rows() -> None:
+    contract = load_contract(DEFAULT_CONTRACT_PATH)
+    expected = {
+        (producer["producer_id"], name): reason
+        for producer in contract["producers"]
+        for name, reason in producer.get("excluded_parameters", {}).items()
+    }
+
+    result = reconcile()
+    rows = [row for row in result["rows"] if row["relation"] == "excluded"]
+
+    assert len(rows) == len(expected) == 3
+    _, markdown = render_reports(result)
+    for row in rows:
+        key = (row["producer"], row["producer_path"].rsplit("::", 1)[-1])
+        assert row["status"] == "passed"
+        assert row["canonical_path"].startswith("$.producers[")
+        assert row["reason"] == expected[key]
+        assert row["producer"] in markdown
+        assert row["producer_path"] in markdown
+        assert row["reason"] in markdown
 
 
 def test_every_scoped_producer_and_canonical_parameter_has_a_row() -> None:
@@ -441,6 +461,31 @@ def test_wildcard_python_mapping_cannot_hide_exclusions(tmp_path: Path) -> None:
     assert "wildcard parameter_map cannot define exclusions" in "\n".join(
         result["failures"]
     )
+
+
+def test_invalid_nonnumeric_binding_does_not_emit_value_mismatch(tmp_path: Path) -> None:
+    project = project_payload()
+    asset_type(project, "openscad_pipe_clamp_type_b")["parameters"][
+        "material_tag"
+    ] = "steel"
+    project_path = write_json(tmp_path / "project.json", project)
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    producer = next(
+        item
+        for item in contract["producers"]
+        if item["adapter"] == "openscad_assignments"
+    )
+    canonical_name, producer_name = next(iter(producer["parameter_map"].items()))
+    del producer["parameter_map"][canonical_name]
+    producer["parameter_map"]["material_tag"] = producer_name
+    path = write_json(tmp_path / "nonnumeric-binding.json", contract)
+
+    result = reconcile(project_spec_path=project_path, contract_path=path)
+
+    diagnostic = "\n".join(result["failures"])
+    assert "[NONNUMERIC_CANONICAL_PARAMETER]" in diagnostic
+    assert "material_tag" in diagnostic
+    assert "[VALUE_MISMATCH]" not in diagnostic
 
 
 def test_mutated_project_parameter_reports_precise_source_drift(tmp_path: Path) -> None:
@@ -977,7 +1022,10 @@ def test_openscad_command_forwards_every_mapped_project_spec_parameter(
     asset_id: str,
 ) -> None:
     project = load_project_spec()
-    parameters = openscad_parameters_for_asset(project, asset_id)
+    parameters = project.parameters_for_asset_type(
+        asset_id,
+        expected_group="openscad",
+    )
     command = build_openscad_command(
         "openscad",
         asset_id,
@@ -1002,7 +1050,10 @@ def test_openscad_command_forwards_every_mapped_project_spec_parameter(
 def test_openscad_command_rejects_unmapped_parameters() -> None:
     project = load_project_spec()
     asset_id = "openscad_pipe_clamp_type_b"
-    parameters = openscad_parameters_for_asset(project, asset_id)
+    parameters = project.parameters_for_asset_type(
+        asset_id,
+        expected_group="openscad",
+    )
     parameters["unmapped_mm"] = 1
 
     with pytest.raises(ValueError, match="unmapped ProjectSpec parameter.*unmapped_mm"):

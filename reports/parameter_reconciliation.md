@@ -14,8 +14,8 @@ are evaluated; derived values use the contract's small transform vocabulary.
 | `producer_count` | 13 |
 | `required_producer_count` | 13 |
 | `relation_count` | 17 |
-| `row_count` | 92 |
-| `passed_row_count` | 92 |
+| `row_count` | 95 |
+| `passed_row_count` | 95 |
 | `failed_row_count` | 0 |
 | `scoped_numeric_parameter_count` | 75 |
 | `covered_numeric_parameter_count` | 75 |
@@ -97,12 +97,14 @@ are evaluated; derived values use the contract's small transform vocabulary.
 | openscad.bracket_plate.slot_width_mm | asset_type:openscad_bracket_plate_type_b | $.asset_types[openscad_bracket_plate_type_b].parameters.slot_width_mm | openscad/bracket_plate.scad::slot_width_mm | equal | 11 | 11 | passed |  |
 | openscad.bracket_plate.thickness_mm | asset_type:openscad_bracket_plate_type_b | $.asset_types[openscad_bracket_plate_type_b].parameters.thickness_mm | openscad/bracket_plate.scad::plate_thickness_mm | equal | 10 | 10 | passed |  |
 | openscad.bracket_plate.width_mm | asset_type:openscad_bracket_plate_type_b | $.asset_types[openscad_bracket_plate_type_b].parameters.width_mm | openscad/bracket_plate.scad::plate_width_mm | equal | 90 | 90 | passed |  |
+| openscad.bracket_plate.excluded.$fn | asset_type:openscad_bracket_plate_type_b | $.producers[openscad.bracket_plate].excluded_parameters.$fn | openscad/bracket_plate.scad::$fn | excluded | — | 48 | passed | OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension. |
 | openscad.cable_tray.height_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.height_mm | openscad/cable_tray_segment.scad::tray_height_mm | equal | 60 | 60 | passed |  |
 | openscad.cable_tray.hole_diameter_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.hole_diameter_mm | openscad/cable_tray_segment.scad::hole_diameter_mm | equal | 16 | 16 | passed |  |
 | openscad.cable_tray.hole_pitch_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.hole_pitch_mm | openscad/cable_tray_segment.scad::hole_pitch_mm | equal | 80 | 80 | passed |  |
 | openscad.cable_tray.length_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.length_mm | openscad/cable_tray_segment.scad::tray_length_mm | equal | 500 | 500 | passed |  |
 | openscad.cable_tray.wall_thickness_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.wall_thickness_mm | openscad/cable_tray_segment.scad::wall_thickness_mm | equal | 4 | 4 | passed |  |
 | openscad.cable_tray.width_mm | asset_type:openscad_cable_tray_segment_type_b | $.asset_types[openscad_cable_tray_segment_type_b].parameters.width_mm | openscad/cable_tray_segment.scad::tray_width_mm | equal | 160 | 160 | passed |  |
+| openscad.cable_tray.excluded.$fn | asset_type:openscad_cable_tray_segment_type_b | $.producers[openscad.cable_tray].excluded_parameters.$fn | openscad/cable_tray_segment.scad::$fn | excluded | — | 36 | passed | OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension. |
 | openscad.duct_connector.connector_depth_mm | asset_type:openscad_duct_connector_type_b | $.asset_types[openscad_duct_connector_type_b].parameters.connector_depth_mm | openscad/duct_connector.scad::connector_depth_mm | equal | 50 | 50 | passed |  |
 | openscad.duct_connector.duct_height_mm | asset_type:openscad_duct_connector_type_b | $.asset_types[openscad_duct_connector_type_b].parameters.duct_height_mm | openscad/duct_connector.scad::duct_height_mm | equal | 180 | 180 | passed |  |
 | openscad.duct_connector.duct_width_mm | asset_type:openscad_duct_connector_type_b | $.asset_types[openscad_duct_connector_type_b].parameters.duct_width_mm | openscad/duct_connector.scad::duct_width_mm | equal | 360 | 360 | passed |  |
@@ -113,6 +115,7 @@ are evaluated; derived values use the contract's small transform vocabulary.
 | openscad.pipe_clamp.pipe_diameter_mm | asset_type:openscad_pipe_clamp_type_b | $.asset_types[openscad_pipe_clamp_type_b].parameters.pipe_diameter_mm | openscad/pipe_clamp.scad::pipe_diameter_mm | equal | 50 | 50 | passed |  |
 | openscad.pipe_clamp.thickness_mm | asset_type:openscad_pipe_clamp_type_b | $.asset_types[openscad_pipe_clamp_type_b].parameters.thickness_mm | openscad/pipe_clamp.scad::clamp_thickness_mm | equal | 8 | 8 | passed |  |
 | openscad.pipe_clamp.width_mm | asset_type:openscad_pipe_clamp_type_b | $.asset_types[openscad_pipe_clamp_type_b].parameters.width_mm | openscad/pipe_clamp.scad::clamp_width_mm | equal | 35 | 35 | passed |  |
+| openscad.pipe_clamp.excluded.$fn | asset_type:openscad_pipe_clamp_type_b | $.producers[openscad.pipe_clamp].excluded_parameters.$fn | openscad/pipe_clamp.scad::$fn | excluded | — | 72 | passed | OpenSCAD tessellation control is validated through committed STL evidence, not as an engineering dimension. |
 | cable_tray_height | occurrence:cable_tray_overhead_001 | $.asset_types[cable_tray_overhead_001].parameters.height_mm | $.occurrences[cable_tray_overhead_001].dimensions_mm[2] | equal | 80 | 80 | passed |  |
 | cable_tray_length_override | occurrence:cable_tray_overhead_001 | $.asset_types[cable_tray_overhead_001].parameters.length_mm | $.occurrences[cable_tray_overhead_001].dimensions_mm[0] | override | 900 | 3200 | passed | The placed overhead route is assembled from repeated reusable tray segments. |
 | cable_tray_width | occurrence:cable_tray_overhead_001 | $.asset_types[cable_tray_overhead_001].parameters.width_mm | $.occurrences[cable_tray_overhead_001].dimensions_mm[1] | equal | 220 | 220 | passed |  |

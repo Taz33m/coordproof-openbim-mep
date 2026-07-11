@@ -154,7 +154,7 @@
 
       .metrics {
         display: grid;
-        grid-template-columns: repeat(7, minmax(120px, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
         margin-top: 30px;
       }
@@ -304,10 +304,16 @@
         }
 
         .metrics {
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .artifact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .metrics {
           grid-template-columns: 1fr;
         }
       }
@@ -406,7 +412,7 @@
           <tr><td>Canonical engineering parameters</td><td>75 / 75</td><td>75 / 75</td><td>PASS</td></tr>
           <tr><td>Observed producer numeric inputs accounted</td><td>78 / 78</td><td>78 / 78</td><td>PASS</td></tr>
           <tr><td>Explicit technical exclusions</td><td>3 OpenSCAD <code>$fn</code> controls</td><td>3</td><td>PASS</td></tr>
-          <tr><td>Reconciliation evidence rows</td><td>92 passing</td><td>92 passing</td><td>PASS</td></tr>
+          <tr><td>Reconciliation evidence rows</td><td>95 passing</td><td>95 passing</td><td>PASS</td></tr>
           <tr><td>Port connections</td><td>&gt;= 20</td><td>22</td><td>PASS</td></tr>
           <tr><td>Building element proxies</td><td>0</td><td>0</td><td>PASS</td></tr>
           <tr><td>Required exports</td><td>35+</td><td>46</td><td>PASS</td></tr>

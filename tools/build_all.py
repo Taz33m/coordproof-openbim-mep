@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
+
+from reproducibility import source_date_epoch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,7 +22,7 @@ CORE_STEPS = [
     ["tools/generate_coordination_reports.py"],
     ["validation/run_all.py"],
     ["tools/generate_review_images.py"],
-    ["tools/build_provenance.py"],
+    ["tools/build_provenance.py", "--profile", "core"],
 ]
 
 FULL_ONLY_STEPS = [
@@ -43,6 +46,8 @@ def parse_args() -> argparse.Namespace:
 def steps_for(profile: str) -> list[list[str]]:
     if profile == "core":
         return CORE_STEPS
+    if profile != "full":
+        raise ValueError(f"Unknown build profile: {profile}")
 
     # Desktop exporters run after their source generators and before provenance
     # and validation. Keep the order explicit so failures cannot be mistaken for
@@ -60,12 +65,13 @@ def steps_for(profile: str) -> list[list[str]]:
         ["tools/generate_coordination_reports.py"],
         ["validation/run_all.py"],
         ["tools/generate_review_images.py"],
-        ["tools/build_provenance.py"],
+        ["tools/build_provenance.py", "--profile", "full"],
     ]
 
 
 def main() -> int:
     args = parse_args()
+    os.environ["SOURCE_DATE_EPOCH"] = str(source_date_epoch())
     for step in steps_for(args.profile):
         cmd = [sys.executable, *step]
         print("$", " ".join(cmd), flush=True)

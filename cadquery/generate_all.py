@@ -14,7 +14,7 @@ TOOLS_DIR = ROOT / "tools"
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
 
-from project_spec import ProjectSpec, load_project_spec  # noqa: E402
+from project_spec import load_project_spec  # noqa: E402
 from reconcile_parameters import contract_project_spec_path, load_contract  # noqa: E402
 
 
@@ -34,18 +34,6 @@ def contract_asset_bindings() -> dict[str, str]:
 
 ASSET_BINDINGS = contract_asset_bindings()
 ASSET_MODULES = list(ASSET_BINDINGS)
-
-
-def parameters_for_asset(project: ProjectSpec, asset_id: str) -> dict[str, object]:
-    """Return an isolated ProjectSpec parameter mapping for a CadQuery type."""
-
-    try:
-        asset_type = project.asset_types_by_id[asset_id]
-    except KeyError as exc:
-        raise ValueError(f"Unknown ProjectSpec asset type: {asset_id}") from exc
-    if asset_type.group != "cadquery":
-        raise ValueError(f"ProjectSpec asset type {asset_id} is not a CadQuery asset")
-    return dict(asset_type.parameters)
 
 
 def load_asset_module(module_name: str) -> ModuleType:
@@ -78,7 +66,10 @@ def main() -> None:
                 f"CadQuery module {module_name} declares ASSET_ID {module.ASSET_ID!r}; "
                 f"the reconciliation contract expects {expected_asset_id!r}"
             )
-        parameters = parameters_for_asset(project, expected_asset_id)
+        parameters = project.parameters_for_asset_type(
+            expected_asset_id,
+            expected_group="cadquery",
+        )
         shape = module.build(parameters)
         step_path, stl_path = export_shape(shape, expected_asset_id)
         print(f"{expected_asset_id}: {step_path.name}, {stl_path.name}")

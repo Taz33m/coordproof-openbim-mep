@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import math
 import subprocess
+import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 
-from project_spec import ProjectSpec, load_project_spec
+from artifact_normalization import normalize_ascii_stl, publish_staged_files
+from project_spec import load_project_spec
 from reconcile_parameters import contract_project_spec_path, load_contract
 from tooling import openscad_command
 
@@ -30,18 +32,6 @@ def contract_openscad_bindings() -> tuple[dict[str, str], dict[str, dict[str, st
 
 
 ASSETS, PARAMETER_ALIASES = contract_openscad_bindings()
-
-
-def parameters_for_asset(project: ProjectSpec, asset_id: str) -> dict[str, object]:
-    """Return an isolated ProjectSpec parameter mapping for an OpenSCAD type."""
-
-    try:
-        asset_type = project.asset_types_by_id[asset_id]
-    except KeyError as exc:
-        raise ValueError(f"Unknown ProjectSpec asset type: {asset_id}") from exc
-    if asset_type.group != "openscad":
-        raise ValueError(f"ProjectSpec asset type {asset_id} is not an OpenSCAD asset")
-    return dict(asset_type.parameters)
 
 
 def _openscad_number(name: str, value: object) -> str:
@@ -90,6 +80,40 @@ def build_openscad_command(
     return command
 
 
+def _render_stl(
+    executable: str | Path,
+    asset_id: str,
+    parameters: Mapping[str, object],
+    source_path: Path,
+    output_path: Path,
+) -> None:
+    cmd = build_openscad_command(
+        executable,
+        asset_id,
+        parameters,
+        source_path,
+        output_path,
+    )
+    print("$", " ".join(cmd), flush=True)
+    subprocess.run(cmd, cwd=ROOT, check=True)
+    normalize_ascii_stl(output_path, solid_name=asset_id)
+
+
+def _export_stl(
+    executable: str | Path,
+    asset_id: str,
+    parameters: Mapping[str, object],
+    source_path: Path,
+    output_path: Path,
+) -> None:
+    """Render and validate beside one target before publishing it."""
+
+    with tempfile.TemporaryDirectory(dir=output_path.parent, prefix=f".{output_path.stem}.") as temp:
+        temporary_output = Path(temp) / output_path.name
+        _render_stl(executable, asset_id, parameters, source_path, temporary_output)
+        publish_staged_files(((temporary_output, output_path),))
+
+
 def main() -> int:
     executable = openscad_command()
     if executable is None:
@@ -97,19 +121,26 @@ def main() -> int:
     out_dir = ROOT / "exports" / "stl"
     out_dir.mkdir(parents=True, exist_ok=True)
     project = load_project_spec(contract_project_spec_path())
-    for asset_id, source in ASSETS.items():
-        output = out_dir / f"{asset_id}.stl"
-        source_path = ROOT / source
-        parameters = parameters_for_asset(project, asset_id)
-        cmd = build_openscad_command(
-            executable,
-            asset_id,
-            parameters,
-            source_path,
-            output,
-        )
-        print("$", " ".join(cmd), flush=True)
-        subprocess.run(cmd, cwd=ROOT, check=True)
+    with tempfile.TemporaryDirectory(dir=out_dir, prefix=".coordproof-openscad-") as temp:
+        stage_dir = Path(temp)
+        publications: list[tuple[Path, Path]] = []
+        for asset_id, source in ASSETS.items():
+            output = out_dir / f"{asset_id}.stl"
+            staged_output = stage_dir / output.name
+            source_path = ROOT / source
+            parameters = project.parameters_for_asset_type(
+                asset_id,
+                expected_group="openscad",
+            )
+            _render_stl(
+                executable,
+                asset_id,
+                parameters,
+                source_path,
+                staged_output,
+            )
+            publications.append((staged_output, output))
+        publish_staged_files(publications)
     return 0
 
 

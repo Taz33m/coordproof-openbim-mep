@@ -1325,7 +1325,11 @@ def reconcile(
         producer_inputs.update((producer_id, name) for name in observed_numeric)
 
         missing_canonical = sorted(set(canonical_numeric) - mapped_canonical)
-        unknown_canonical = sorted(mapped_canonical - set(canonical_numeric))
+        canonical_names = set(parameters)
+        unknown_canonical = sorted(mapped_canonical - canonical_names)
+        nonnumeric_canonical = sorted(
+            mapped_canonical & canonical_names - set(canonical_numeric)
+        )
         missing_producer = sorted(
             set(observed_numeric) - mapped_producer - excluded_producer
         )
@@ -1340,6 +1344,11 @@ def reconcile(
         for name in unknown_canonical:
             failures.append(
                 f"[UNKNOWN_CANONICAL_PARAMETER] {producer_id} maps absent "
+                f"{subject['id']}.{name}"
+            )
+        for name in nonnumeric_canonical:
+            failures.append(
+                f"[NONNUMERIC_CANONICAL_PARAMETER] {producer_id} maps nonnumeric "
                 f"{subject['id']}.{name}"
             )
         for name in missing_producer:
@@ -1358,16 +1367,42 @@ def reconcile(
             (producer_id, name) for name in excluded_producer & set(observed_numeric)
         )
 
+        for name in sorted(excluded_producer):
+            exclusion_is_observed = name in observed_numeric
+            rows.append(
+                {
+                    "relation_id": f"{producer_id}.excluded.{name}",
+                    "subject_kind": subject["kind"],
+                    "subject_id": subject["id"],
+                    "canonical_path": (
+                        f"$.producers[{producer_id}].excluded_parameters.{name}"
+                    ),
+                    "producer": producer_id,
+                    "producer_path": f"{producer['path']}::{name}",
+                    "relation": "excluded",
+                    "expected": None,
+                    "actual": observed_numeric.get(name),
+                    "unit": _unit(name),
+                    "tolerance_mm": 0.0,
+                    "status": "passed" if exclusion_is_observed else "failed",
+                    "reason": excluded[name],
+                }
+            )
+
         tolerance = float(producer.get("tolerance_mm", contract["default_tolerance_mm"]))
         for canonical_name in sorted(parameter_map):
             producer_name = parameter_map[canonical_name]
             expected = canonical_numeric.get(canonical_name)
             actual = observed_numeric.get(producer_name)
             key = (subject["kind"], subject["id"], canonical_name)
-            if canonical_name in canonical_numeric and producer_name in observed_numeric:
+            binding_is_valid = (
+                canonical_name in canonical_numeric
+                and producer_name in observed_numeric
+            )
+            if binding_is_valid:
                 covered_parameters.add(key)
                 covered_inputs.add((producer_id, producer_name))
-            passed = _matches(expected, actual, tolerance)
+            passed = binding_is_valid and _matches(expected, actual, tolerance)
             row = {
                 "relation_id": f"{producer_id}.{canonical_name}",
                 "subject_kind": subject["kind"],
@@ -1390,10 +1425,14 @@ def reconcile(
                 "unit": _unit(canonical_name),
                 "tolerance_mm": tolerance,
                 "status": "passed" if passed else "failed",
-                "reason": "",
+                "reason": (
+                    ""
+                    if binding_is_valid
+                    else "Comparison skipped because a binding endpoint is invalid."
+                ),
             }
             rows.append(row)
-            if not passed:
+            if binding_is_valid and not passed:
                 failures.append(
                     f"[VALUE_MISMATCH] {producer_id} {subject['id']}.{canonical_name}: "
                     f"expected {expected!r}, observed {actual!r} at {row['producer_path']} "

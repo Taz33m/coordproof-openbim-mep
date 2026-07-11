@@ -74,6 +74,9 @@ def main() -> int:
     REPORT.write_text("\n".join(lines), encoding="utf-8")
     print(f"Wrote {REPORT}")
     print(f"Overall Status: {status_line(overall)}")
+    validation_token = os.environ.get("COORDPROOF_VALIDATION_TOKEN")
+    if validation_token:
+        print(f"Validation Run Token: {validation_token}")
     return 0 if overall == "passed" else 1
 
 

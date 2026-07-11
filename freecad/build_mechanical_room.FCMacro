@@ -11,9 +11,18 @@ import Part
 
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-SOURCE_PATH = os.path.join(ROOT, "freecad", "mechanical_room.FCStd")
-BIM_PATH = os.path.join(ROOT, "freecad", "mechanical_room_bim.FCStd")
-ASSEMBLY_STEP_PATH = os.path.join(ROOT, "exports", "step", "mechanical_room_assembly.step")
+SOURCE_PATH = os.environ.get(
+    "COORDPROOF_FREECAD_SOURCE_PATH",
+    os.path.join(ROOT, "freecad", "mechanical_room.FCStd"),
+)
+BIM_PATH = os.environ.get(
+    "COORDPROOF_FREECAD_BIM_PATH",
+    os.path.join(ROOT, "freecad", "mechanical_room_bim.FCStd"),
+)
+ASSEMBLY_STEP_PATH = os.environ.get(
+    "COORDPROOF_FREECAD_ASSEMBLY_STEP_PATH",
+    os.path.join(ROOT, "exports", "step", "mechanical_room_assembly.step"),
+)
 
 ASSET_METADATA = {
     "Space_MechanicalRoom_001": ("room_shell_001", "architectural_shell", "Space"),
@@ -326,7 +335,15 @@ try:
     import Import
 
     shape_objects = [obj for obj in DOC.Objects if hasattr(obj, "Shape")]
-    Import.export(shape_objects, ASSEMBLY_STEP_PATH)
+    temporary_step_path = ASSEMBLY_STEP_PATH + ".tmp.step"
+    if os.path.exists(temporary_step_path):
+        os.remove(temporary_step_path)
+    Import.export(shape_objects, temporary_step_path)
+    if not os.path.isfile(temporary_step_path) or os.path.getsize(temporary_step_path) == 0:
+        raise RuntimeError("FreeCAD returned without creating a non-empty assembly STEP")
+    os.replace(temporary_step_path, ASSEMBLY_STEP_PATH)
     print("Saved assembly STEP", ASSEMBLY_STEP_PATH)
 except Exception as exc:
-    print("Assembly STEP export skipped:", exc)
+    if "temporary_step_path" in globals() and os.path.exists(temporary_step_path):
+        os.remove(temporary_step_path)
+    raise RuntimeError(f"Assembly STEP export failed: {exc}") from exc

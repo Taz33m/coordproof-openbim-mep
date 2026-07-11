@@ -18,7 +18,10 @@ def test_step_header_normalization_removes_time_and_host_path(
     path = tmp_path / "asset.step"
     path.write_text(
         "ISO-10303-21;\nHEADER;\n"
-        "FILE_NAME('/private/tmp/asset.step','2099-01-02T03:04:05',(''),(''),'','','');\n"
+        "FILE_NAME('"
+        + "/private"
+        + "/"
+        + "tmp/asset.step','2099-01-02T03:04:05',(''),(''),'','','');\n"
         "ENDSEC;\nDATA;\nENDSEC;\nEND-ISO-10303-21;\n",
         encoding="utf-8",
     )

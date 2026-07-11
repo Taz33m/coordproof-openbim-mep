@@ -42,8 +42,8 @@ Status: **PASSED**
 | `producer_count` | 13 |
 | `required_producer_count` | 13 |
 | `relation_count` | 17 |
-| `row_count` | 92 |
-| `passed_row_count` | 92 |
+| `row_count` | 95 |
+| `passed_row_count` | 95 |
 | `failed_row_count` | 0 |
 | `scoped_numeric_parameter_count` | 75 |
 | `covered_numeric_parameter_count` | 75 |

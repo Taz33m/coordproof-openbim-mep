@@ -31,6 +31,11 @@ make doctor-full
 make all
 ```
 
+The full build stages and validates desktop outputs before atomically replacing
+tracked artifacts. Run it twice after changing a desktop generator and require
+the second run to produce no tracked diff; do not bypass a strict normalizer
+when a vendor changes its output shape.
+
 Set `FREECAD_CMD`, `OPENSCAD_CMD`, or `QCAD_DWG2PDF` when those tools are not on
 `PATH`. The optional OpenCAD experiment has a separate pinned environment:
 

@@ -152,7 +152,7 @@ The reconciliation boundary and safe-transform policy are recorded in
 | Canonical engineering parameter coverage | 75 / 75 | 75 / 75 | PASS |
 | Observed producer numeric inputs accounted | 78 / 78 | 78 / 78 | PASS |
 | Explicit technical exclusions | 3 OpenSCAD `$fn` controls | 3 | PASS |
-| Reconciliation evidence rows | 92 passing | 92 passing | PASS |
+| Reconciliation evidence rows | 95 passing | 95 passing | PASS |
 | Distribution systems | >= 5 | 5 | PASS |
 | Port connections | >= 20 | 22 | PASS |
 | Building element proxies | 0 | 0 | PASS |
@@ -202,6 +202,13 @@ The complete desktop build additionally requires FreeCAD, OpenSCAD, and QCAD's
 make doctor-full
 make all
 ```
+
+Desktop exporters publish through validated same-filesystem staging paths. The
+build canonicalizes OpenSCAD facet ordering, QCAD's volatile PDF metadata,
+FreeCAD ZIP/XML metadata and object IDs, the assembly STEP header, and review
+IFC timestamps and GlobalIds before replacing tracked evidence. With the pinned
+toolchain, a second `make all` must leave these artifacts byte-for-byte
+unchanged; `SOURCE_DATE_EPOCH` defaults to `0` when it is not set.
 
 Run validation and public-package preflight:
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from tools.build_all import steps_for
 from tools.generate_drawings import PORTABLE_PDF_DIR, parse_args
 
@@ -19,3 +21,8 @@ def test_full_build_leaves_canonical_pdfs_to_qcad() -> None:
     )
 
     assert "--skip-pdf" in drawing_step
+
+
+def test_unknown_build_profile_fails_closed() -> None:
+    with pytest.raises(ValueError, match="Unknown build profile"):
+        steps_for("typo")
