@@ -63,7 +63,10 @@ def _scaled_tetra_facets(
     ox, oy, oz = origin
 
     def vertex(dx: float, dy: float, dz: float) -> str:
-        return f"{ox + dx:g} {oy + dy:g} {oz + dz:g}"
+        coordinates = (ox + dx, oy + dy, oz + dz)
+        return " ".join(
+            str(value) if isinstance(value, int) else f"{value:g}" for value in coordinates
+        )
 
     a = vertex(0, 0, 0)
     b = vertex(size, 0, 0)
@@ -179,6 +182,22 @@ def test_ascii_stl_normalization_rejects_inward_winding(tmp_path: Path) -> None:
         normalize_ascii_stl(reversed_path, solid_name="asset")
 
 
+def test_ascii_stl_signed_volume_is_exact_for_large_translated_coordinates(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "translated-reversed.stl"
+    origin = (266952647900000, -917523037300000, 916381185200000)
+    path.write_text(
+        "solid translated-reversed\n"
+        + "".join(_scaled_tetra_facets(origin, 1, reverse=True))
+        + "endsolid translated-reversed\n",
+        encoding="ascii",
+    )
+
+    with pytest.raises(ValueError, match="positive signed volume"):
+        normalize_ascii_stl(path, solid_name="translated-reversed")
+
+
 def test_ascii_stl_normalization_rejects_open_surface(tmp_path: Path) -> None:
     path = tmp_path / "open.stl"
     path.write_text(
@@ -192,21 +211,44 @@ def test_ascii_stl_normalization_rejects_open_surface(tmp_path: Path) -> None:
         normalize_ascii_stl(path, solid_name="open")
 
 
-def test_ascii_stl_normalization_accepts_enclosed_negative_volume_shell(
+@pytest.mark.parametrize(
+    "origin",
+    [
+        pytest.param((0.5, 0.5, 0.5), id="enclosed-cavity"),
+        pytest.param((10, 0, 0), id="remote-solid"),
+        pytest.param((3, 3, 3), id="inside-bounds-outside-tetrahedron"),
+    ],
+)
+def test_ascii_stl_normalization_rejects_disconnected_negative_volume_shell(
     tmp_path: Path,
+    origin: tuple[float, float, float],
 ) -> None:
-    path = tmp_path / "hollow.stl"
+    path = tmp_path / "negative-shell.stl"
     path.write_text(
-        "solid hollow\n"
+        "solid negative-shell\n"
         + "".join(_scaled_tetra_facets((0, 0, 0), 4))
-        + "".join(_scaled_tetra_facets((0.5, 0.5, 0.5), 0.5, reverse=True))
-        + "endsolid hollow\n",
+        + "".join(_scaled_tetra_facets(origin, 0.25, reverse=True))
+        + "endsolid negative-shell\n",
         encoding="ascii",
     )
 
-    normalize_ascii_stl(path, solid_name="hollow")
+    with pytest.raises(ValueError, match="inward-wound disconnected shells"):
+        normalize_ascii_stl(path, solid_name="negative-shell")
 
-    assert path.read_text(encoding="ascii").startswith("solid hollow\n")
+
+def test_ascii_stl_normalization_accepts_disconnected_positive_shells(tmp_path: Path) -> None:
+    path = tmp_path / "positive-shells.stl"
+    path.write_text(
+        "solid positive-shells\n"
+        + "".join(_scaled_tetra_facets((0, 0, 0), 1))
+        + "".join(_scaled_tetra_facets((10, 0, 0), 1))
+        + "endsolid positive-shells\n",
+        encoding="ascii",
+    )
+
+    normalize_ascii_stl(path, solid_name="positive-shells")
+
+    assert path.read_text(encoding="ascii").startswith("solid positive-shells\n")
 
 
 def test_qcad_pdf_normalization_removes_only_volatile_metadata(tmp_path: Path) -> None:

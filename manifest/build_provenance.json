@@ -349,8 +349,8 @@
       "sha256": "18bf1f75e2ccc6102bf21b413bd463c272320f9af8ba710436c3f73b17aaa99d"
     },
     "tools/artifact_normalization.py": {
-      "bytes": 24807,
-      "sha256": "23b1796cb8486f65613517c33328240194f94c67c3b4154c2da19772d7d79051"
+      "bytes": 25933,
+      "sha256": "65fcd013a2d4bb3a630c3fcbbf7a17e470ea60a12c8636c3453eab58f0df5f7c"
     },
     "tools/asset_catalog.py": {
       "bytes": 1888,

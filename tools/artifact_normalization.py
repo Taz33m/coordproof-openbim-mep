@@ -14,6 +14,7 @@ from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+from fractions import Fraction
 from pathlib import Path
 
 from reproducibility import source_date_epoch, source_timestamp
@@ -57,6 +58,16 @@ class _Facet:
     ]
 
 
+_DecimalPoint = tuple[Decimal, Decimal, Decimal]
+_FractionPoint = tuple[Fraction, Fraction, Fraction]
+
+
+def _fraction_point(point: _DecimalPoint) -> _FractionPoint:
+    """Convert a parsed decimal point to exact rational coordinates."""
+
+    return (Fraction(point[0]), Fraction(point[1]), Fraction(point[2]))
+
+
 def _decimal_tokens(line: str, prefix: str, count: int) -> tuple[Decimal, ...]:
     parts = line.strip().split()
     prefix_parts = prefix.split()
@@ -72,7 +83,7 @@ def _decimal_tokens(line: str, prefix: str, count: int) -> tuple[Decimal, ...]:
 
 
 def _validate_facet(facet: _Facet) -> None:
-    first, second, third = facet.vertices
+    first, second, third = tuple(_fraction_point(vertex) for vertex in facet.vertices)
     left = tuple(second[index] - first[index] for index in range(3))
     right = tuple(third[index] - first[index] for index in range(3))
     cross = (
@@ -116,18 +127,11 @@ def _validate_closed_mesh(facets: list[_Facet]) -> None:
     directed_edges: Counter[
         tuple[tuple[Decimal, Decimal, Decimal], tuple[Decimal, Decimal, Decimal]]
     ] = Counter()
-    six_volumes: list[Decimal] = []
     for facet_index, facet in enumerate(facets):
         first, second, third = facet.vertices
         for start, end in ((first, second), (second, third), (third, first)):
             edge_facets[tuple(sorted((start, end)))].append(facet_index)
             directed_edges[(start, end)] += 1
-        cross = (
-            second[1] * third[2] - second[2] * third[1],
-            second[2] * third[0] - second[0] * third[2],
-            second[0] * third[1] - second[1] * third[0],
-        )
-        six_volumes.append(sum(first[index] * cross[index] for index in range(3)))
 
     bad_incidence = [edge for edge, owners in edge_facets.items() if len(owners) != 2]
     if bad_incidence:
@@ -150,8 +154,14 @@ def _validate_closed_mesh(facets: list[_Facet]) -> None:
     for first_owner, second_owner in edge_facets.values():
         neighbors[first_owner].add(second_owner)
         neighbors[second_owner].add(first_owner)
+    exact_vertices: dict[_DecimalPoint, _FractionPoint] = {}
+
+    def exact_vertex(point: _DecimalPoint) -> _FractionPoint:
+        if point not in exact_vertices:
+            exact_vertices[point] = _fraction_point(point)
+        return exact_vertices[point]
+
     unvisited = set(range(len(facets)))
-    component_volumes: list[Decimal] = []
     while unvisited:
         pending = [unvisited.pop()]
         component: list[int] = []
@@ -161,14 +171,31 @@ def _validate_closed_mesh(facets: list[_Facet]) -> None:
             discovered = neighbors[facet_index] & unvisited
             unvisited.difference_update(discovered)
             pending.extend(discovered)
-        component_volume = sum(six_volumes[index] for index in component)
+        reference = exact_vertex(facets[component[0]].vertices[0])
+        component_volume = Fraction()
+        for facet_index in component:
+            translated = tuple(
+                tuple(coordinate - reference[axis] for axis, coordinate in enumerate(exact_vertex(vertex)))
+                for vertex in facets[facet_index].vertices
+            )
+            first, second, third = translated
+            cross = (
+                second[1] * third[2] - second[2] * third[1],
+                second[2] * third[0] - second[0] * third[2],
+                second[0] * third[1] - second[1] * third[0],
+            )
+            component_volume += sum(first[axis] * cross[axis] for axis in range(3))
         if component_volume == 0:
             raise ValueError("ASCII STL mesh shell must have nonzero signed volume")
-        component_volumes.append(component_volume)
-    # Enclosed void boundaries are correctly wound with negative component
-    # volume, so require positive material volume across all nested shells.
-    if sum(component_volumes) <= 0:
-        raise ValueError("ASCII STL mesh must have positive signed volume in total")
+        # Aggregate signed volume cannot distinguish a genuine enclosed cavity
+        # from a disconnected inward-wound solid. Supporting negative shells
+        # safely requires intersection checks and a containment/parity tree, so
+        # fail closed until that stronger proof is part of the contract.
+        if component_volume < 0:
+            raise ValueError(
+                "ASCII STL mesh shell must have positive signed volume; "
+                "inward-wound disconnected shells are not supported"
+            )
 
 
 def normalize_ascii_stl(path: str | Path, *, solid_name: str) -> None:
