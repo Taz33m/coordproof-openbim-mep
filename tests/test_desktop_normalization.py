@@ -198,6 +198,35 @@ def test_ascii_stl_signed_volume_is_exact_for_large_translated_coordinates(
         normalize_ascii_stl(path, solid_name="translated-reversed")
 
 
+@pytest.mark.parametrize("token", ["1e-9999999", "1e9999999", "0e-9999999"])
+def test_ascii_stl_rejects_extreme_exponents_before_exact_conversion(
+    tmp_path: Path,
+    token: str,
+) -> None:
+    path = tmp_path / "extreme-exponent.stl"
+    facets = "".join(_tetra_facets()).replace("vertex 0 0 0", f"vertex {token} 0 0")
+    path.write_text(
+        "solid extreme-exponent\n" + facets + "endsolid extreme-exponent\n",
+        encoding="ascii",
+    )
+
+    with pytest.raises(ValueError, match="exponent exceeds supported range"):
+        normalize_ascii_stl(path, solid_name="extreme-exponent")
+
+
+def test_ascii_stl_rejects_oversized_number_tokens(tmp_path: Path) -> None:
+    path = tmp_path / "oversized-number.stl"
+    token = "1." + ("0" * 128)
+    facets = "".join(_tetra_facets()).replace("vertex 0 0 0", f"vertex {token} 0 0")
+    path.write_text(
+        "solid oversized-number\n" + facets + "endsolid oversized-number\n",
+        encoding="ascii",
+    )
+
+    with pytest.raises(ValueError, match="number token exceeds length limit"):
+        normalize_ascii_stl(path, solid_name="oversized-number")
+
+
 def test_ascii_stl_normalization_rejects_open_surface(tmp_path: Path) -> None:
     path = tmp_path / "open.stl"
     path.write_text(

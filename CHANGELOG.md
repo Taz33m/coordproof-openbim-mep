@@ -57,7 +57,8 @@ and uses semantic versioning for source and evidence-contract releases.
   atomically replacing tracked artifacts.
 - FCStd XML parsing rejects entity expansion and external references through a
   hardened parser.
-- ASCII STL validation uses exact signed-volume predicates and rejects
-  disconnected inward-wound shells until strict cavity containment is proven.
+- ASCII STL validation bounds numeric tokens, uses exact signed-volume
+  predicates, and rejects disconnected inward-wound shells until strict cavity
+  containment is proven.
 - The development test range starts at pytest 9.0.3, which fixes
   CVE-2025-71176 temporary-directory handling on UNIX.

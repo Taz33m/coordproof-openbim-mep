@@ -46,6 +46,8 @@ MAX_PDF_DECODED_BYTES = 10 * 1024 * 1024
 MAX_PDF_TOTAL_DECODED_BYTES = 20 * 1024 * 1024
 MAX_ASCII_STL_BYTES = 10 * 1024 * 1024
 MAX_ASCII_STL_FACETS = 200_000
+MAX_ASCII_STL_NUMBER_CHARS = 128
+MAX_ASCII_STL_ADJUSTED_EXPONENT = 100
 
 
 @dataclass(frozen=True)
@@ -68,22 +70,41 @@ def _fraction_point(point: _DecimalPoint) -> _FractionPoint:
     return (Fraction(point[0]), Fraction(point[1]), Fraction(point[2]))
 
 
+def _exact_vertex(
+    point: _DecimalPoint,
+    cache: dict[_DecimalPoint, _FractionPoint],
+) -> _FractionPoint:
+    if point not in cache:
+        cache[point] = _fraction_point(point)
+    return cache[point]
+
+
 def _decimal_tokens(line: str, prefix: str, count: int) -> tuple[Decimal, ...]:
     parts = line.strip().split()
     prefix_parts = prefix.split()
     if parts[: len(prefix_parts)] != prefix_parts or len(parts) != len(prefix_parts) + count:
         raise ValueError(f"Malformed ASCII STL line: {line!r}")
+    number_tokens = parts[len(prefix_parts) :]
+    if any(len(token) > MAX_ASCII_STL_NUMBER_CHARS for token in number_tokens):
+        raise ValueError(f"ASCII STL number token exceeds length limit: {line!r}")
     try:
-        values = tuple(Decimal(token) for token in parts[len(prefix_parts) :])
+        values = tuple(Decimal(token) for token in number_tokens)
     except InvalidOperation as exc:
         raise ValueError(f"Malformed ASCII STL number: {line!r}") from exc
     if not all(value.is_finite() for value in values):
         raise ValueError(f"Non-finite ASCII STL number: {line!r}")
+    if any(abs(value.adjusted()) > MAX_ASCII_STL_ADJUSTED_EXPONENT for value in values):
+        raise ValueError(f"ASCII STL number exponent exceeds supported range: {line!r}")
     return values
 
 
-def _validate_facet(facet: _Facet) -> None:
-    first, second, third = tuple(_fraction_point(vertex) for vertex in facet.vertices)
+def _validate_facet(
+    facet: _Facet,
+    exact_vertices: dict[_DecimalPoint, _FractionPoint],
+) -> None:
+    first, second, third = tuple(
+        _exact_vertex(vertex, exact_vertices) for vertex in facet.vertices
+    )
     left = tuple(second[index] - first[index] for index in range(3))
     right = tuple(third[index] - first[index] for index in range(3))
     cross = (
@@ -115,7 +136,10 @@ def _format_decimal(value: Decimal) -> str:
     return rendered
 
 
-def _validate_closed_mesh(facets: list[_Facet]) -> None:
+def _validate_closed_mesh(
+    facets: list[_Facet],
+    exact_vertices: dict[_DecimalPoint, _FractionPoint],
+) -> None:
     """Require consistently oriented, positive-volume closed manifold shells."""
 
     if len(facets) < 4:
@@ -154,13 +178,6 @@ def _validate_closed_mesh(facets: list[_Facet]) -> None:
     for first_owner, second_owner in edge_facets.values():
         neighbors[first_owner].add(second_owner)
         neighbors[second_owner].add(first_owner)
-    exact_vertices: dict[_DecimalPoint, _FractionPoint] = {}
-
-    def exact_vertex(point: _DecimalPoint) -> _FractionPoint:
-        if point not in exact_vertices:
-            exact_vertices[point] = _fraction_point(point)
-        return exact_vertices[point]
-
     unvisited = set(range(len(facets)))
     while unvisited:
         pending = [unvisited.pop()]
@@ -171,11 +188,14 @@ def _validate_closed_mesh(facets: list[_Facet]) -> None:
             discovered = neighbors[facet_index] & unvisited
             unvisited.difference_update(discovered)
             pending.extend(discovered)
-        reference = exact_vertex(facets[component[0]].vertices[0])
+        reference = _exact_vertex(facets[component[0]].vertices[0], exact_vertices)
         component_volume = Fraction()
         for facet_index in component:
             translated = tuple(
-                tuple(coordinate - reference[axis] for axis, coordinate in enumerate(exact_vertex(vertex)))
+                tuple(
+                    coordinate - reference[axis]
+                    for axis, coordinate in enumerate(_exact_vertex(vertex, exact_vertices))
+                )
                 for vertex in facets[facet_index].vertices
             )
             first, second, third = translated
@@ -216,6 +236,7 @@ def normalize_ascii_stl(path: str | Path, *, solid_name: str) -> None:
         raise ValueError(f"ASCII STL has no endsolid footer: {target}")
 
     facets: list[_Facet] = []
+    exact_vertices: dict[_DecimalPoint, _FractionPoint] = {}
     index = 1
     while index < len(lines) - 1:
         if not lines[index].strip():
@@ -237,14 +258,14 @@ def normalize_ascii_stl(path: str | Path, *, solid_name: str) -> None:
             normal=(normal_values[0], normal_values[1], normal_values[2]),
             vertices=min(rotations),
         )
-        _validate_facet(facet)
+        _validate_facet(facet, exact_vertices)
         facets.append(facet)
         if len(facets) > MAX_ASCII_STL_FACETS:
             raise ValueError(f"ASCII STL exceeds facet limit: {target}")
         index += 7
     if not facets:
         raise ValueError(f"ASCII STL has no facets: {target}")
-    _validate_closed_mesh(facets)
+    _validate_closed_mesh(facets, exact_vertices)
 
     output = [f"solid {solid_name}"]
     for facet in sorted(facets, key=lambda item: (item.vertices, item.normal)):
