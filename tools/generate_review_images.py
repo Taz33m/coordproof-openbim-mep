@@ -52,16 +52,10 @@ def box2(asset_id: str) -> tuple[float, float, float, float]:
 
 
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    candidates = [
-        "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Arial.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
-    ]
-    for path in candidates:
-        try:
-            return ImageFont.truetype(path, size)
-        except OSError:
-            continue
-    return ImageFont.load_default()
+    # Pillow's bundled font is pinned with the release toolchain, avoiding
+    # host-font drift between macOS evidence builds and Linux CI regeneration.
+    del bold
+    return ImageFont.load_default(size=size)
 
 
 def base(title: str, subtitle: str) -> tuple[Image.Image, ImageDraw.ImageDraw]:
@@ -168,6 +162,92 @@ def save(img: Image.Image, name: str) -> None:
 
 def manifest_assets() -> list[dict[str, object]]:
     return json.loads(MANIFEST.read_text(encoding="utf-8"))["assets"]
+
+
+def overview_metrics() -> dict[str, tuple[str, str]]:
+    numbers = report_numbers()
+    checks = clash_counts()
+    exports = export_counts()
+    return {
+        "IFC4": ("IFC4", "semantic model"),
+        "systems": (str(numbers["Distribution systems"]), "distribution systems"),
+        "ports": (validation_metric("declared_port_count") or "0", "MEP ports"),
+        "connections": (str(numbers["Port connections"]), "connected pairs"),
+        "assets": (str(len(manifest_assets())), "manifest assets"),
+        "sheets": (
+            f"{exports['DXF drawings']}+{exports['PDF drawings']}",
+            "DXF/PDF sheets",
+        ),
+        "failures": (str(checks["FAIL"]), "critical failures"),
+    }
+
+
+def system_overview() -> None:
+    """Compose the public hero from freshly generated evidence images and counts."""
+
+    width, height = 1920, 1080
+    img = Image.new("RGB", (width, height), (248, 246, 241))
+    draw = ImageDraw.Draw(img)
+    draw.text(
+        (72, 42),
+        "CoordProof generated OpenBIM package",
+        fill=(30, 39, 48),
+        font=font(56, True),
+    )
+    draw.text(
+        (75, 113),
+        "IFC4 model · QCAD drawing sheets · validation evidence · manifest-tracked CAD exports",
+        fill=(83, 94, 107),
+        font=font(29),
+    )
+
+    previews = (
+        ("01_freecad_mechanical_room_overview.png", "3D coordination review", "FreeCAD/BIM review model"),
+        ("04_qcad_floor_plan.png", "Drawing package", "QCAD DXF/PDF sheets"),
+        ("05_ifc_validation_report.png", "Validation evidence", "IfcOpenShell + manifest QA"),
+    )
+    for index, (filename, title, subtitle) in enumerate(previews):
+        x = 60 + index * 610
+        y = 180
+        draw.rounded_rectangle(
+            (x, y, x + 580, y + 450),
+            radius=10,
+            fill=(255, 255, 253),
+            outline=(213, 207, 194),
+            width=2,
+        )
+        with Image.open(SCREENSHOTS / filename) as source:
+            preview = source.convert("RGB").resize((540, 338), Image.Resampling.LANCZOS)
+        img.paste(preview, (x + 20, y + 24))
+        draw.text((x + 20, y + 380), title, fill=(30, 39, 48), font=font(28, True))
+        draw.text((x + 20, y + 420), subtitle, fill=(83, 94, 107), font=font(21))
+
+    metrics = tuple(overview_metrics().values())
+    card_colors = (
+        ((235, 241, 248), (34, 64, 93)),
+        ((237, 247, 239), (30, 112, 64)),
+        ((255, 244, 231), (151, 78, 8)),
+    )
+    for index, (value, label) in enumerate(metrics):
+        x = 60 + index * 260
+        fill, accent = card_colors[index % len(card_colors)]
+        draw.rounded_rectangle(
+            (x, 700, x + 240, 856),
+            radius=9,
+            fill=fill,
+            outline=tuple((channel + 255) // 2 for channel in accent),
+            width=1,
+        )
+        draw.text((x + 28, 730), value, fill=accent, font=font(43, True))
+        draw.text((x + 28, 798), label, fill=(83, 94, 107), font=font(20))
+
+    draw.text(
+        (72, 988),
+        "Generated artifacts are committed for inspection; every public count is derived from current evidence.",
+        fill=(83, 94, 107),
+        font=font(22),
+    )
+    save(img, "00_coordproof_system_overview.png")
 
 
 def asset_grid() -> None:
@@ -539,7 +619,7 @@ def validation_status() -> None:
         ("Distribution systems", ">= 5", str(numbers["Distribution systems"]), "PASS"),
         ("Port connections", ">= 20", str(numbers["Port connections"]), "PASS"),
         ("Building element proxies", "0", validation_metric("proxy_count") or "0", "PASS"),
-        ("Required exports", "35+", validation_metric("required_file_count") or "44", "PASS"),
+        ("Required exports", "35+", validation_metric("required_file_count") or "46", "PASS"),
         ("Critical failures", "0", str(checks["FAIL"]), "PASS"),
     ]
     for i, row in enumerate(table_rows):
@@ -553,17 +633,25 @@ def validation_status() -> None:
     save(img, "05_ifc_validation_report.png")
 
 
-def export_overview() -> None:
+def export_counts() -> dict[str, int]:
+    """Return review counts without folding QA evidence into coordination reports."""
+
     assets = manifest_assets()
-    counts = {
+    return {
         "Manifest assets": len(assets),
         "STEP exports": len(list((ROOT / "exports" / "step").glob("*.step"))),
         "STL exports": len(list((ROOT / "exports" / "stl").glob("*.stl"))),
         "DXF drawings": len(list((ROOT / "qcad").glob("*.dxf"))),
         "PDF drawings": len(list((ROOT / "qcad" / "pdf_exports").glob("*.pdf"))),
         "IFC exports": len(list((ROOT / "bim").glob("*.ifc"))),
-        "Coordination reports": len(list((ROOT / "reports").glob("*"))),
+        "Coordination reports": sum(
+            path.exists() for path in (COORDINATION_REPORT, CLASH_REPORT, BOM_REPORT)
+        ),
     }
+
+
+def export_overview() -> None:
+    counts = export_counts()
     img, draw = base("Export Formats Overview", "Generated deliverables across CAD, BIM, drawing, and metadata layers")
     x_positions = [110, 565, 1020]
     y_positions = [240, 390, 540]
@@ -587,6 +675,7 @@ def main() -> None:
     section_and_riser_preview()
     validation_status()
     export_overview()
+    system_overview()
 
 
 if __name__ == "__main__":

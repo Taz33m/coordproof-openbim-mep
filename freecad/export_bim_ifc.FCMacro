@@ -12,8 +12,14 @@ import FreeCAD as App
 
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-IFC_PATH = os.path.join(ROOT, "bim", "mechanical_room_freecad_review.ifc")
-BIM_PATH = os.path.join(ROOT, "freecad", "mechanical_room_bim.FCStd")
+IFC_PATH = os.environ.get(
+    "COORDPROOF_FREECAD_REVIEW_IFC_PATH",
+    os.path.join(ROOT, "bim", "mechanical_room_freecad_review.ifc"),
+)
+BIM_PATH = os.environ.get(
+    "COORDPROOF_FREECAD_BIM_PATH",
+    os.path.join(ROOT, "freecad", "mechanical_room_bim.FCStd"),
+)
 
 doc = App.ActiveDocument or App.openDocument(BIM_PATH)
 if doc is None:

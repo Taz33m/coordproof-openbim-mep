@@ -32,6 +32,20 @@ dangling declarations before generators run. Python consumers expose compatible
 catalog and IFC schedule projections while geometry remains implemented in the
 reviewed CadQuery, OpenSCAD, FreeCAD, and drawing generators.
 
+The versioned [`spec/reconciliation.contract.json`](spec/reconciliation.contract.json)
+binds authoritative numeric values to producer inputs without copying expected
+values. CadQuery and OpenSCAD currently reconcile 75/75 canonical engineering
+parameters and account for 78/78 observed top-level numeric inputs. The three
+additional inputs are explicit OpenSCAD `$fn` facet-control exclusions, not
+engineering dimensions. Declared type-to-occurrence differences must be equal,
+safely derived, or a justified override.
+
+Reconciliation v1 verifies declared fallback values and the bounded plumbing
+that forwards ProjectSpec inputs into CadQuery or OpenSCAD. Differential tests
+also confirm that every current numeric CadQuery input changes generated
+geometry. These checks are not a dimensional inspection of committed STEP/STL
+files; observed-export parity remains a separate roadmap milestone.
+
 The package connects geometry, drawings, IFC semantics, reports, and QA outputs as inspectable artifacts.
 
 ![CoordProof generated OpenBIM package](screenshots/00_coordproof_system_overview.png)
@@ -56,9 +70,12 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 | Distribution ports | 51 | MEP connectivity graph. |
 | Connected port pairs | 22 | Machine-readable relationships between systems/assets. |
 | Building element proxies | 0 | No generic proxy fallback in the authoritative validation model. |
-| Manifest assets | 55 | Traceable asset inventory across 15 categories. |
+| Manifest assets | 56 | Traceable asset and evidence inventory across 15 categories. |
 | DXF/PDF sheets | 7 + 7 | QCAD drawing package and review exports. |
 | STEP/STL exports | 10 + 13 | Reusable CAD assets and mesh review/export layer. |
+| Canonical engineering parameters | 75 / 75 | Default/input bindings reconciled across the required CadQuery/OpenSCAD producers. |
+| Observed producer numeric inputs | 78 / 78 | Accounted for: 75 mapped values and 3 explicit OpenSCAD `$fn` technical exclusions. |
+| Reconciliation relations | 17 | Equal, safely derived, or justified type-to-occurrence relationships. |
 | Critical validation failures | 0 | Current automated QA status. |
 
 ## Generated Package
@@ -69,7 +86,7 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 | CAD review model | FreeCAD assembly files and supporting FreeCAD BIM organization for native model inspection. |
 | Drawing package | QCAD-ready DXF sheets with matching PDF exports, title blocks, dimensions, sections, details, and system routing views. |
 | Asset library | CadQuery and OpenSCAD assets exported to STEP/STL for reusable mechanical supports, routing components, bases, sleeves, and details. |
-| Reports | Coordination report, bill of materials, clash/clearance screen, IFC entity summary, and validation report. |
+| Reports | Coordination report, bill of materials, clash/clearance screen, parameter reconciliation evidence, IFC entity summary, and validation report. |
 | QA manifest | Asset manifest and export index linking generated objects to categories, parameters, file outputs, and validation status. |
 
 ## Architecture
@@ -77,12 +94,14 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 ```mermaid
 flowchart LR
     P["ProjectSpec v1<br/>types + occurrences + systems + ports"] --> L["Schema + semantic validation"]
+    P --> R["Reconciliation contract<br/>selectors + safe relations"]
     L --> A["openbim_core.py<br/>placed-occurrence projection"]
     L --> T["asset_catalog.py<br/>catalog projection"]
     A --> B["IFC4 model<br/>systems + ports + properties"]
     A --> D["QCAD-ready drawings<br/>DXF + PDF sheets"]
     A --> F["Reports<br/>BOM + clearance + coordination"]
     T --> E["CadQuery + OpenSCAD<br/>STEP/STL assets"]
+    R --> E
     T --> G["Manifest<br/>asset/export inventory"]
     T -. "optional parameters" .-> I["OpenCAD pilot<br/>feature DAG + real OCCT"]
     C["FreeCAD macros<br/>native review model"] --> K["FCStd + review STEP/IFC"]
@@ -97,18 +116,22 @@ flowchart LR
     G --> H
     K --> H
     V --> H
+    R --> H
     J --> H
 ```
 
 The authority and migration boundary are recorded in
 [ADR 0002](docs/decisions/0002-versioned-projectspec.md); the optional OpenCAD
 boundary remains documented in [ADR 0001](docs/decisions/0001-openbim-authority-and-opencad-boundary.md).
+The reconciliation boundary and safe-transform policy are recorded in
+[ADR 0003](docs/decisions/0003-versioned-parameter-reconciliation.md).
 
 ## Primary Artifacts
 
 | Area | Files |
 | --- | --- |
 | Project contract | [`spec/mechanical_room.project.json`](spec/mechanical_room.project.json), [`spec/project.schema.json`](spec/project.schema.json), [`tools/project_spec.py`](tools/project_spec.py) |
+| Reconciliation | [`spec/reconciliation.contract.json`](spec/reconciliation.contract.json), [`tools/reconcile_parameters.py`](tools/reconcile_parameters.py), [`reports/parameter_reconciliation.md`](reports/parameter_reconciliation.md) |
 | Generator projections | [`tools/asset_catalog.py`](tools/asset_catalog.py), [`tools/openbim_core.py`](tools/openbim_core.py), [`tools/build_all.py`](tools/build_all.py) |
 | IFC/OpenBIM | [`bim/mechanical_room.ifc`](bim/mechanical_room.ifc), [`bim/mechanical_room_freecad_review.ifc`](bim/mechanical_room_freecad_review.ifc), [`bim/openbim_semantic_inventory.csv`](bim/openbim_semantic_inventory.csv) |
 | Drawings | [`qcad/`](qcad/), [`qcad/pdf_exports/`](qcad/pdf_exports/) |
@@ -126,10 +149,14 @@ boundary remains documented in [ADR 0001](docs/decisions/0001-openbim-authority-
 | IFC schema | IFC4 | IFC4 | PASS |
 | IFC EXPRESS validation errors | 0 | 0 | PASS |
 | ProjectSpec-to-IFC semantic parity | Exact | Exact | PASS |
+| Canonical engineering parameter coverage | 75 / 75 | 75 / 75 | PASS |
+| Observed producer numeric inputs accounted | 78 / 78 | 78 / 78 | PASS |
+| Explicit technical exclusions | 3 OpenSCAD `$fn` controls | 3 | PASS |
+| Reconciliation evidence rows | 95 passing | 95 passing | PASS |
 | Distribution systems | >= 5 | 5 | PASS |
 | Port connections | >= 20 | 22 | PASS |
 | Building element proxies | 0 | 0 | PASS |
-| Required exports | 35+ | 44 | PASS |
+| Required exports | 35+ | 46 | PASS |
 | Critical failures | 0 | 0 | PASS |
 
 Validation is implemented with IfcOpenShell inspection, manifest checks, export-count checks, and deterministic report generation. The generated report is available at [`validation/validation_report.md`](validation/validation_report.md).
@@ -146,6 +173,7 @@ python3.11 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 make doctor
 make spec-validate
+make reconcile
 ```
 
 For an intentional regeneration of committed golden evidence, use
@@ -174,6 +202,13 @@ The complete desktop build additionally requires FreeCAD, OpenSCAD, and QCAD's
 make doctor-full
 make all
 ```
+
+Desktop exporters publish through validated same-filesystem staging paths. The
+build canonicalizes OpenSCAD facet ordering, QCAD's volatile PDF metadata,
+FreeCAD ZIP/XML metadata and object IDs, the assembly STEP header, and review
+IFC timestamps and GlobalIds before replacing tracked evidence. With the pinned
+toolchain, a second `make all` must leave these artifacts byte-for-byte
+unchanged; `SOURCE_DATE_EPOCH` defaults to `0` when it is not set.
 
 Run validation and public-package preflight:
 
@@ -210,6 +245,7 @@ Current validation status:
 
 ```text
 Overall Status: PASSED
+Parameter Reconciliation Validation: PASSED
 IFC Validation: PASSED
 Manifest Validation: PASSED
 Exports Validation: PASSED
@@ -224,7 +260,7 @@ Excluded scopes: stamped engineering design, construction documents, manufacture
 Major objects are named, classified, exported, documented, mapped, coordinated,
 and validated from the versioned ProjectSpec contract. See
 [`docs/limitations.md`](docs/limitations.md) for modeling assumptions and the
-remaining cross-format dimension-reconciliation boundary.
+remaining FreeCAD and drawing reconciliation boundary.
 
 ## Project and Community
 

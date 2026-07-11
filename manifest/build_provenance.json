@@ -1,24 +1,84 @@
 {
+  "artifact_producers": {
+    "freecad_review_ifcopenshell": "0.8.4",
+    "freecad_step_occt": "7.8"
+  },
   "artifacts": {
+    "Makefile": {
+      "bytes": 1882,
+      "sha256": "b1fa7b5e7a0debc01303148cecb82f8e1c33a2e62fff9642d26867899fb855c0"
+    },
     "bim/bim_object_map.csv": {
-      "bytes": 5743,
-      "sha256": "b0a4a786d5ed8a531f2b60a5ae8ebcfe8a229dc726da512c6ef0134592c757d8"
+      "bytes": 5939,
+      "sha256": "659ef8ee1df88a5eb411c63e5da34caf2aebfb8597ce096d96e2761f50f35a12"
     },
     "bim/ifc_entity_summary.md": {
       "bytes": 2074,
       "sha256": "c69ed39ff0c305c6bdb6b3cec775e9e7cc8ec224dbcaa901e0340ca6f71c6736"
+    },
+    "bim/ifc_export_notes.md": {
+      "bytes": 1212,
+      "sha256": "80491e2b354fcb01dd8461f772b4dc9f66d5890fec9c4de4bdad9b2e29aacfb7"
     },
     "bim/mechanical_room.ifc": {
       "bytes": 122119,
       "sha256": "8acd102977af3604ee872ee3587fc59b559032392c567192caa6022a1bf1d3b8"
     },
     "bim/mechanical_room_freecad_review.ifc": {
-      "bytes": 117896,
-      "sha256": "72fdff3aa242a748950ffc1f939147bdeaa4dc4b6606c264b5a65ae35384b4d6"
+      "bytes": 117793,
+      "sha256": "2ebbc039df49d6e4a1841aea5358fe25b26784db4e64b47b70f4f11b9a0522a2"
     },
     "bim/openbim_semantic_inventory.csv": {
       "bytes": 3354,
       "sha256": "b3ee3a5a1f92027729091234693560cc1168840c4244961bc152bbed3a0b1b8a"
+    },
+    "cadquery/asset_io.py": {
+      "bytes": 1777,
+      "sha256": "3387fbc26f7040f8c7a4e872433feef26afced8e26d3aa8808dbbecc3d4172f3"
+    },
+    "cadquery/cable_tray.py": {
+      "bytes": 1877,
+      "sha256": "332df7b918f76c41c3abfacab29de6507574e5d34535c0a7d39779a2263eb5c6"
+    },
+    "cadquery/duct_hanger.py": {
+      "bytes": 1797,
+      "sha256": "1cc66aceaa52dc02cfb1ef2b7e84838a86256f6ac502aa1733e1ad71076695d6"
+    },
+    "cadquery/equipment_base.py": {
+      "bytes": 1208,
+      "sha256": "67f2e51f3a760f73bfc6801a9b32add3f82f3b8264e82efbde6c74fa1a4bbc0d"
+    },
+    "cadquery/generate_all.py": {
+      "bytes": 2758,
+      "sha256": "2d0043dd9511812b3513aff7503d85ede147f3a98afdc59cf2cff6dc2515dfd2"
+    },
+    "cadquery/mounting_plate.py": {
+      "bytes": 1824,
+      "sha256": "816036865ac387550b23422b085017ce0fcbf194a49944b626402e23540d1744"
+    },
+    "cadquery/pipe_clamp.py": {
+      "bytes": 1478,
+      "sha256": "3d608c36fc05b09ead236d4b5f171ff6ba9e65e1899bd7e3116c4a807b049c31"
+    },
+    "cadquery/pipe_support.py": {
+      "bytes": 1949,
+      "sha256": "3f3bfa8354c9648a0d6693a942111abe3121dd795b1553590c9af4dc026fac0e"
+    },
+    "cadquery/pump_skid_frame.py": {
+      "bytes": 1326,
+      "sha256": "d34a46fbb973a731629f20ef32d09144789d208dbeb94dc83e9595f82c3b70c8"
+    },
+    "cadquery/rectangular_duct.py": {
+      "bytes": 1349,
+      "sha256": "39c79d56bc83b65262706933e4f7464c134ea4ee1cc2f1ffdced366171c9abf1"
+    },
+    "cadquery/wall_sleeve.py": {
+      "bytes": 1305,
+      "sha256": "5d7a3106fc4aae27d4bc27ab9fd2965fa22c62eb9e28421bd3ca7c15c6b10ed4"
+    },
+    "constraints-release.txt": {
+      "bytes": 513,
+      "sha256": "dd1e2924716a17d023304ed3568e4c0d162fdffece606add64c920727ac52dc1"
     },
     "exports/step/cable_tray_overhead_001.step": {
       "bytes": 97481,
@@ -37,8 +97,8 @@
       "sha256": "67c1a94b13584ce2585266a4373d1af600c3fd036fd01b7da51af8768576cb80"
     },
     "exports/step/mechanical_room_assembly.step": {
-      "bytes": 451647,
-      "sha256": "17ef9b932186f7da6ba1bdb4e12f1d2b0673faed8249bef467fed58f4c738856"
+      "bytes": 451652,
+      "sha256": "7980d9af246bcc4cf5c37fc752640123efde9b08bfb319b35a98bde1a7e597d2"
     },
     "exports/step/pipe_clamp_type_a.step": {
       "bytes": 45301,
@@ -77,20 +137,20 @@
       "sha256": "aee23a6bb992ad918730fc39b2799245e88bf586fa07ec11e3ccb397da40fd05"
     },
     "exports/stl/openscad_bracket_plate_type_b.stl": {
-      "bytes": 65448,
-      "sha256": "83f1ddae9e077d8bf8d7b72c8ebe227d53fef1a6bf4f1ee53d8e8c1677eb5a9d"
+      "bytes": 65415,
+      "sha256": "ea223c3413e64294dbbf5e52c5c60920ea901cb6ed7ac8cf480781e1b6b2f4a8"
     },
     "exports/stl/openscad_cable_tray_segment_type_b.stl": {
-      "bytes": 236458,
-      "sha256": "4788b72c91b8f6622242ae471c44c06da30f6de84d85123eef0ed29f4d7346cd"
+      "bytes": 236349,
+      "sha256": "7e406980ad22a589a5a6df51d8dcdbcfee8f559d0405a92d4f63fd632c368dd8"
     },
     "exports/stl/openscad_duct_connector_type_b.stl": {
-      "bytes": 13041,
-      "sha256": "66eda7a7cb32a3e4e40035dd49f0a276e4cd7e99ee07a20b9fefe9ca65484ab5"
+      "bytes": 13037,
+      "sha256": "38aaa2c05d7df35693cd761d0bdbe08abb2f27304b40b96deac6ae7c6ff5af82"
     },
     "exports/stl/openscad_pipe_clamp_type_b.stl": {
-      "bytes": 180061,
-      "sha256": "3341816f4822b258e196bd8744caebe6c1b3f51839a2da4f7ea8facc68e74593"
+      "bytes": 179873,
+      "sha256": "9314374e8956337dd6ee14995edfb3cd263befb9b7bdcdbebbf6d0fcf871eca4"
     },
     "exports/stl/pipe_clamp_type_a.stl": {
       "bytes": 49884,
@@ -112,25 +172,37 @@
       "bytes": 37884,
       "sha256": "63632697d4b385b93a0eaae20c71552cf2ffd70188cdbaf560c22e57d6491dd3"
     },
+    "freecad/build_mechanical_room.FCMacro": {
+      "bytes": 17098,
+      "sha256": "513fd069af68b9e59257264adb03eb7578deb7886261ef3d977d3cc6d15584e5"
+    },
+    "freecad/export_bim_ifc.FCMacro": {
+      "bytes": 2172,
+      "sha256": "6925df0b3d774c8f1f46ba65baa1c5843efc432ddf0906a27fca2e5d8d3d3106"
+    },
     "freecad/mechanical_room.FCStd": {
-      "bytes": 55013,
-      "sha256": "563e9591311b2fc94dc82d2aa80894eb0e7115c5dacfd4783d25adff337ec2ec"
+      "bytes": 54524,
+      "sha256": "74476282509f3ed6d4e74581b9b5e743721f8801dac20851cd0641e73075b89e"
     },
     "freecad/mechanical_room_bim.FCStd": {
-      "bytes": 65300,
-      "sha256": "20e007dcef4fa02e48429fddb3c2c9b06ac4c86fcacb35cff93d849dff53b1ff"
+      "bytes": 64585,
+      "sha256": "ca0e3046cf071feeb385bede54afbd38345c03f9250b506fd57955180fcb2f62"
+    },
+    "freecad/validate_staged_outputs.FCMacro": {
+      "bytes": 2963,
+      "sha256": "667f595a36bc9d3d782435112c3668ba15d3705b90f45e5b80be840f43149c2f"
     },
     "manifest/asset_manifest.json": {
-      "bytes": 31838,
-      "sha256": "eefd6b42d60b4a93bcabe1ff5ba56c99933a6464bb423a4129edd3929da159c5"
+      "bytes": 32868,
+      "sha256": "c8c126432fdd2b557bcdecd8002eb45de80b3e9e75fdb6a44890bd5001a25609"
     },
     "manifest/export_index.csv": {
-      "bytes": 4832,
-      "sha256": "aeefe09399e60704b73249fd4c6ad5178eac2df8ef8001ed1a6d2404731b6045"
+      "bytes": 4984,
+      "sha256": "19fbd7d1cfdc95f4a917bdd10791b7276b4ba5a2a6ab00691d6f5c4bc52eea82"
     },
     "manifest/parameter_schema.json": {
-      "bytes": 2990,
-      "sha256": "90dc9f07adb2aa151c60471b7a13c0056770acb4cbf85965d4213d96f910e487"
+      "bytes": 3390,
+      "sha256": "fb7fc4ad7d02c1e8688e1fe34e375e14d2b39bcebc420069ed50e6e31cf66e84"
     },
     "openscad/bracket_plate.scad": {
       "bytes": 727,
@@ -150,59 +222,59 @@
     },
     "qcad/duct_hanger_detail.dxf": {
       "bytes": 24840,
-      "sha256": "73d4b588920e840bfbeeb8a49302ca3169b477adc67331579212b594cc17a238"
+      "sha256": "87988dfd2c411f4c6bca18f23cfd28e6d03a6a94aafdd12607197092944b739c"
     },
     "qcad/equipment_layout.dxf": {
       "bytes": 31934,
-      "sha256": "5f1157e824f220b24a694429763cf504885d4cba19b64ea29a9b172e75d3bf38"
+      "sha256": "17fcac55bf5f9d3c2ac2f9718f58b17691e3fbeff658091777084d5bf702fe40"
     },
     "qcad/floor_plan.dxf": {
       "bytes": 38583,
-      "sha256": "5f79d003d05200f3f5063516b096323145e511bd91d13e550ef9f39322330db3"
+      "sha256": "7214a1711f4bd2a1d86dfc486d931536d60e22ec5feb98ed3210092fef8cf90a"
     },
     "qcad/pdf_exports/duct_hanger_detail.pdf": {
-      "bytes": 139367,
-      "sha256": "850728f74359efac005be1c1ff106ffdb845ff394cc47ea9dd67735eb84a4c5e"
+      "bytes": 139355,
+      "sha256": "2f65ee518f9317406bde336be62a401b2837189741409458019bfb9df85af0a8"
     },
     "qcad/pdf_exports/equipment_layout.pdf": {
-      "bytes": 207239,
-      "sha256": "55c778cf06fad3a62d2cf4a87ded5c43bd25cde4201483af09683aae62dcf037"
+      "bytes": 207227,
+      "sha256": "8fd337745c0023fc9799488da9b08a2a102558a83d115dcffb03dd06f816177a"
     },
     "qcad/pdf_exports/floor_plan.pdf": {
-      "bytes": 233624,
-      "sha256": "f1d33819c7d734cb039c552cbf4209fc7907b76a7e1f7db10d3e01a1f65a3c0b"
+      "bytes": 233612,
+      "sha256": "dd1068012823d84087ca721455f4c348831d90c291d14cf5923610bc7a3fe7e1"
     },
     "qcad/pdf_exports/pipe_support_detail.pdf": {
-      "bytes": 165218,
-      "sha256": "1efaa49f0f19eebbed687454badd4a2bb2a00edf9d7b4254aec96e6f381a4d64"
+      "bytes": 165206,
+      "sha256": "60916a843dbb3ed713ae331ce32e2dcd9a55edd984aace4e2827b5269703bdf8"
     },
     "qcad/pdf_exports/section_aa.pdf": {
-      "bytes": 185516,
-      "sha256": "07f2f5eeba995dc048010f0934d9fc2f44eda55a69ef7fe4354e0e5bb1730d43"
+      "bytes": 185504,
+      "sha256": "eedee386aa8a665f4612cae91c56c0e2907c2e4c65a7ad68eccc12fd4083d8ef"
     },
     "qcad/pdf_exports/system_riser.pdf": {
-      "bytes": 148634,
-      "sha256": "8c9f978db45a2c9e3b46a0cadf10cef6a4bd9691cabc322d6ad3ced1127ada77"
+      "bytes": 148622,
+      "sha256": "a2c9177d0226d4b4607d531c606346878da541062eaf66ff1adaf2ae70dfe88e"
     },
     "qcad/pdf_exports/wall_penetration_detail.pdf": {
-      "bytes": 181597,
-      "sha256": "667b0dc0d1c86ab4d19d144dd398ab6e86d0ff573709c12c92090deb007a117e"
+      "bytes": 181585,
+      "sha256": "b1cf5178bccdb3598278cb5286d11c3e054c311415949fb44823120328a5744e"
     },
     "qcad/pipe_support_detail.dxf": {
       "bytes": 24806,
-      "sha256": "5fc6d516704644b533ad8ef4328cd4bd8f6e1370bd880e4512e4c5054b8a2b2c"
+      "sha256": "3e87f73d2e46866d2e81ec65843c77975f63aea6f2be54bfbdb2ba7f88c2497d"
     },
     "qcad/section_aa.dxf": {
       "bytes": 26865,
-      "sha256": "6940ad6ae4796deeeca345fd6b9f4ec9d79705a9776108d2e1306340cbb0f6ba"
+      "sha256": "0abe2dc98c3a248faf61cf0a3057587b5dbcccd1f61e31074f659701a5ff1785"
     },
     "qcad/system_riser.dxf": {
       "bytes": 25399,
-      "sha256": "25fb1411bf1bcdb6f69b12f602c189a2108edf4b2159a24f5ab46ad9258da8e9"
+      "sha256": "5a0dbe8ad8443f6598a8e64ba6557d1eb65a238a379755e1e0a55b6268736247"
     },
     "qcad/wall_penetration_detail.dxf": {
       "bytes": 23723,
-      "sha256": "307f7e44403063f9fb764d5e3ad04d41c4e3e1d485a8a7a288db239f2d25f82f"
+      "sha256": "55c1189c1d03dc81f0e4c97d94143f5fc3c6402cefe9c36bc489c387b30ace01"
     },
     "reports/bill_of_materials.csv": {
       "bytes": 5026,
@@ -216,58 +288,197 @@
       "bytes": 2137,
       "sha256": "6ad24dda3a400c6c4d135c4841edad2a87723d5d58dc1d99c0fac23e33e48069"
     },
+    "reports/parameter_reconciliation.csv": {
+      "bytes": 23590,
+      "sha256": "de9b81d3d8438a9e92583c01216ca403058f94bca314ca68a4e2eec187ea9c5b"
+    },
+    "reports/parameter_reconciliation.md": {
+      "bytes": 24057,
+      "sha256": "12147ebc1c073800a5f256f9f45802e3c43fdc06f4a68a9a2aeca500168f4627"
+    },
+    "requirements.txt": {
+      "bytes": 282,
+      "sha256": "5cc903475b0d0b8bc0dfd16af31ab955ec334089a62a518caf24db6ae009aa40"
+    },
     "screenshots/00_coordproof_system_overview.png": {
-      "bytes": 466504,
-      "sha256": "c23406002fc8291663665e942b992c18e7b1bb5edd92e14473713308853c6fdf"
+      "bytes": 262927,
+      "sha256": "7bf1e699a3ef93fae9bf43ca60466fc9384f80226e362e1eacb792cd239ee8c1"
     },
     "screenshots/01_freecad_mechanical_room_overview.png": {
-      "bytes": 101167,
-      "sha256": "09d9dd3ec4ae96196fae121ac51938dde8c9c2316df1499d885c784f781f3333"
+      "bytes": 98851,
+      "sha256": "581c91b4c3f97f4264117efc194b9ba148ae14e871648daed2b99ceda727ad1e"
     },
     "screenshots/02_freecad_bim_structure.png": {
-      "bytes": 115332,
-      "sha256": "1a73014f0faa42e205cbb4f091a0c8101d9e10788bf7007238acb0dd5faeea58"
+      "bytes": 111302,
+      "sha256": "8c4927ab68d4426db5e4a16e48171eb4f39862525201012328cc85b3945c58bd"
     },
     "screenshots/03_cadquery_asset_grid.png": {
-      "bytes": 93436,
-      "sha256": "2c450f34211ca070c44715540f8345f86b342a6f52fae8863d86803a5ec194a0"
+      "bytes": 89350,
+      "sha256": "a8b9b5769a9ba597a83bab4f5c3224b678e2c4fa254fe75c2e23f4ba070fcc0b"
     },
     "screenshots/04_qcad_floor_plan.png": {
-      "bytes": 83677,
-      "sha256": "3b1e7a3ab41ec5c08a51a45ed9019b497faeedf14b8a14efcbfa064157d7cb48"
+      "bytes": 81039,
+      "sha256": "df7d560d35d1a233d059215dfb28be842533ba964dd2b2943a34adb7c97da66b"
     },
     "screenshots/05_ifc_validation_report.png": {
-      "bytes": 94012,
-      "sha256": "142deb6b53ce417c6b010c24c99bdc0b54b6fdfccaace2c278debdc1f0eaadec"
+      "bytes": 92673,
+      "sha256": "dc5aef89d7e901754b839532de67ea24e54771afbb3475a013605ebd325de787"
     },
     "screenshots/06_export_formats_overview.png": {
-      "bytes": 73442,
-      "sha256": "f74953a5de6a0ecfb58e8b0c7eac500dda80b5ea1de8bd0742f1b303dd7be2a7"
+      "bytes": 72089,
+      "sha256": "9e128caf32432943268be0094effa72ec63aa36caed7d0dc4638ebeb00c452a6"
     },
     "screenshots/07_qcad_section_and_riser.png": {
-      "bytes": 76598,
-      "sha256": "a9cf01aca9f30d4e816a918ed0685598694564aee679034e103b98216055110f"
+      "bytes": 72659,
+      "sha256": "d2fcd29c582afd1aa199cd7cd9b7b2a670d682b90fe497d506b13c38ff763074"
     },
     "spec/mechanical_room.project.json": {
-      "bytes": 65550,
-      "sha256": "e8f9b93bb7abb5745b6e1799354f084fd78185725ac03529c9467f35a6c82beb"
+      "bytes": 66561,
+      "sha256": "558b564c35c21fb95c1007b30a58a0927c055c6fc9c45d2bbff2f649412f179f"
     },
     "spec/project.schema.json": {
       "bytes": 9912,
       "sha256": "75873744e45e04ad760b9a1a1f3b6da5f4e0656d7815721ad5f3c93118660ce4"
     },
+    "spec/reconciliation.contract.json": {
+      "bytes": 10866,
+      "sha256": "acb7fba50f74d1b885a867c12eb90e64f7246200c2aa9126b4d54c94be9f919c"
+    },
+    "spec/reconciliation.schema.json": {
+      "bytes": 5221,
+      "sha256": "18bf1f75e2ccc6102bf21b413bd463c272320f9af8ba710436c3f73b17aaa99d"
+    },
+    "tools/artifact_normalization.py": {
+      "bytes": 26715,
+      "sha256": "c6980bedb8a75b77e7a0f8a9579a42e15b3c511059acf785386de70482df73f0"
+    },
+    "tools/asset_catalog.py": {
+      "bytes": 1888,
+      "sha256": "83f0f7d95539541b6ff1a53518cea1e762e596768d1ac5a5e05a17bdf2713bba"
+    },
+    "tools/build_all.py": {
+      "bytes": 2491,
+      "sha256": "a487aac55173600c927a194b5bf4efaf4055907b8e7e989162e3a53ca47e0820"
+    },
+    "tools/build_manifest.py": {
+      "bytes": 6734,
+      "sha256": "45f64dc045db6eb1b345db1f4e48bccdd4d4bdade5a2b67d3951c67d48cab50b"
+    },
+    "tools/build_provenance.py": {
+      "bytes": 7766,
+      "sha256": "0d3fd213638c252359774ffb1b01bcf3fe01a97a3a24e61c757dfa623421abb4"
+    },
+    "tools/desktop_artifact_contract.py": {
+      "bytes": 5132,
+      "sha256": "001a0a84d117d0aa930a1fbb173bc71c754f4221423cabdc8a589167ddd14d09"
+    },
+    "tools/doctor.py": {
+      "bytes": 2975,
+      "sha256": "04e5515161aa2b93309665815d216c9819c5140b82512e7fbaf559818d63febb"
+    },
+    "tools/export_qcad_pdfs.py": {
+      "bytes": 2398,
+      "sha256": "54664f223fa1557e606de01efd257deb824146fa3c9e2db731efc16160a5e372"
+    },
+    "tools/freecad_artifact_normalization.py": {
+      "bytes": 27333,
+      "sha256": "08f70ddf0700956f9dd8949b5202c5cc71fb69a330fd1a0f716ccf612fb4aa74"
+    },
+    "tools/generate_coordination_reports.py": {
+      "bytes": 10546,
+      "sha256": "92a10afe315e93d6c09968dca3514c2cfd3ba23bc821f930a5a3c9d8a7fcf5e7"
+    },
+    "tools/generate_drawings.py": {
+      "bytes": 23537,
+      "sha256": "c4ede7bda259c30e1b698a350664f1d89816afa8029d7e20479ac94c6987318b"
+    },
+    "tools/generate_freecad_assets.py": {
+      "bytes": 5508,
+      "sha256": "d996a28190c9a6bfe8d6b6b93192668b2b6eccfeae3a15984fc38254161d6763"
+    },
+    "tools/generate_ifc.py": {
+      "bytes": 335,
+      "sha256": "e7069e7b2b011fc7efdc583d2441af1dd692f24df0f4ac965aab0723c0e96738"
+    },
+    "tools/generate_openscad_exports.py": {
+      "bytes": 5067,
+      "sha256": "c2b874afc35aa7d1bc4c1ed0ef734171aee582b83feeb3a804ebf9e924979d90"
+    },
+    "tools/generate_review_images.py": {
+      "bytes": 31484,
+      "sha256": "fe3469d636c2e44f2cebd38b0193b2e4a151d0fe6d42627bcf1d493609f207ae"
+    },
+    "tools/openbim_core.py": {
+      "bytes": 26565,
+      "sha256": "66c6b439f5e78e2648eb43857b99fb44dbf25de08717fb423235cfadf56fe42d"
+    },
+    "tools/preflight_public_package.py": {
+      "bytes": 21858,
+      "sha256": "e6b88a99d536a3e86fa4899cd20c729557b1f9a598c16bdc0399b6d2accbbd83"
+    },
+    "tools/project_spec.py": {
+      "bytes": 27418,
+      "sha256": "4a07741ef75381a4b4a6723942811ee34f55da33db21b8f49d44d4b8725fd8c4"
+    },
+    "tools/provenance_contract.py": {
+      "bytes": 15551,
+      "sha256": "cb94c723bdef6ddcdc4acab73f18ec4f0f2ae3cff7a142a978fd50e86e0278bd"
+    },
+    "tools/reconcile_parameters.py": {
+      "bytes": 63696,
+      "sha256": "de901ca98eba5f3b8c06337c8f9f961ff5075e35d90ae6b6019152fa124e237b"
+    },
+    "tools/reproducibility.py": {
+      "bytes": 1187,
+      "sha256": "f1da7a32ed68fab17b8605ec8310d2c67be960b09d94b31ef8097ff86c10bd07"
+    },
+    "tools/tooling.py": {
+      "bytes": 1332,
+      "sha256": "329a2b56d22db289f2ef9cbde96707626714380186c15fdb6212406b962068b2"
+    },
+    "validation/run_all.py": {
+      "bytes": 2990,
+      "sha256": "9310e6ddab3bcafe6b6176bfde638231499c4cbb51f7970506333ba5b9ecd34a"
+    },
+    "validation/validate_exports.py": {
+      "bytes": 9782,
+      "sha256": "cd43ea3a9bf1698db00f0dee7eaf91e1caacc347c50343ac834b367c042877c0"
+    },
+    "validation/validate_ifc.py": {
+      "bytes": 29810,
+      "sha256": "2156324f4ee337e687d41d691372a56d2d05dfeaf109c7d537c40edb454b49ce"
+    },
+    "validation/validate_manifest.py": {
+      "bytes": 3589,
+      "sha256": "848aa74861efbf2420eb44ec59526000d68529a7a0af236789cb0fff35427810"
+    },
+    "validation/validate_reconciliation.py": {
+      "bytes": 1682,
+      "sha256": "a967b159fc162a67e943c83162202187c5bbb0c93e41c03b62f2b52e3b262f48"
+    },
+    "validation/validate_sources.py": {
+      "bytes": 6779,
+      "sha256": "e3fe03697eebe834543dee50c3249e52c056d24fa508166f5fe261eb52694671"
+    },
     "validation/validation_report.md": {
-      "bytes": 2796,
-      "sha256": "71801a921a5bf2acfa3d631bd648d00a2115d78056d250929975896da6f8f375"
+      "bytes": 3901,
+      "sha256": "f21183c8f5ecf3b9aa4f374c568cbae62c054cc717e7ed59579f7965f21f5c44"
     }
   },
+  "build_profile": "full",
   "environment": {
+    "desktop_tools": {
+      "freecad": "1.1.1",
+      "openscad": "2021.01",
+      "qcad": "3.32.9"
+    },
     "implementation": "CPython",
     "machine": "x86_64",
     "packages": {
       "Pillow": "12.3.0",
       "cadquery": "2.5.2",
       "cadquery-ocp": "7.7.2",
+      "defusedxml": "0.7.1",
       "ezdxf": "1.4.4",
       "ifcopenshell": "0.8.5",
       "jsonschema": "4.26.0",
@@ -276,6 +487,6 @@
     "platform": "macOS-15.4.1-x86_64-i386-64bit",
     "python": "3.11.13"
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "source_date": "1970-01-01T00:00:00Z"
 }

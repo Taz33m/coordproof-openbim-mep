@@ -25,8 +25,12 @@ persist OpenCAD topology IDs, execute agent-generated code, or treat OpenCAD as
 the authority for IFC identity, systems, ports, or validation.
 
 Reusable asset-type parameters and placed occurrence dimensions are separated in
-the versioned ProjectSpec. Cross-format geometry is not yet fully reconciled:
-some coordination dimensions intentionally differ from reusable type defaults,
-and legacy values remain in CAD builders and FreeCAD macros. Those differences
-must be treated as explicit, reviewable overrides until the parameter-parity
-milestone on the [roadmap](roadmap.md) is complete.
+the versioned ProjectSpec. The reconciliation contract now provides complete
+numeric input coverage for CadQuery and OpenSCAD and validates selected equal,
+derived, and intentional occurrence relationships. Cross-format geometry is not
+yet fully reconciled. CadQuery sensitivity tests establish that each current
+numeric input changes generated geometry, but they do not measure exact
+dimensions in committed BRep/mesh exports. Legacy values also remain in the
+FreeCAD macro and several drawing details. Observed STEP/STL geometry, FreeCAD,
+and drawings are identified as uncovered scope in the report and remain the
+next parameter-parity milestone on the [roadmap](roadmap.md).

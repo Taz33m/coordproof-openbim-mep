@@ -176,6 +176,25 @@ class ProjectSpec:
     def asset_types_by_id(self) -> dict[str, AssetTypeSpec]:
         return {asset.type_id: asset for asset in self.asset_types}
 
+    def parameters_for_asset_type(
+        self,
+        asset_id: str,
+        *,
+        expected_group: str,
+    ) -> dict[str, object]:
+        """Return an isolated parameter mapping for a type in the expected producer group."""
+
+        try:
+            asset_type = self.asset_types_by_id[asset_id]
+        except KeyError as exc:
+            raise ValueError(f"Unknown ProjectSpec asset type: {asset_id}") from exc
+        if asset_type.group != expected_group:
+            raise ValueError(
+                f"ProjectSpec asset type {asset_id} belongs to {asset_type.group}, "
+                f"expected {expected_group}"
+            )
+        return dict(asset_type.parameters)
+
     @property
     def occurrences_by_id(self) -> dict[str, OccurrenceSpec]:
         return {occurrence.occurrence_id: occurrence for occurrence in self.occurrences}

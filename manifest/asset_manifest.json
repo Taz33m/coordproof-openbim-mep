@@ -779,7 +779,9 @@
       "parameters": {
         "pipe_diameter_mm": 50,
         "thickness_mm": 8,
-        "width_mm": 35
+        "width_mm": 35,
+        "ear_length_mm": 28,
+        "bolt_diameter_mm": 8
       },
       "exports": {
         "scad": "openscad/pipe_clamp.scad",
@@ -798,7 +800,10 @@
       "parameters": {
         "length_mm": 180,
         "width_mm": 90,
-        "thickness_mm": 10
+        "thickness_mm": 10,
+        "slot_length_mm": 30,
+        "slot_width_mm": 11,
+        "slot_spacing_mm": 105
       },
       "exports": {
         "scad": "openscad/bracket_plate.scad",
@@ -817,7 +822,10 @@
       "parameters": {
         "length_mm": 500,
         "width_mm": 160,
-        "height_mm": 60
+        "height_mm": 60,
+        "wall_thickness_mm": 4,
+        "hole_diameter_mm": 16,
+        "hole_pitch_mm": 80
       },
       "exports": {
         "scad": "openscad/cable_tray_segment.scad",
@@ -836,7 +844,9 @@
       "parameters": {
         "duct_width_mm": 360,
         "duct_height_mm": 180,
-        "thickness_mm": 5
+        "thickness_mm": 5,
+        "connector_depth_mm": 50,
+        "flange_extra_mm": 30
       },
       "exports": {
         "scad": "openscad/duct_connector.scad",
@@ -1011,6 +1021,24 @@
       },
       "validation_status": "not_evaluated",
       "notes": "Generated bounding-box clearance and coordination checks for the mechanical-room layout."
+    },
+    {
+      "asset_id": "report_parameter_reconciliation_001",
+      "display_name": "Parameter Reconciliation Report",
+      "category": "report",
+      "source_tool": "Python",
+      "units": "millimeters",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "spec/mechanical_room.project.json",
+        "reconciliation_contract": "spec/reconciliation.contract.json"
+      },
+      "exports": {
+        "csv": "reports/parameter_reconciliation.csv",
+        "md": "reports/parameter_reconciliation.md"
+      },
+      "validation_status": "not_evaluated",
+      "notes": "Deterministic evidence for declared producer inputs and type-to-occurrence parameter relationships."
     }
   ]
 }

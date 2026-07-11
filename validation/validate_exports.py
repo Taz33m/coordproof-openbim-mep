@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import csv
 import json
+import stat
 import struct
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import ezdxf
 
@@ -58,6 +59,8 @@ REQUIRED_FILES = [
     "reports/coordination_report.md",
     "reports/bill_of_materials.csv",
     "reports/clash_clearance_report.csv",
+    "reports/parameter_reconciliation.csv",
+    "reports/parameter_reconciliation.md",
 ]
 
 
@@ -71,6 +74,8 @@ def artifact_structure_error(path: Path) -> str | None:
             return "invalid ISO-10303 STEP envelope"
         if data.startswith(b"OPENCAD-MOCK"):
             return "analytic OpenCAD mock is not a STEP file"
+        if not any(line.lstrip().startswith(b"#") and b"=" in line for line in data.splitlines()):
+            return "STEP DATA section contains no entities"
 
     elif suffix == ".stl":
         data = path.read_bytes()
@@ -110,9 +115,48 @@ def artifact_structure_error(path: Path) -> str | None:
     elif suffix == ".fcstd":
         if not zipfile.is_zipfile(path):
             return "FCStd is not a valid ZIP container"
-        with zipfile.ZipFile(path) as archive:
-            if "Document.xml" not in archive.namelist():
-                return "FCStd is missing Document.xml"
+        try:
+            with zipfile.ZipFile(path) as archive:
+                infos = archive.infolist()
+                names = [info.filename for info in infos]
+                if len(names) != len(set(names)):
+                    return "FCStd contains duplicate archive members"
+                for info in infos:
+                    member = PurePosixPath(info.filename)
+                    if (
+                        member.is_absolute()
+                        or not info.filename
+                        or "\\" in info.filename
+                        or any(ord(character) < 32 for character in info.filename)
+                        or any(
+                            part in {"", ".", ".."}
+                            or not all(
+                                character.isascii()
+                                and (character.isalnum() or character in "._-")
+                                for character in part
+                            )
+                            for part in info.filename.split("/")
+                        )
+                    ):
+                        return f"FCStd contains unsafe archive member: {info.filename}"
+                    if info.flag_bits & 1:
+                        return f"FCStd contains encrypted archive member: {info.filename}"
+                    if stat.S_ISLNK(info.external_attr >> 16):
+                        return f"FCStd contains symlink archive member: {info.filename}"
+                    if info.file_size > 10 * 1024 * 1024:
+                        return f"FCStd archive member is too large: {info.filename}"
+                    ratio = info.file_size / max(info.compress_size, 1)
+                    if ratio > 1000:
+                        return f"FCStd archive member has suspicious compression: {info.filename}"
+                if sum(info.file_size for info in infos) > 20 * 1024 * 1024:
+                    return "FCStd uncompressed archive is too large"
+                if names.count("Document.xml") != 1:
+                    return "FCStd must contain exactly one Document.xml"
+                bad_member = archive.testzip()
+                if bad_member is not None:
+                    return f"FCStd CRC failure in {bad_member}"
+        except (OSError, RuntimeError, zipfile.BadZipFile) as exc:
+            return f"FCStd ZIP validation failed: {exc}"
     return None
 
 
@@ -154,7 +198,7 @@ def validate() -> dict[str, object]:
 
     unindexed_required = sorted(set(REQUIRED_FILES) - indexed_paths)
     if unindexed_required:
-        warnings.append(
+        failures.append(
             "Required generated files not in export index: " + ", ".join(unindexed_required)
         )
 

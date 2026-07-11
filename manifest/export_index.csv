@@ -80,3 +80,5 @@ drawing_duct_hanger_detail_001,pdf,qcad/pdf_exports/duct_hanger_detail.pdf
 report_coordination_001,md,reports/coordination_report.md
 report_bom_001,csv,reports/bill_of_materials.csv
 report_clash_clearance_001,csv,reports/clash_clearance_report.csv
+report_parameter_reconciliation_001,csv,reports/parameter_reconciliation.csv
+report_parameter_reconciliation_001,md,reports/parameter_reconciliation.md

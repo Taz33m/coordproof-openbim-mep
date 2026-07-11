@@ -9,7 +9,7 @@ from project_spec import ProjectSpecError, clear_project_spec_cache, load_projec
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "spec" / "mechanical_room.project.json"
-PROJECT_SPEC_V1_FINGERPRINT = "a1fdd056eaccbc99ff80a1828110fd4cac55a2df91383ffc9d52d3509fca1242"
+PROJECT_SPEC_V1_FINGERPRINT = "c147c503bf8bcd86568b40d9cda770d094f928c9558c02a4075e89726c27a294"
 
 
 def test_project_spec_v1_migration_fingerprint() -> None:
@@ -31,6 +31,23 @@ def test_loaded_project_spec_is_deeply_immutable() -> None:
     with pytest.raises(TypeError):
         asset_type.parameters["radius_mm"] = 999  # type: ignore[index]
     assert isinstance(project.occurrences[0].dimensions_mm, tuple)
+
+
+def test_asset_type_parameters_are_isolated_and_group_checked() -> None:
+    project = load_project_spec()
+    asset_id = "openscad_pipe_clamp_type_b"
+
+    parameters = project.parameters_for_asset_type(
+        asset_id,
+        expected_group="openscad",
+    )
+
+    parameters["pipe_diameter_mm"] = 999
+    assert project.asset_types_by_id[asset_id].parameters["pipe_diameter_mm"] != 999
+    with pytest.raises(ValueError, match="expected cadquery"):
+        project.parameters_for_asset_type(asset_id, expected_group="cadquery")
+    with pytest.raises(ValueError, match="Unknown ProjectSpec asset type"):
+        project.parameters_for_asset_type("missing", expected_group="openscad")
 
 
 def test_project_spec_cache_refreshes_when_source_file_changes(tmp_path: Path) -> None:

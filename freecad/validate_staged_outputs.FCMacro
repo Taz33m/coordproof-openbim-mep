@@ -1,0 +1,80 @@
+"""Reopen and validate every native FreeCAD artifact before publication."""
+
+import os
+
+import FreeCAD as App
+import Part
+
+
+SOURCE_PATH = os.environ["COORDPROOF_FREECAD_SOURCE_PATH"]
+BIM_PATH = os.environ["COORDPROOF_FREECAD_BIM_PATH"]
+ASSEMBLY_STEP_PATH = os.environ["COORDPROOF_FREECAD_ASSEMBLY_STEP_PATH"]
+
+
+def validate_document(path, expected_objects, expected_null_names):
+    doc = App.openDocument(path)
+    if doc is None:
+        raise RuntimeError("FreeCAD could not reopen staged document: " + path)
+    try:
+        objects = list(doc.Objects)
+        if len(objects) != expected_objects:
+            raise RuntimeError(
+                "Unexpected staged object count for %s: expected %d, found %d"
+                % (path, expected_objects, len(objects))
+            )
+        shaped = [obj for obj in objects if hasattr(obj, "Shape")]
+        if len(shaped) != expected_objects:
+            raise RuntimeError(
+                "Unexpected shape-bearing object count for %s: expected %d, found %d"
+                % (path, expected_objects, len(shaped))
+            )
+        null_names = {obj.Name for obj in shaped if obj.Shape.isNull()}
+        if null_names != set(expected_null_names):
+            raise RuntimeError(
+                "Unexpected null shapes for %s: expected %s, found %s"
+                % (path, sorted(expected_null_names), sorted(null_names))
+            )
+        invalid_names = [
+            obj.Name
+            for obj in shaped
+            if not obj.Shape.isNull() and not obj.Shape.isValid()
+        ]
+        if invalid_names:
+            raise RuntimeError(
+                "Invalid native shapes in %s: %s" % (path, sorted(invalid_names))
+            )
+    finally:
+        App.closeDocument(doc.Name)
+
+
+validate_document(SOURCE_PATH, 61, set())
+validate_document(
+    BIM_PATH,
+    74,
+    {"BuildingPart", "BuildingPart001", "Project", "Site", "Space"},
+)
+
+step_shape = Part.read(ASSEMBLY_STEP_PATH)
+if step_shape.isNull() or not step_shape.isValid():
+    raise RuntimeError("Staged assembly STEP did not reopen as a valid native shape")
+if len(step_shape.Solids) != 122:
+    raise RuntimeError(
+        "Unexpected staged assembly STEP solid count: expected 122, found %d"
+        % len(step_shape.Solids)
+    )
+box = step_shape.BoundBox
+actual_bounds = (box.XMin, box.XMax, box.YMin, box.YMax, box.ZMin, box.ZMax)
+expected_bounds = (0.0, 6000.0, -280.0, 4200.0, 0.0, 3400.0)
+if any(abs(actual - expected) > 1e-6 for actual, expected in zip(actual_bounds, expected_bounds)):
+    raise RuntimeError(
+        "Unexpected staged assembly STEP bounds: expected %s, found %s"
+        % (expected_bounds, actual_bounds)
+    )
+expected_volume = 48200177173.668
+if abs(step_shape.Volume - expected_volume) > 1e-3:
+    raise RuntimeError(
+        "Unexpected staged assembly STEP volume: expected %.3f, found %.3f"
+        % (expected_volume, step_shape.Volume)
+    )
+
+print("Native staged FreeCAD validation PASSED")

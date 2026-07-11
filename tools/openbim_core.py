@@ -10,17 +10,16 @@ from __future__ import annotations
 import csv
 import json
 import math
-import os
 import uuid
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
 
 import ifcopenshell
 import ifcopenshell.guid
 from project_spec import ProjectSpec, load_project_spec
+from reproducibility import source_timestamp
 
 ROOT = Path(__file__).resolve().parents[1]
 IFC_PATH = ROOT / "bim" / "mechanical_room.ifc"
@@ -81,12 +80,7 @@ def connection_description(
 class OpenBIMBuilder:
     def __init__(self) -> None:
         self.model = ifcopenshell.file(schema="IFC4")
-        source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
-        if source_date_epoch is not None:
-            timestamp = datetime.fromtimestamp(
-                int(source_date_epoch), tz=UTC
-            ).strftime("%Y-%m-%dT%H:%M:%S")
-            self.model.header.file_name.time_stamp = timestamp
+        self.model.header.file_name.time_stamp = source_timestamp()
         self.body_context = None
         self.materials: dict[str, object] = {}
         self.products_by_asset: dict[str, object] = {}

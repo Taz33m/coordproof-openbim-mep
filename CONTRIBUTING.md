@@ -14,6 +14,7 @@ environment.
 make install-dev
 make doctor
 make spec-validate
+make reconcile
 make lint
 make test
 make validate
@@ -29,6 +30,11 @@ needs FreeCAD, OpenSCAD, and QCAD's `dwg2pdf` command:
 make doctor-full
 make all
 ```
+
+The full build stages and validates desktop outputs before atomically replacing
+tracked artifacts. Run it twice after changing a desktop generator and require
+the second run to produce no tracked diff; do not bypass a strict normalizer
+when a vendor changes its output shape.
 
 Set `FREECAD_CMD`, `OPENSCAD_CMD`, or `QCAD_DWG2PDF` when those tools are not on
 `PATH`. The optional OpenCAD experiment has a separate pinned environment:
@@ -51,13 +57,20 @@ For a new or changed asset:
    together; do not silently reinterpret an existing `schema_version`. Update
    the reviewed v1 migration fingerprint in `tests/test_project_spec_runtime.py`
    and explain the semantic change.
-4. Keep CadQuery `DEFAULT_PARAMETERS` synchronized with reusable type parameters;
-   source validation rejects drift. Occurrence coordination dimensions may differ
-   only when that distinction is explicit and tested.
-5. Regenerate affected STEP/STL, manifests, IFC, reports, and drawings.
-6. Add or update tests for dimensions, references, port-system bindings, and
+4. Update `spec/reconciliation.contract.json` when a producer input, alias, or
+   type-to-occurrence relationship changes. Every scoped numeric input must be
+   bound. Derived relations use the supported operator vocabulary; overrides
+   require a concrete rationale.
+5. Keep CadQuery `DEFAULT_PARAMETERS` synchronized as standalone fallbacks;
+   production generation passes ProjectSpec parameters explicitly. OpenSCAD
+   aliases must remain complete so every command-line `-D` value comes from
+   ProjectSpec. Occurrence coordination dimensions may differ only when that
+   distinction is explicit and tested.
+6. Regenerate affected STEP/STL, manifests, IFC, reports, and drawings.
+7. Add or update tests for dimensions, references, port-system bindings, and
    invalid parameter combinations.
-7. Run validation and inspect the generated report—not only screenshots.
+8. Run validation and inspect both reconciliation and validation reports—not
+   only screenshots.
 
 Use `make spec-summary` to review normalized inventory counts after a model
 change. `tools/asset_catalog.py` and `tools/openbim_core.py` are compatibility

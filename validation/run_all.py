@@ -8,6 +8,7 @@ from pathlib import Path
 from validate_exports import validate as validate_exports
 from validate_ifc import validate as validate_ifc
 from validate_manifest import validate as validate_manifest
+from validate_reconciliation import validate as validate_reconciliation
 from validate_sources import validate as validate_sources
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +50,13 @@ def render_section(result: dict[str, object]) -> list[str]:
 
 
 def main() -> int:
-    results = [validate_sources(), validate_ifc(), validate_manifest(), validate_exports()]
+    results = [
+        validate_sources(),
+        validate_reconciliation(),
+        validate_ifc(),
+        validate_manifest(),
+        validate_exports(),
+    ]
     overall = "passed" if all(result["status"] == "passed" for result in results) else "failed"
     lines = [
         "# Validation Report",
@@ -67,6 +74,9 @@ def main() -> int:
     REPORT.write_text("\n".join(lines), encoding="utf-8")
     print(f"Wrote {REPORT}")
     print(f"Overall Status: {status_line(overall)}")
+    validation_token = os.environ.get("COORDPROOF_VALIDATION_TOKEN")
+    if validation_token:
+        print(f"Validation Run Token: {validation_token}")
     return 0 if overall == "passed" else 1
 
 

@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://taz33m.github.io/coordproof-openbim-mep/schema/reconciliation-v1.json",
+  "title": "CoordProof parameter reconciliation contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "project_spec",
+    "default_tolerance_mm",
+    "producers",
+    "relations"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "integer", "const": 1},
+    "project_spec": {"$ref": "#/$defs/safePath"},
+    "default_tolerance_mm": {"type": "number", "minimum": 0},
+    "producers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/producer"}
+    },
+    "relations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/relation"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "parameterName": {
+      "type": "string",
+      "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+    },
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[^\\x00-\\x1f:]+$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {"enum": ["asset_type", "occurrence"]},
+        "id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "assetTypeEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "path"],
+      "properties": {
+        "kind": {"const": "asset_type"},
+        "id": {"$ref": "#/$defs/id"},
+        "path": {
+          "type": "string",
+          "pattern": "^parameters\\.[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "occurrenceEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "path"],
+      "properties": {
+        "kind": {"const": "occurrence"},
+        "id": {"$ref": "#/$defs/id"},
+        "path": {
+          "type": "string",
+          "pattern": "^(?:dimensions|origin)_mm\\[[0-2]\\]$"
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_id",
+        "adapter",
+        "path",
+        "subject",
+        "parameter_map"
+      ],
+      "properties": {
+        "producer_id": {"$ref": "#/$defs/id"},
+        "adapter": {"enum": ["python_mapping", "openscad_assignments"]},
+        "path": {"$ref": "#/$defs/safePath"},
+        "selector": {"$ref": "#/$defs/parameterName"},
+        "subject": {"$ref": "#/$defs/subject"},
+        "parameter_map": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "anyOf": [
+              {"const": "*"},
+              {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+            ]
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {"const": "*"},
+              {"$ref": "#/$defs/parameterName"}
+            ]
+          }
+        },
+        "excluded_parameters": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/parameterName"},
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "tolerance_mm": {"type": "number", "minimum": 0}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"adapter": {"const": "python_mapping"}}},
+          "then": {"required": ["selector"]}
+        }
+      ]
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator"],
+      "properties": {
+        "operator": {"enum": ["identity", "divide", "multiply", "add", "subtract"]},
+        "operand": {"type": "number"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"operator": {"enum": ["divide", "multiply", "add", "subtract"]}}
+          },
+          "then": {"required": ["operand"]}
+        }
+      ]
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_id", "from", "to", "classification"],
+      "properties": {
+        "relation_id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/assetTypeEndpoint"},
+        "to": {"$ref": "#/$defs/occurrenceEndpoint"},
+        "classification": {"enum": ["equal", "derived", "override"]},
+        "transform": {"$ref": "#/$defs/transform"},
+        "tolerance_mm": {"type": "number", "minimum": 0},
+        "reason": {"type": "string", "minLength": 1, "pattern": "\\S"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"classification": {"const": "derived"}}},
+          "then": {"required": ["transform"]}
+        },
+        {
+          "if": {"properties": {"classification": {"const": "equal"}}},
+          "then": {"not": {"required": ["transform"]}}
+        },
+        {
+          "if": {"properties": {"classification": {"const": "override"}}},
+          "then": {
+            "required": ["reason"],
+            "not": {"required": ["transform"]}
+          }
+        }
+      ]
+    }
+  }
+}

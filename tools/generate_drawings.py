@@ -69,6 +69,10 @@ def pipe_plan(asset_id: str) -> tuple[tuple[float, float], tuple[float, float], 
 def setup_doc() -> ezdxf.EzDxfDocument:
     doc = ezdxf.new("R2010")
     doc.header["$INSUNITS"] = 4
+    # ezdxf otherwise discovers these classes through a set at write time, so
+    # their serialized order changes with PYTHONHASHSEED across processes.
+    for dxftype in ("ACDBPLACEHOLDER", "LAYOUT"):
+        doc.classes.add_class(dxftype)
     for name, (color, lineweight) in LAYERS.items():
         if name not in doc.layers:
             doc.layers.add(name=name, color=color, lineweight=lineweight)
