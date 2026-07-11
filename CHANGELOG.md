@@ -45,3 +45,10 @@ and uses semantic versioning for source and evidence-contract releases.
 - Cable-tray range generation rejects zero, negative, and non-finite pitches.
 - Export validation parses STEP/STL/DXF/PDF/FCStd structure instead of accepting
   every non-empty file.
+- Reconciliation rejects shadowed CadQuery modules, unscanned OpenSCAD inputs,
+  producer-mapping mutation, invalid relation topology, and status laundering.
+- CadQuery producer checks require canonical ProjectSpec forwarding, bounded
+  numeric-input consumption, and per-parameter geometry sensitivity.
+- DXF class serialization is stable across Python hash seeds.
+- The development test range starts at pytest 9.0.3, which fixes
+  CVE-2025-71176 temporary-directory handling on UNIX.

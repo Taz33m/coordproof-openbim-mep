@@ -43,6 +43,13 @@ The first enforced scope covers all required CadQuery and OpenSCAD producers,
 and selected occurrence relations. FreeCAD and drawing adapters remain an
 explicit follow-up boundary.
 
+For CadQuery, the source gate requires canonical ProjectSpec forwarding, bounded
+literal reads of the merged mapping, consumption of every numeric fallback, and
+a differential test showing that each current numeric input changes the shape
+signature. For OpenSCAD, it validates literal declarations and the generator's
+`-D` injection boundary. Reconciliation does not measure committed STEP/STL
+dimensions; observed-export parity remains separate work.
+
 ## 3. Generate Structured Metadata
 
 ```bash

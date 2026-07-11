@@ -60,7 +60,8 @@ Status: **PASSED**
 
 ### Warnings
 
-- This v1 contract gates CadQuery engineering inputs, all top-level OpenSCAD numeric inputs or justified exclusions, and declared type-to-occurrence relations; FreeCAD and drawing adapters remain the next scope.
+- This v1 contract verifies CadQuery fallback mappings and canonical ProjectSpec forwarding, OpenSCAD literal declarations and deterministic -D injection, and declared type-to-occurrence relations.
+- CadQuery parameter-sensitivity tests show that each current numeric input changes generated geometry, but reconciliation does not prove exact BRep/mesh dimensions or dimensional parity of committed exports; FreeCAD, drawings, and observed-export measurement remain future scope.
 
 ## IFC Validation
 

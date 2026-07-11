@@ -50,16 +50,29 @@
         "id": {"$ref": "#/$defs/id"}
       }
     },
-    "endpoint": {
+    "assetTypeEndpoint": {
       "type": "object",
       "additionalProperties": false,
       "required": ["kind", "id", "path"],
       "properties": {
-        "kind": {"enum": ["asset_type", "occurrence"]},
+        "kind": {"const": "asset_type"},
         "id": {"$ref": "#/$defs/id"},
         "path": {
           "type": "string",
-          "pattern": "^(?:parameters\\.[a-z][a-z0-9_]*|(?:dimensions|origin)_mm\\[[0-2]\\])$"
+          "pattern": "^parameters\\.[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "occurrenceEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "path"],
+      "properties": {
+        "kind": {"const": "occurrence"},
+        "id": {"$ref": "#/$defs/id"},
+        "path": {
+          "type": "string",
+          "pattern": "^(?:dimensions|origin)_mm\\[[0-2]\\]$"
         }
       }
     },
@@ -136,8 +149,8 @@
       "required": ["relation_id", "from", "to", "classification"],
       "properties": {
         "relation_id": {"$ref": "#/$defs/id"},
-        "from": {"$ref": "#/$defs/endpoint"},
-        "to": {"$ref": "#/$defs/endpoint"},
+        "from": {"$ref": "#/$defs/assetTypeEndpoint"},
+        "to": {"$ref": "#/$defs/occurrenceEndpoint"},
         "classification": {"enum": ["equal", "derived", "override"]},
         "transform": {"$ref": "#/$defs/transform"},
         "tolerance_mm": {"type": "number", "minimum": 0},

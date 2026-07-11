@@ -40,6 +40,12 @@ additional inputs are explicit OpenSCAD `$fn` facet-control exclusions, not
 engineering dimensions. Declared type-to-occurrence differences must be equal,
 safely derived, or a justified override.
 
+Reconciliation v1 verifies declared fallback values and the bounded plumbing
+that forwards ProjectSpec inputs into CadQuery or OpenSCAD. Differential tests
+also confirm that every current numeric CadQuery input changes generated
+geometry. These checks are not a dimensional inspection of committed STEP/STL
+files; observed-export parity remains a separate roadmap milestone.
+
 The package connects geometry, drawings, IFC semantics, reports, and QA outputs as inspectable artifacts.
 
 ![CoordProof generated OpenBIM package](screenshots/00_coordproof_system_overview.png)
@@ -67,7 +73,7 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 | Manifest assets | 56 | Traceable asset and evidence inventory across 15 categories. |
 | DXF/PDF sheets | 7 + 7 | QCAD drawing package and review exports. |
 | STEP/STL exports | 10 + 13 | Reusable CAD assets and mesh review/export layer. |
-| Canonical engineering parameters | 75 / 75 | Reconciled across the required CadQuery/OpenSCAD producers. |
+| Canonical engineering parameters | 75 / 75 | Default/input bindings reconciled across the required CadQuery/OpenSCAD producers. |
 | Observed producer numeric inputs | 78 / 78 | Accounted for: 75 mapped values and 3 explicit OpenSCAD `$fn` technical exclusions. |
 | Reconciliation relations | 17 | Equal, safely derived, or justified type-to-occurrence relationships. |
 | Critical validation failures | 0 | Current automated QA status. |

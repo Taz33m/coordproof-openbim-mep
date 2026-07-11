@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from project_spec import ProjectSpec, load_project_spec
-from reconcile_parameters import load_contract
+from reconcile_parameters import contract_project_spec_path, load_contract
 from tooling import openscad_command
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -96,7 +96,7 @@ def main() -> int:
         raise SystemExit("OpenSCAD was not found. Set OPENSCAD_CMD or add openscad to PATH.")
     out_dir = ROOT / "exports" / "stl"
     out_dir.mkdir(parents=True, exist_ok=True)
-    project = load_project_spec()
+    project = load_project_spec(contract_project_spec_path())
     for asset_id, source in ASSETS.items():
         output = out_dir / f"{asset_id}.stl"
         source_path = ROOT / source

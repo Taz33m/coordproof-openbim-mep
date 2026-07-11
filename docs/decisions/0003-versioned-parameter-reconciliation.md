@@ -29,10 +29,23 @@ CadQuery and OpenSCAD are the first enforced producer scope. FreeCAD and drawing
 adapters will be added as their legacy composition and annotation contracts are
 made explicit.
 
+The CadQuery adapter accepts a deliberately bounded source shape: an
+undecorated `build(parameters=None)` must begin with the trusted merge helper,
+the merged mapping may only be read through literal known keys, and every
+numeric fallback input must be consumed. Differential geometry tests perturb
+each current numeric CadQuery input and require the generated shape signature to
+change. The OpenSCAD adapter verifies literal top-level declarations while the
+generator injects mapped ProjectSpec values with deterministic `-D` arguments.
+
+This contract proves declared fallback alignment, supported input plumbing, and
+the classified relations in its report. It does not prove exact BRep/mesh
+dimensions or that committed exports geometrically match every declared value;
+those require format-specific observed-geometry checks.
+
 ## Consequences
 
-- Changing a scoped ProjectSpec parameter produces matching evidence or a
-  producer-specific failure.
+- Changing a scoped fallback or supported producer binding produces matching
+  evidence or a producer-specific failure.
 - OpenSCAD aliases remain explicit without leaking tool-specific names into the
   domain model.
 - Intentional occurrence envelopes are distinguishable from unexplained drift.

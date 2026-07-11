@@ -278,15 +278,15 @@ def run_project_spec_validation() -> list[str]:
 
 def main() -> int:
     failures: list[str] = []
-    # Refresh the deterministic validation report before inspecting it or its
-    # provenance record. This keeps one preflight invocation authoritative.
-    failures.extend(run_project_spec_validation())
-    failures.extend(run_validation())
+    # Golden evidence must already exist before live validation runs; preflight
+    # must not launder a missing committed report by regenerating it first.
     failures.extend(check_required_files())
     failures.extend(check_expected_counts())
     failures.extend(check_backups())
     failures.extend(check_git_ignored())
     failures.extend(check_validation_report())
+    failures.extend(run_project_spec_validation())
+    failures.extend(run_validation())
     failures.extend(check_provenance())
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room.ifc", min_products=43))
     failures.extend(check_ifc(ROOT / "bim" / "mechanical_room_freecad_review.ifc", min_products=40))

@@ -18,8 +18,13 @@ from reconcile_parameters import (  # noqa: E402
 
 def validate() -> dict[str, object]:
     result = reconcile()
+    live_status = result["status"]
     expected_csv, expected_markdown = render_reports(result)
     failures = list(result["failures"])
+    if live_status != "passed" and not failures:
+        failures.append(
+            "[LIVE_RECONCILIATION] reconciliation failed without a diagnostic"
+        )
     for path, expected in (
         (DEFAULT_CSV_PATH, expected_csv),
         (DEFAULT_MARKDOWN_PATH, expected_markdown),
@@ -31,7 +36,9 @@ def validate() -> dict[str, object]:
                 f"[STALE_REPORT] {path.relative_to(ROOT)} does not match live reconciliation"
             )
     result["failures"] = failures
-    result["status"] = "passed" if not failures else "failed"
+    result["status"] = (
+        "passed" if live_status == "passed" and not failures else "failed"
+    )
     result["summary"] = {
         **result["summary"],
         "committed_report_count": 2,

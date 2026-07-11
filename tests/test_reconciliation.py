@@ -58,7 +58,7 @@ RECONCILIATION_CONTRACT_V1_FINGERPRINT = (
     "df5ca1354eaeb929e63fcff1c7b6170901d7cf4e992ba43f796f4f2f7d9b08f3"
 )
 RECONCILIATION_SCHEMA_V1_FINGERPRINT = (
-    "22a472fae49dbb8fffc43fc6f1a3efd4759d92f2edca956d8fd83e7811ef3c5c"
+    "36ea29e197bd831af859608eea2a8ad348bec94f86a210e7a1dabb3459df3f9d"
 )
 
 
@@ -159,6 +159,60 @@ def test_validation_rejects_stale_committed_reconciliation_report(
     assert result["summary"]["failure_count"] == 1
     assert result["failures"] == [
         f"[STALE_REPORT] {stale_path.name} does not match live reconciliation"
+    ]
+
+
+def test_validation_never_launders_a_failed_live_result(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    failed_result = {
+        "name": "Parameter Reconciliation",
+        "status": "failed",
+        "summary": {"failed_row_count": 1},
+        "failures": [],
+        "warnings": [],
+        "rows": [
+            {
+                "relation_id": "failed_relation",
+                "subject_kind": "occurrence",
+                "subject_id": "failed_occurrence",
+                "canonical_path": "$.asset_types[failed].parameters.length_mm",
+                "producer": "project_spec.relation",
+                "producer_path": "$.occurrences[failed].dimensions_mm[0]",
+                "relation": "derived",
+                "expected": None,
+                "actual": None,
+                "unit": "mm",
+                "tolerance_mm": 0,
+                "status": "failed",
+                "reason": "",
+            }
+        ],
+    }
+    csv_text, markdown_text = render_reports(failed_result)
+    csv_path = tmp_path / DEFAULT_CSV_PATH.name
+    markdown_path = tmp_path / DEFAULT_MARKDOWN_PATH.name
+    csv_path.write_text(csv_text, encoding="utf-8")
+    markdown_path.write_text(markdown_text, encoding="utf-8")
+    monkeypatch.setattr(reconciliation_validation, "ROOT", tmp_path)
+    monkeypatch.setattr(reconciliation_validation, "DEFAULT_CSV_PATH", csv_path)
+    monkeypatch.setattr(
+        reconciliation_validation,
+        "DEFAULT_MARKDOWN_PATH",
+        markdown_path,
+    )
+    monkeypatch.setattr(
+        reconciliation_validation,
+        "reconcile",
+        lambda: copy.deepcopy(failed_result),
+    )
+
+    result = reconciliation_validation.validate()
+
+    assert result["status"] == "failed"
+    assert result["failures"] == [
+        "[LIVE_RECONCILIATION] reconciliation failed without a diagnostic"
     ]
 
 
@@ -284,6 +338,109 @@ def test_override_relation_requires_a_nonempty_reason(tmp_path: Path) -> None:
     assert override["relation_id"] in diagnostic
     assert "override" in diagnostic.lower()
     assert "reason" in diagnostic.lower()
+
+
+def test_relations_must_point_from_type_to_occurrence(tmp_path: Path) -> None:
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    relation = next(
+        item for item in contract["relations"] if item["relation_id"] == "duct_main_width"
+    )
+    relation["from"] = copy.deepcopy(relation["to"])
+    path = write_json(tmp_path / "wrong-direction.json", contract)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH, contract_path=path)
+
+    assert result["status"] == "failed"
+    diagnostic = "\n".join(result["failures"])
+    assert "duct_main_width" in diagnostic
+    assert "asset_type" in diagnostic
+
+
+def test_relation_occurrence_must_instantiate_source_type(tmp_path: Path) -> None:
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    relation = next(
+        item for item in contract["relations"] if item["relation_id"] == "duct_main_width"
+    )
+    relation["to"] = {
+        "kind": "occurrence",
+        "id": "equipment_ahu_001",
+        "path": "dimensions_mm[1]",
+    }
+    path = write_json(tmp_path / "wrong-occurrence-type.json", contract)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH, contract_path=path)
+
+    assert result["status"] == "failed"
+    diagnostic = "\n".join(result["failures"])
+    assert "does not instantiate the source type" in diagnostic
+    assert "equipment_ahu_001" in diagnostic
+    assert "duct_main_001" in diagnostic
+
+
+@pytest.mark.parametrize(
+    ("operator", "operand"),
+    [
+        ("add", 0),
+        ("subtract", 0),
+        ("multiply", 0),
+        ("multiply", 1),
+        ("divide", 1),
+    ],
+)
+def test_derived_relations_reject_neutral_or_degenerate_transforms(
+    tmp_path: Path,
+    operator: str,
+    operand: int,
+) -> None:
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    relation = next(
+        item for item in contract["relations"] if item["relation_id"] == "duct_main_width"
+    )
+    relation["classification"] = "derived"
+    relation["transform"] = {"operator": operator, "operand": operand}
+    path = write_json(tmp_path / f"neutral-{operator}.json", contract)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH, contract_path=path)
+
+    assert result["status"] == "failed"
+    assert "neutral or degenerate" in "\n".join(result["failures"])
+
+
+def test_derived_relation_divide_by_zero_has_a_diagnostic(tmp_path: Path) -> None:
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    relation = next(
+        item
+        for item in contract["relations"]
+        if item["relation_id"] == "pipe_supply_diameter_to_radius"
+    )
+    relation["transform"]["operand"] = 0
+    path = write_json(tmp_path / "divide-zero.json", contract)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH, contract_path=path)
+
+    assert result["status"] == "failed"
+    assert result["failures"]
+    assert "divides by zero" in "\n".join(result["failures"])
+
+
+def test_wildcard_python_mapping_cannot_hide_exclusions(tmp_path: Path) -> None:
+    contract = copy.deepcopy(load_contract(DEFAULT_CONTRACT_PATH))
+    producer = next(
+        item
+        for item in contract["producers"]
+        if item["adapter"] == "python_mapping"
+    )
+    producer["excluded_parameters"] = {
+        "length_mm": "This must remain mapped by the wildcard."
+    }
+    path = write_json(tmp_path / "wildcard-exclusion.json", contract)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH, contract_path=path)
+
+    assert result["status"] == "failed"
+    assert "wildcard parameter_map cannot define exclusions" in "\n".join(
+        result["failures"]
+    )
 
 
 def test_mutated_project_parameter_reports_precise_source_drift(tmp_path: Path) -> None:
@@ -469,6 +626,32 @@ def test_generator_aliases_are_loaded_from_the_contract() -> None:
     assert set(OPENSCAD_ASSETS) == set(contract_aliases)
 
 
+def test_cadquery_loader_uses_the_exact_reconciled_source(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    repo_root = tmp_path / "repo"
+    source_dir = repo_root / "cadquery"
+    shadow_dir = tmp_path / "shadow"
+    source_dir.mkdir(parents=True)
+    shadow_dir.mkdir()
+    (source_dir / "sample_asset.py").write_text(
+        'ORIGIN = "reconciled"\n',
+        encoding="utf-8",
+    )
+    (shadow_dir / "sample_asset.py").write_text(
+        'raise RuntimeError("shadow module executed")\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cadquery_generate_all, "ROOT", repo_root)
+    monkeypatch.syspath_prepend(str(shadow_dir))
+
+    module = cadquery_generate_all.load_asset_module("sample_asset")
+
+    assert module.ORIGIN == "reconciled"
+    assert Path(module.__file__).resolve() == (source_dir / "sample_asset.py").resolve()
+
+
 def test_cadquery_producer_asset_id_drift_is_rejected(
     tmp_path: Path,
     monkeypatch,
@@ -523,6 +706,57 @@ def test_extra_openscad_numeric_input_increases_scope_and_fails_coverage(
     assert "unmapped_test_input_mm" in diagnostic
 
 
+def test_openscad_block_comment_cannot_spoof_a_live_value(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    copy_producer_sources(tmp_path)
+    source = tmp_path / "openscad" / "bracket_plate.scad"
+    text = source.read_text(encoding="utf-8")
+    text = text.replace("plate_length_mm = 180;", "plate_length_mm = 999;", 1)
+    source.write_text(
+        text + "\n/*\nplate_length_mm = 180;\n*/\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(reconciliation, "ROOT", tmp_path)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH)
+
+    assert result["status"] == "failed"
+    diagnostic = "\n".join(result["failures"])
+    assert "plate_length_mm" in diagnostic
+    assert "999" in diagnostic
+
+
+@pytest.mark.parametrize(
+    ("extra_source", "expected_diagnostic"),
+    [
+        ("hidden_geometry_input_mm = 100 + 20;", "finite numeric literals"),
+        ("include <hidden_inputs.scad>", "include/use directives"),
+        ("$fn = 48; include <hidden_inputs.scad>", "include/use directives"),
+        ("pipe_diameter_mm = 50;", "repeats a top-level input"),
+    ],
+)
+def test_openscad_unscanned_or_duplicate_inputs_fail_closed(
+    tmp_path: Path,
+    monkeypatch,
+    extra_source: str,
+    expected_diagnostic: str,
+) -> None:
+    copy_producer_sources(tmp_path)
+    source = tmp_path / "openscad" / "pipe_clamp.scad"
+    source.write_text(
+        source.read_text(encoding="utf-8") + f"\n{extra_source}\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(reconciliation, "ROOT", tmp_path)
+
+    result = reconcile(project_spec_path=DEFAULT_PROJECT_SPEC_PATH)
+
+    assert result["status"] == "failed"
+    assert expected_diagnostic in "\n".join(result["failures"])
+
+
 def test_python_mapping_rejects_duplicate_runtime_assignment(tmp_path: Path) -> None:
     source = tmp_path / "duplicate.py"
     source.write_text(
@@ -532,6 +766,169 @@ def test_python_mapping_rejects_duplicate_runtime_assignment(tmp_path: Path) -> 
     )
 
     with pytest.raises(ReconciliationError, match="one literal assignment"):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        'alias = DEFAULT_PARAMETERS\nalias["hidden_mm"] = 999',
+        'DEFAULT_PARAMETERS |= {"length_mm": 999}',
+        '(DEFAULT_PARAMETERS := {"length_mm": 999})',
+        'globals()["DEFAULT_PARAMETERS"]["hidden_mm"] = 999',
+        "def merged(parameters, defaults):\n"
+        '    defaults["hidden_mm"] = 999\n'
+        "    return defaults",
+    ],
+)
+def test_python_mapping_rejects_alias_and_name_level_mutation(
+    tmp_path: Path,
+    mutation: str,
+) -> None:
+    source = tmp_path / "mutated.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        "    p = merged(parameters, DEFAULT_PARAMETERS)\n"
+        "    return p\n"
+        f"{mutation}\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ReconciliationError,
+        match="selector|merged|dynamic|build parameters",
+    ):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+def test_python_mapping_requires_trusted_merged_import(tmp_path: Path) -> None:
+    source = tmp_path / "untrusted_merge.py"
+    source.write_text(
+        "from untrusted_helpers import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        "    return merged(parameters, DEFAULT_PARAMETERS)\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match="trusted merged"):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+def test_python_mapping_rejects_indirect_module_rebinding(tmp_path: Path) -> None:
+    source = tmp_path / "indirect_rebind.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        "import cadquery as cq\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        "    p = merged(parameters, DEFAULT_PARAMETERS)\n"
+        "    return p\n"
+        "cq.merged = lambda incoming, defaults: defaults\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match="indirect object mutation"):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+@pytest.mark.parametrize(
+    "first_argument",
+    [
+        '{"length_mm": 999}',
+        "dict(parameters or {}, length_mm=999)",
+        "None",
+    ],
+)
+def test_python_mapping_requires_canonical_build_parameters(
+    tmp_path: Path,
+    first_argument: str,
+) -> None:
+    source = tmp_path / "override_parameters.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        f"    p = merged({first_argument}, DEFAULT_PARAMETERS)\n"
+        "    return p\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match="canonical merged"):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+def test_python_mapping_rejects_build_parameter_rebinding(tmp_path: Path) -> None:
+    source = tmp_path / "rebound_parameters.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        "    p = merged(parameters, DEFAULT_PARAMETERS)\n"
+        '    parameters = {"length_mm": 999}\n'
+        "    return p\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match="build parameters"):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+@pytest.mark.parametrize(
+    ("body", "diagnostic"),
+    [
+        (
+            '    p.update({"length_mm": 999})\n'
+            '    return float(p["length_mm"])\n',
+            "escapes literal key reads",
+        ),
+        (
+            '    p = {**p, "length_mm": 999}\n'
+            '    return float(p["length_mm"])\n',
+            "escapes literal key reads",
+        ),
+        ("    return 999.0\n", "numeric inputs are not consumed"),
+        (
+            '    return float(p["unknown_mm"])\n',
+            "unknown input key",
+        ),
+    ],
+)
+def test_python_mapping_rejects_unsafe_or_missing_consumption(
+    tmp_path: Path,
+    body: str,
+    diagnostic: str,
+) -> None:
+    source = tmp_path / "unsafe_consumption.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260}\n'
+        "def build(parameters=None):\n"
+        "    p = merged(parameters, DEFAULT_PARAMETERS)\n"
+        f"{body}",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match=diagnostic):
+        _python_mapping(source, "DEFAULT_PARAMETERS")
+
+
+def test_python_mapping_requires_every_numeric_input_to_be_consumed(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "missing_consumption.py"
+    source.write_text(
+        "from asset_io import merged\n"
+        'DEFAULT_PARAMETERS = {"length_mm": 260, "width_mm": 160}\n'
+        "def build(parameters=None):\n"
+        "    p = merged(parameters, DEFAULT_PARAMETERS)\n"
+        '    return float(p["length_mm"])\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReconciliationError, match="width_mm"):
         _python_mapping(source, "DEFAULT_PARAMETERS")
 
 
@@ -552,10 +949,10 @@ def test_cadquery_generation_forwards_project_spec_parameters(monkeypatch) -> No
         {"fake_plate": asset_id},
     )
     monkeypatch.setattr(cadquery_generate_all, "ASSET_MODULES", ["fake_plate"])
-    monkeypatch.setattr(cadquery_generate_all, "load_project_spec", lambda: project)
+    monkeypatch.setattr(cadquery_generate_all, "load_project_spec", lambda path: project)
     monkeypatch.setattr(
-        cadquery_generate_all.importlib,
-        "import_module",
+        cadquery_generate_all,
+        "load_asset_module",
         lambda name: fake_module,
     )
     monkeypatch.setattr(

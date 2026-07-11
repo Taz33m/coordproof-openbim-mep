@@ -14,6 +14,8 @@
   parameters, 78/78 observed top-level producer numeric inputs accounted for,
   three explicit OpenSCAD `$fn` technical exclusions, and 17 declared
   type-to-occurrence relationships
+- Bounded CadQuery input consumption plus differential geometry sensitivity for
+  all 53 current numeric CadQuery inputs
 
 ## Next: complete cross-format parameter reconciliation
 

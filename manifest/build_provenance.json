@@ -150,15 +150,15 @@
     },
     "qcad/duct_hanger_detail.dxf": {
       "bytes": 24840,
-      "sha256": "73d4b588920e840bfbeeb8a49302ca3169b477adc67331579212b594cc17a238"
+      "sha256": "87988dfd2c411f4c6bca18f23cfd28e6d03a6a94aafdd12607197092944b739c"
     },
     "qcad/equipment_layout.dxf": {
       "bytes": 31934,
-      "sha256": "5f1157e824f220b24a694429763cf504885d4cba19b64ea29a9b172e75d3bf38"
+      "sha256": "17fcac55bf5f9d3c2ac2f9718f58b17691e3fbeff658091777084d5bf702fe40"
     },
     "qcad/floor_plan.dxf": {
       "bytes": 38583,
-      "sha256": "5f79d003d05200f3f5063516b096323145e511bd91d13e550ef9f39322330db3"
+      "sha256": "7214a1711f4bd2a1d86dfc486d931536d60e22ec5feb98ed3210092fef8cf90a"
     },
     "qcad/pdf_exports/duct_hanger_detail.pdf": {
       "bytes": 139367,
@@ -190,19 +190,19 @@
     },
     "qcad/pipe_support_detail.dxf": {
       "bytes": 24806,
-      "sha256": "5fc6d516704644b533ad8ef4328cd4bd8f6e1370bd880e4512e4c5054b8a2b2c"
+      "sha256": "3e87f73d2e46866d2e81ec65843c77975f63aea6f2be54bfbdb2ba7f88c2497d"
     },
     "qcad/section_aa.dxf": {
       "bytes": 26865,
-      "sha256": "6940ad6ae4796deeeca345fd6b9f4ec9d79705a9776108d2e1306340cbb0f6ba"
+      "sha256": "0abe2dc98c3a248faf61cf0a3057587b5dbcccd1f61e31074f659701a5ff1785"
     },
     "qcad/system_riser.dxf": {
       "bytes": 25399,
-      "sha256": "25fb1411bf1bcdb6f69b12f602c189a2108edf4b2159a24f5ab46ad9258da8e9"
+      "sha256": "5a0dbe8ad8443f6598a8e64ba6557d1eb65a238a379755e1e0a55b6268736247"
     },
     "qcad/wall_penetration_detail.dxf": {
       "bytes": 23723,
-      "sha256": "307f7e44403063f9fb764d5e3ad04d41c4e3e1d485a8a7a288db239f2d25f82f"
+      "sha256": "55c1189c1d03dc81f0e4c97d94143f5fc3c6402cefe9c36bc489c387b30ace01"
     },
     "reports/bill_of_materials.csv": {
       "bytes": 5026,
@@ -221,8 +221,8 @@
       "sha256": "f55bd81b79d5f18a9de87f8c02b5499e4a619cc562cfb5a8b617ebc173889d67"
     },
     "reports/parameter_reconciliation.md": {
-      "bytes": 22835,
-      "sha256": "70bb89d46225b6f8a6627bf1db61bff5841163c2e1687334fbedda194ecccf9f"
+      "bytes": 23102,
+      "sha256": "ca67f30a7494aaa68b022ac590640e6ade6c30adbc0927e8b9d7359f0272d463"
     },
     "screenshots/00_coordproof_system_overview.png": {
       "bytes": 466504,
@@ -269,12 +269,12 @@
       "sha256": "acb7fba50f74d1b885a867c12eb90e64f7246200c2aa9126b4d54c94be9f919c"
     },
     "spec/reconciliation.schema.json": {
-      "bytes": 4884,
-      "sha256": "c9bde378ed7f5f80c59ad8efa4072e7635d2e39ba86c2e68ec87bda8a76953b4"
+      "bytes": 5221,
+      "sha256": "18bf1f75e2ccc6102bf21b413bd463c272320f9af8ba710436c3f73b17aaa99d"
     },
     "validation/validation_report.md": {
-      "bytes": 3634,
-      "sha256": "86a6a12b65d47c0652858e5c470da78476d6faf3439a54ee338f1682b4ae890b"
+      "bytes": 3901,
+      "sha256": "ad421448929972cef88332f7315c138544447b50d130bc47f88d88367625b94f"
     }
   },
   "environment": {
