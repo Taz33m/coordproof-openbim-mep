@@ -60,6 +60,8 @@ ADDITIONAL_ARTIFACTS = (
     "reports/clash_clearance_report.csv",
     "reports/parameter_reconciliation.csv",
     "reports/parameter_reconciliation.md",
+    "reports/observed_geometry_matrix.csv",
+    "reports/observed_geometry_matrix.md",
     "validation/validation_report.md",
 )
 REQUIRED_SCREENSHOTS = tuple(

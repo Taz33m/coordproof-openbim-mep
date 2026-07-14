@@ -11,7 +11,7 @@ supporting CAD views of the same mechanical-room intent.
 - Schema: `IFC4`
 - Non-port product count: `43`
 - Distribution systems: `5`
-- Property sets: `131`
+- Property sets: `171`
 - Connected port relationships: `22`
 - Building element proxies: `0`
 
@@ -47,8 +47,8 @@ supporting CAD views of the same mechanical-room intent.
 | `IfcPipeSegment` | 4 |
 | `IfcProductDefinitionShape` | 40 |
 | `IfcProject` | 1 |
-| `IfcPropertySet` | 131 |
-| `IfcPropertySingleValue` | 555 |
+| `IfcPropertySet` | 171 |
+| `IfcPropertySingleValue` | 695 |
 | `IfcPump` | 2 |
 | `IfcRectangleProfileDef` | 24 |
 | `IfcRelAggregates` | 4 |
@@ -57,7 +57,7 @@ supporting CAD views of the same mechanical-room intent.
 | `IfcRelConnectsPortToElement` | 51 |
 | `IfcRelConnectsPorts` | 22 |
 | `IfcRelContainedInSpatialStructure` | 1 |
-| `IfcRelDefinesByProperties` | 131 |
+| `IfcRelDefinesByProperties` | 171 |
 | `IfcSIUnit` | 3 |
 | `IfcSensor` | 1 |
 | `IfcShapeRepresentation` | 40 |

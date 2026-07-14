@@ -44,3 +44,4 @@ report_coordination_001,Coordination_Report,IfcDocumentReference,report,"Generat
 report_bom_001,Bill_of_Materials,IfcDocumentReference,report,Generated BOM from the same semantic product schedule used for IFC output.
 report_clash_clearance_001,Clash_and_Clearance_Report,IfcDocumentReference,report,Generated bounding-box clearance and coordination checks for the mechanical-room layout.
 report_parameter_reconciliation_001,Parameter_Reconciliation_Report,IfcDocumentReference,report,Deterministic evidence for declared producer inputs and type-to-occurrence parameter relationships.
+report_observed_geometry_001,Observed_Geometry_Matrix,IfcDocumentReference,report,"Deterministic full-bounds parity evidence measured directly from committed IFC, STEP, STL, and selected DXF geometry."

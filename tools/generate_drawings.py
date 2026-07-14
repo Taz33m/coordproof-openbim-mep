@@ -85,9 +85,7 @@ def setup_doc() -> ezdxf.EzDxfDocument:
 
 def rect(msp, x: float, y: float, w: float, h: float, layer: str, close: bool = True) -> None:
     points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
-    if close:
-        points.append((x, y))
-    msp.add_lwpolyline(points, dxfattribs={"layer": layer})
+    msp.add_lwpolyline(points, close=close, dxfattribs={"layer": layer})
 
 
 def label(msp, text: str, x: float, y: float, height: float = 90, layer: str = "ANNOTATIONS") -> None:

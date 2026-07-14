@@ -2378,6 +2378,29 @@
         "md": "reports/parameter_reconciliation.md"
       },
       "notes": "Deterministic evidence for declared producer inputs and type-to-occurrence parameter relationships."
+    },
+    {
+      "artifact_id": "report_observed_geometry_001",
+      "catalog_order": 56,
+      "group": "report",
+      "display_name": "Observed Geometry Matrix",
+      "category": "report",
+      "source_tool": "Python and format-native readers",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "source_of_truth": "spec/mechanical_room.project.json",
+        "observed_formats": [
+          "ifc",
+          "step",
+          "stl",
+          "dxf"
+        ]
+      },
+      "exports": {
+        "csv": "reports/observed_geometry_matrix.csv",
+        "md": "reports/observed_geometry_matrix.md"
+      },
+      "notes": "Deterministic full-bounds parity evidence measured directly from committed IFC, STEP, STL, and selected DXF geometry."
     }
   ],
   "connections": [

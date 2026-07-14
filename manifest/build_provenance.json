@@ -5,24 +5,24 @@
   },
   "artifacts": {
     "Makefile": {
-      "bytes": 1882,
-      "sha256": "b1fa7b5e7a0debc01303148cecb82f8e1c33a2e62fff9642d26867899fb855c0"
+      "bytes": 1988,
+      "sha256": "84b23c9a073845a7ec57c2c2e611067c6727aecb9e60988cafa445d71b041400"
     },
     "bim/bim_object_map.csv": {
-      "bytes": 5939,
-      "sha256": "659ef8ee1df88a5eb411c63e5da34caf2aebfb8597ce096d96e2761f50f35a12"
+      "bytes": 6141,
+      "sha256": "927179133e6e793f61908055de33b1c7a6517f4e4f1e3b8421e6c96ac825fd0e"
     },
     "bim/ifc_entity_summary.md": {
       "bytes": 2074,
-      "sha256": "c69ed39ff0c305c6bdb6b3cec775e9e7cc8ec224dbcaa901e0340ca6f71c6736"
+      "sha256": "1ca61d6fd4b9ddc5b784057b4c1df849d50fdfd022d03297b69e146ec39ef665"
     },
     "bim/ifc_export_notes.md": {
       "bytes": 1212,
       "sha256": "80491e2b354fcb01dd8461f772b4dc9f66d5890fec9c4de4bdad9b2e29aacfb7"
     },
     "bim/mechanical_room.ifc": {
-      "bytes": 122119,
-      "sha256": "8acd102977af3604ee872ee3587fc59b559032392c567192caa6022a1bf1d3b8"
+      "bytes": 140999,
+      "sha256": "1c008dda548a7a2477acc1a0dc76f75cb720da193f2fa505da65b46fcd32888d"
     },
     "bim/mechanical_room_freecad_review.ifc": {
       "bytes": 117793,
@@ -77,8 +77,8 @@
       "sha256": "5d7a3106fc4aae27d4bc27ab9fd2965fa22c62eb9e28421bd3ca7c15c6b10ed4"
     },
     "constraints-release.txt": {
-      "bytes": 513,
-      "sha256": "dd1e2924716a17d023304ed3568e4c0d162fdffece606add64c920727ac52dc1"
+      "bytes": 527,
+      "sha256": "d3d5dbac895cc4291d9a96a0027ea8b8edb9b35e2d831f8a4f5478ced6baaf1d"
     },
     "exports/step/cable_tray_overhead_001.step": {
       "bytes": 97481,
@@ -193,16 +193,16 @@
       "sha256": "667f595a36bc9d3d782435112c3668ba15d3705b90f45e5b80be840f43149c2f"
     },
     "manifest/asset_manifest.json": {
-      "bytes": 32868,
-      "sha256": "c8c126432fdd2b557bcdecd8002eb45de80b3e9e75fdb6a44890bd5001a25609"
+      "bytes": 33656,
+      "sha256": "547b264a742113f0804b8b76faa1ead3a9ae9b673b8d55af6df1e6998397867f"
     },
     "manifest/export_index.csv": {
-      "bytes": 4984,
-      "sha256": "19fbd7d1cfdc95f4a917bdd10791b7276b4ba5a2a6ab00691d6f5c4bc52eea82"
+      "bytes": 5122,
+      "sha256": "f00bc4ea16d708e3a42570971a42e1e154b7cffe7e789aaa596e543a44ac090e"
     },
     "manifest/parameter_schema.json": {
-      "bytes": 3390,
-      "sha256": "fb7fc4ad7d02c1e8688e1fe34e375e14d2b39bcebc420069ed50e6e31cf66e84"
+      "bytes": 3496,
+      "sha256": "7e28e521f557d67931ecba6df1730a2abae0c68beb31ec5060e1225b4f0e45ad"
     },
     "openscad/bracket_plate.scad": {
       "bytes": 727,
@@ -221,16 +221,16 @@
       "sha256": "ca86ec3a09be7ff857f2abf5af2c5f5fdadeb0bbe3b7fbca5c312e0020d4a72a"
     },
     "qcad/duct_hanger_detail.dxf": {
-      "bytes": 24840,
-      "sha256": "87988dfd2c411f4c6bca18f23cfd28e6d03a6a94aafdd12607197092944b739c"
+      "bytes": 24643,
+      "sha256": "81ec46898e85a8180ca6634e6fc916d5a921fe6c779a292a3dad7f3d1d1b482c"
     },
     "qcad/equipment_layout.dxf": {
-      "bytes": 31934,
-      "sha256": "17fcac55bf5f9d3c2ac2f9718f58b17691e3fbeff658091777084d5bf702fe40"
+      "bytes": 31624,
+      "sha256": "2fc75db04490ad32c3e10c75bfeb983589c473c6695e7b9a1f4ed30543a568fc"
     },
     "qcad/floor_plan.dxf": {
-      "bytes": 38583,
-      "sha256": "7214a1711f4bd2a1d86dfc486d931536d60e22ec5feb98ed3210092fef8cf90a"
+      "bytes": 38115,
+      "sha256": "234566f53d3fbbf2c9ddfaa87090746e6dad0878f9d58d1da9e3dde961885fa0"
     },
     "qcad/pdf_exports/duct_hanger_detail.pdf": {
       "bytes": 139355,
@@ -261,20 +261,20 @@
       "sha256": "b1cf5178bccdb3598278cb5286d11c3e054c311415949fb44823120328a5744e"
     },
     "qcad/pipe_support_detail.dxf": {
-      "bytes": 24806,
-      "sha256": "3e87f73d2e46866d2e81ec65843c77975f63aea6f2be54bfbdb2ba7f88c2497d"
+      "bytes": 24589,
+      "sha256": "91d3fa1308e57c89725887d14a6fdeaba766c37102ef9751307c796646fdfdaa"
     },
     "qcad/section_aa.dxf": {
-      "bytes": 26865,
-      "sha256": "0abe2dc98c3a248faf61cf0a3057587b5dbcccd1f61e31074f659701a5ff1785"
+      "bytes": 26591,
+      "sha256": "1c36144dd4a1ee9ffc86c30cac1f8135ff76cf9f143baa187c3b20cd4276528e"
     },
     "qcad/system_riser.dxf": {
-      "bytes": 25399,
-      "sha256": "5a0dbe8ad8443f6598a8e64ba6557d1eb65a238a379755e1e0a55b6268736247"
+      "bytes": 25158,
+      "sha256": "592cf8862ca2950cc9dfa5c847c6c4d64458cca4cce89dc0c5fc81b80ff0513e"
     },
     "qcad/wall_penetration_detail.dxf": {
-      "bytes": 23723,
-      "sha256": "55c1189c1d03dc81f0e4c97d94143f5fc3c6402cefe9c36bc489c387b30ace01"
+      "bytes": 23615,
+      "sha256": "821ae94fe2f51bfc78812139202cb5b2b8490664065d592fbf751f91ecae6ae1"
     },
     "reports/bill_of_materials.csv": {
       "bytes": 5026,
@@ -288,21 +288,29 @@
       "bytes": 2137,
       "sha256": "6ad24dda3a400c6c4d135c4841edad2a87723d5d58dc1d99c0fac23e33e48069"
     },
+    "reports/observed_geometry_matrix.csv": {
+      "bytes": 15189,
+      "sha256": "d0076dfecfe9740eec245f424cc6844d8d3a1d3205d027f894555a6ea1566864"
+    },
+    "reports/observed_geometry_matrix.md": {
+      "bytes": 8883,
+      "sha256": "38405f31193872d07a07472724f895dc82db5dabd72f25766dd235f91f41a924"
+    },
     "reports/parameter_reconciliation.csv": {
       "bytes": 23590,
       "sha256": "de9b81d3d8438a9e92583c01216ca403058f94bca314ca68a4e2eec187ea9c5b"
     },
     "reports/parameter_reconciliation.md": {
-      "bytes": 24057,
-      "sha256": "12147ebc1c073800a5f256f9f45802e3c43fdc06f4a68a9a2aeca500168f4627"
+      "bytes": 24192,
+      "sha256": "ecb850b7f9bd80f33f4687e4e647dd0a3a4090d92ae3c1acff6935d99172e716"
     },
     "requirements.txt": {
-      "bytes": 282,
-      "sha256": "5cc903475b0d0b8bc0dfd16af31ab955ec334089a62a518caf24db6ae009aa40"
+      "bytes": 365,
+      "sha256": "8c6f48c0a194fee3ea734b1da8aad0d35ce512086d8e3a9be4cbddda60b8e329"
     },
     "screenshots/00_coordproof_system_overview.png": {
-      "bytes": 262927,
-      "sha256": "7bf1e699a3ef93fae9bf43ca60466fc9384f80226e362e1eacb792cd239ee8c1"
+      "bytes": 262280,
+      "sha256": "044bab0535a5690218c027d2517fe97edd7d3d2edd879097cd53d62f04b78e5a"
     },
     "screenshots/01_freecad_mechanical_room_overview.png": {
       "bytes": 98851,
@@ -321,24 +329,24 @@
       "sha256": "df7d560d35d1a233d059215dfb28be842533ba964dd2b2943a34adb7c97da66b"
     },
     "screenshots/05_ifc_validation_report.png": {
-      "bytes": 92673,
-      "sha256": "dc5aef89d7e901754b839532de67ea24e54771afbb3475a013605ebd325de787"
+      "bytes": 92441,
+      "sha256": "0e46150c094f8d65beba2541411e9bd79bd9acf3dcd93db00d6060deda86e78d"
     },
     "screenshots/06_export_formats_overview.png": {
-      "bytes": 72089,
-      "sha256": "9e128caf32432943268be0094effa72ec63aa36caed7d0dc4638ebeb00c452a6"
+      "bytes": 71560,
+      "sha256": "ea95eafab8a03ce2a106121410dabac312435a8a1f4c080ab4c790233927b976"
     },
     "screenshots/07_qcad_section_and_riser.png": {
       "bytes": 72659,
       "sha256": "d2fcd29c582afd1aa199cd7cd9b7b2a670d682b90fe497d506b13c38ff763074"
     },
     "spec/mechanical_room.project.json": {
-      "bytes": 66561,
-      "sha256": "558b564c35c21fb95c1007b30a58a0927c055c6fc9c45d2bbff2f649412f179f"
+      "bytes": 67330,
+      "sha256": "9be01ae601503a975246a348ab68959349c56da48aaea153d2aa15a3a68dd14a"
     },
     "spec/project.schema.json": {
-      "bytes": 9912,
-      "sha256": "75873744e45e04ad760b9a1a1f3b6da5f4e0656d7815721ad5f3c93118660ce4"
+      "bytes": 10036,
+      "sha256": "a5146ca3a58f6a3be6f7d8a4493a1fe782a20ca15a6e92b1ea492a4d41a0a8c2"
     },
     "spec/reconciliation.contract.json": {
       "bytes": 10866,
@@ -357,12 +365,12 @@
       "sha256": "83f0f7d95539541b6ff1a53518cea1e762e596768d1ac5a5e05a17bdf2713bba"
     },
     "tools/build_all.py": {
-      "bytes": 2491,
-      "sha256": "a487aac55173600c927a194b5bf4efaf4055907b8e7e989162e3a53ca47e0820"
+      "bytes": 2599,
+      "sha256": "c72781f2f990f07d0b5f9dd59027a7cfc946b58ede6c3fce63fbf8b567fe9c13"
     },
     "tools/build_manifest.py": {
-      "bytes": 6734,
-      "sha256": "45f64dc045db6eb1b345db1f4e48bccdd4d4bdade5a2b67d3951c67d48cab50b"
+      "bytes": 6814,
+      "sha256": "b86ceabf0329c0b9d8bae2d9670fd01ec579960d001c018869358946d60a931f"
     },
     "tools/build_provenance.py": {
       "bytes": 7766,
@@ -380,6 +388,10 @@
       "bytes": 2398,
       "sha256": "54664f223fa1557e606de01efd257deb824146fa3c9e2db731efc16160a5e372"
     },
+    "tools/external_ifc_clash.py": {
+      "bytes": 37475,
+      "sha256": "67bb1b083ff4923e34486b9452f6426bced5f2055e2ab62e778f894ad66adb4c"
+    },
     "tools/freecad_artifact_normalization.py": {
       "bytes": 27333,
       "sha256": "08f70ddf0700956f9dd8949b5202c5cc71fb69a330fd1a0f716ccf612fb4aa74"
@@ -389,8 +401,8 @@
       "sha256": "92a10afe315e93d6c09968dca3514c2cfd3ba23bc821f930a5a3c9d8a7fcf5e7"
     },
     "tools/generate_drawings.py": {
-      "bytes": 23537,
-      "sha256": "c4ede7bda259c30e1b698a350664f1d89816afa8029d7e20479ac94c6987318b"
+      "bytes": 23506,
+      "sha256": "3dee971f258c3df97c41d81e3c815320fc3c3d8d7ffd2622072e565f7ad63b45"
     },
     "tools/generate_freecad_assets.py": {
       "bytes": 5508,
@@ -399,6 +411,10 @@
     "tools/generate_ifc.py": {
       "bytes": 335,
       "sha256": "e7069e7b2b011fc7efdc583d2441af1dd692f24df0f4ac965aab0723c0e96738"
+    },
+    "tools/generate_observed_geometry_matrix.py": {
+      "bytes": 37037,
+      "sha256": "5481f5698ace9a77db3e2d54a4eefe1acadc7ff2997286c31aa2386182b33756"
     },
     "tools/generate_openscad_exports.py": {
       "bytes": 5067,
@@ -409,24 +425,24 @@
       "sha256": "fe3469d636c2e44f2cebd38b0193b2e4a151d0fe6d42627bcf1d493609f207ae"
     },
     "tools/openbim_core.py": {
-      "bytes": 26565,
-      "sha256": "66c6b439f5e78e2648eb43857b99fb44dbf25de08717fb423235cfadf56fe42d"
+      "bytes": 31095,
+      "sha256": "de000d3fbf247cb5edaeaa7d830892b47ffc82f8511733cea78d3cb9805abadb"
     },
     "tools/preflight_public_package.py": {
       "bytes": 21858,
       "sha256": "e6b88a99d536a3e86fa4899cd20c729557b1f9a598c16bdc0399b6d2accbbd83"
     },
     "tools/project_spec.py": {
-      "bytes": 27418,
-      "sha256": "4a07741ef75381a4b4a6723942811ee34f55da33db21b8f49d44d4b8725fd8c4"
+      "bytes": 32105,
+      "sha256": "584d31edbac54a367edd018e4fc9ab4cff709bc08d8854e6a5d1fff07a8d683f"
     },
     "tools/provenance_contract.py": {
-      "bytes": 15551,
-      "sha256": "cb94c723bdef6ddcdc4acab73f18ec4f0f2ae3cff7a142a978fd50e86e0278bd"
+      "bytes": 15638,
+      "sha256": "bd0a171354014e7440fde6397c94555da9c00fd43171eb58ef300ff264cf6447"
     },
     "tools/reconcile_parameters.py": {
-      "bytes": 63696,
-      "sha256": "de901ca98eba5f3b8c06337c8f9f961ff5075e35d90ae6b6019152fa124e237b"
+      "bytes": 63842,
+      "sha256": "351257ec89c6155d1d2483f283462e69bf25882aeefd358f1587bb3c21956255"
     },
     "tools/reproducibility.py": {
       "bytes": 1187,
@@ -437,20 +453,24 @@
       "sha256": "329a2b56d22db289f2ef9cbde96707626714380186c15fdb6212406b962068b2"
     },
     "validation/run_all.py": {
-      "bytes": 2990,
-      "sha256": "9310e6ddab3bcafe6b6176bfde638231499c4cbb51f7970506333ba5b9ecd34a"
+      "bytes": 3158,
+      "sha256": "935c9fb49df675bc21762cef22f88bd0de7b2d74e04502b3ce364d46a24bf58a"
     },
     "validation/validate_exports.py": {
-      "bytes": 9782,
-      "sha256": "cd43ea3a9bf1698db00f0dee7eaf91e1caacc347c50343ac834b367c042877c0"
+      "bytes": 12379,
+      "sha256": "34cb06b8a954cf2f2d7b344c6685dcdd9ab4be2c4fc5ed22fb0a3eb873bc25b1"
     },
     "validation/validate_ifc.py": {
       "bytes": 29810,
       "sha256": "2156324f4ee337e687d41d691372a56d2d05dfeaf109c7d537c40edb454b49ce"
     },
     "validation/validate_manifest.py": {
-      "bytes": 3589,
-      "sha256": "848aa74861efbf2420eb44ec59526000d68529a7a0af236789cb0fff35427810"
+      "bytes": 7238,
+      "sha256": "3157393e8b04e9c9f619a21d1cfa1edf62b156a41ce43f6def183fc9fc8373e1"
+    },
+    "validation/validate_observed_geometry.py": {
+      "bytes": 3238,
+      "sha256": "8791e8eccf20480ba1611e35c17acd09fdfc345dcb0e171623ddb5d384eec7ff"
     },
     "validation/validate_reconciliation.py": {
       "bytes": 1682,
@@ -461,8 +481,8 @@
       "sha256": "e3fe03697eebe834543dee50c3249e52c056d24fa508166f5fe261eb52694671"
     },
     "validation/validation_report.md": {
-      "bytes": 3901,
-      "sha256": "f21183c8f5ecf3b9aa4f374c568cbae62c054cc717e7ed59579f7965f21f5c44"
+      "bytes": 4755,
+      "sha256": "b41b057b553930ea4af889a2cbb7d242e3b7cf55defcb0bec1bcbf859cf806a3"
     }
   },
   "build_profile": "full",

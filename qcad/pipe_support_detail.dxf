@@ -2449,9 +2449,9 @@ M-SUPPORT
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 1500.0
  20
@@ -2468,10 +2468,6 @@ AcDbPolyline
 1500.0
  20
 855.0
- 10
-1500.0
- 20
-760.0
   0
 LWPOLYLINE
   5
@@ -2485,9 +2481,9 @@ M-SUPPORT
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 2100.0
  20
@@ -2504,10 +2500,6 @@ AcDbPolyline
 2100.0
  20
 2035.0
- 10
-2100.0
- 20
-855.0
   0
 LWPOLYLINE
   5
@@ -2521,9 +2513,9 @@ M-SUPPORT
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 3790.0
  20
@@ -2540,10 +2532,6 @@ AcDbPolyline
 3790.0
  20
 2035.0
- 10
-3790.0
- 20
-855.0
   0
 LWPOLYLINE
   5
@@ -2557,9 +2545,9 @@ M-SUPPORT
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 1880.0
  20
@@ -2576,10 +2564,6 @@ AcDbPolyline
 1880.0
  20
 2185.0
- 10
-1880.0
- 20
-2035.0
   0
 CIRCLE
   5
@@ -2633,9 +2617,9 @@ M-PIPE-FITTING
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 2450.0
  20
@@ -2652,10 +2636,6 @@ AcDbPolyline
 2450.0
  20
 2930.0
- 10
-2450.0
- 20
-2310.0
   0
 LWPOLYLINE
   5
@@ -2669,9 +2649,9 @@ M-PIPE-FITTING
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 2520.0
  20
@@ -2688,10 +2668,6 @@ AcDbPolyline
 2520.0
  20
 2310.0
- 10
-2520.0
- 20
-2185.0
   0
 LWPOLYLINE
   5
@@ -2705,9 +2681,9 @@ M-PIPE-FITTING
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 2520.0
  20
@@ -2724,10 +2700,6 @@ AcDbPolyline
 2520.0
  20
 3055.0
- 10
-2520.0
- 20
-2930.0
   0
 CIRCLE
   5
@@ -3373,9 +3345,9 @@ TITLEBLOCK
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 0.0
  20
@@ -3392,10 +3364,6 @@ AcDbPolyline
 0.0
  20
 -250.0
- 10
-0.0
- 20
--1050.0
   0
 LWPOLYLINE
   5
@@ -3409,9 +3377,9 @@ TITLEBLOCK
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 3650.0
  20
@@ -3428,10 +3396,6 @@ AcDbPolyline
 3650.0
  20
 -250.0
- 10
-3650.0
- 20
--1050.0
   0
 LWPOLYLINE
   5
@@ -3445,9 +3409,9 @@ TITLEBLOCK
 100
 AcDbPolyline
  90
-5
+4
  70
-0
+1
  10
 5050.0
  20
@@ -3464,10 +3428,6 @@ AcDbPolyline
 5050.0
  20
 -250.0
- 10
-5050.0
- 20
--1050.0
   0
 TEXT
   5

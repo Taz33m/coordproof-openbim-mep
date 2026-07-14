@@ -1,4 +1,4 @@
-.PHONY: all install install-release install-dev install-opencad build core doctor doctor-full spec-validate spec-summary reconcile manifest drawings qcad-pdfs openscad freecad ifc cadquery opencad-pilot provenance test lint validate preflight clean-pycache
+.PHONY: all install install-release install-dev install-opencad build core doctor doctor-full spec-validate spec-summary reconcile observed-geometry manifest drawings qcad-pdfs openscad freecad ifc cadquery opencad-pilot provenance test lint validate preflight clean-pycache
 
 PYTHON := .venv/bin/python
 VENV_PYTHON ?= python3.11
@@ -41,6 +41,9 @@ spec-summary:
 
 reconcile: spec-validate
 	$(PYTHON) tools/reconcile_parameters.py
+
+observed-geometry: spec-validate
+	$(PYTHON) tools/generate_observed_geometry_matrix.py
 
 manifest:
 	$(PYTHON) tools/build_manifest.py

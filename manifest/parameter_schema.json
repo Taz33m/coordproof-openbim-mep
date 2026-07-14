@@ -169,6 +169,12 @@
       "items": {
         "type": "string"
       }
+    },
+    "observed_formats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   }
 }
