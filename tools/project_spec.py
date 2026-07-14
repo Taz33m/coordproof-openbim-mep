@@ -23,6 +23,74 @@ PROJECT_SPEC_SCHEMA_PATH = ROOT / "spec" / "project.schema.json"
 SUPPORTED_SCHEMA_VERSION = 1
 MAX_REPORTED_ISSUES = 100
 
+# OpenBIMBuilder's placed-occurrence contract creates geometry-bearing
+# IfcElement instances. IfcSpace is handled separately by the spatial contract;
+# metadata roots such as IfcProject and IfcDocumentReference are never valid
+# placed asset occurrences even though they remain valid catalog/artifact types.
+BUILDABLE_OCCURRENCE_IFC_CLASSES = frozenset(
+    {
+        "IfcAirTerminal",
+        "IfcBuildingElementPart",
+        "IfcCableCarrierSegment",
+        "IfcCoil",
+        "IfcDamper",
+        "IfcDoor",
+        "IfcDuctSegment",
+        "IfcElectricAppliance",
+        "IfcElectricDistributionBoard",
+        "IfcElementAssembly",
+        "IfcFan",
+        "IfcFilter",
+        "IfcFlowFitting",
+        "IfcFooting",
+        "IfcJunctionBox",
+        "IfcMechanicalFastener",
+        "IfcPipeFitting",
+        "IfcPipeSegment",
+        "IfcPump",
+        "IfcSensor",
+        "IfcSlab",
+        "IfcTransformer",
+        "IfcUnitaryEquipment",
+        "IfcValve",
+        "IfcVirtualElement",
+        "IfcWall",
+    }
+)
+PORT_CAPABLE_IFC_CLASSES = frozenset(
+    {
+        "IfcAirTerminal",
+        "IfcCableCarrierSegment",
+        "IfcCoil",
+        "IfcDamper",
+        "IfcDuctSegment",
+        "IfcElectricAppliance",
+        "IfcElectricDistributionBoard",
+        "IfcFan",
+        "IfcFilter",
+        "IfcFlowFitting",
+        "IfcJunctionBox",
+        "IfcPipeFitting",
+        "IfcPipeSegment",
+        "IfcPump",
+        "IfcSensor",
+        "IfcTransformer",
+        "IfcUnitaryEquipment",
+        "IfcValve",
+    }
+)
+RESERVED_OPENBIM_ASSET_PROPERTIES = frozenset(
+    {
+        "AssetID",
+        "TypeID",
+        "Category",
+        "SourceTool",
+        "SystemName",
+        "MaterialName",
+        "MachineReadable",
+    }
+)
+
 JSONObject = dict[str, Any]
 
 
@@ -455,9 +523,27 @@ def _validate_semantics(payload: JSONObject) -> None:
 
     for occurrence in occurrences:
         occurrence_id = occurrence["occurrence_id"]
-        if occurrence["type_id"] not in type_by_id:
+        reserved_properties = sorted(
+            set(occurrence["properties"]) & RESERVED_OPENBIM_ASSET_PROPERTIES
+        )
+        if reserved_properties:
+            issues.append(
+                f"[RESERVED_PROPERTY] {occurrence_id}.properties cannot override "
+                "Pset_OpenBIMAsset identity fields: " + ", ".join(reserved_properties)
+            )
+        asset_type = type_by_id.get(occurrence["type_id"])
+        if asset_type is None:
             issues.append(
                 f"[UNKNOWN_REFERENCE] {occurrence_id} uses unknown type {occurrence['type_id']}"
+            )
+        elif (
+            occurrence_id != spatial["space_occurrence_id"]
+            and asset_type["ifc_class"] not in BUILDABLE_OCCURRENCE_IFC_CLASSES
+        ):
+            issues.append(
+                f"[UNBUILDABLE_IFC_CLASS] {occurrence_id} uses {asset_type['ifc_class']} "
+                f"from {occurrence['type_id']}; placed non-space occurrences must use a "
+                "supported IfcElement class"
             )
         unknown_systems = sorted(set(occurrence["systems"]) - known_systems)
         if unknown_systems:
@@ -466,6 +552,16 @@ def _validate_semantics(payload: JSONObject) -> None:
                 + ", ".join(unknown_systems)
             )
         ports = set(occurrence["ports"])
+        if (
+            ports
+            and asset_type is not None
+            and asset_type["ifc_class"] not in PORT_CAPABLE_IFC_CLASSES
+        ):
+            issues.append(
+                f"[UNSUPPORTED_PORT_HOST] {occurrence_id} declares ports but uses "
+                f"{asset_type['ifc_class']}; ProjectSpec v1 ports require an "
+                "IfcDistributionElement class"
+            )
         bindings = occurrence["port_systems"]
         missing_bindings = sorted(ports - bindings.keys())
         extra_bindings = sorted(bindings.keys() - ports)
@@ -502,6 +598,14 @@ def _validate_semantics(payload: JSONObject) -> None:
             issues.append(f"[INVALID_AXIS] {occurrence_id} extrusion_axis must be finite")
         elif math.isclose(sum(float(value) ** 2 for value in axis), 0.0, abs_tol=1e-12):
             issues.append(f"[INVALID_AXIS] {occurrence_id} extrusion_axis cannot be zero")
+        elif occurrence["geometry"] == "box" and any(
+            not math.isclose(float(actual), expected, rel_tol=0.0, abs_tol=1.0e-12)
+            for actual, expected in zip(axis, (0.0, 0.0, 1.0), strict=True)
+        ):
+            issues.append(
+                f"[UNSUPPORTED_BOX_AXIS] {occurrence_id} box geometry must use "
+                "extrusion_axis [0, 0, 1] in ProjectSpec v1"
+            )
 
     if not math.isfinite(float(spatial["storey_elevation_mm"])):
         issues.append("[INVALID_GEOMETRY] spatial.storey_elevation_mm must be finite")
@@ -527,6 +631,15 @@ def _validate_semantics(payload: JSONObject) -> None:
             issues.append("[SPATIAL_CONTRACT] spatial and occurrence IFC names do not match")
         if space_occurrence["dimensions_mm"] != spatial["space_dimensions_mm"]:
             issues.append("[SPATIAL_CONTRACT] spatial and occurrence dimensions do not match")
+        if (
+            space_occurrence["systems"]
+            or space_occurrence["ports"]
+            or space_occurrence["port_systems"]
+        ):
+            issues.append(
+                "[SPATIAL_CONTRACT] spatial space occurrence cannot declare systems or ports "
+                "in ProjectSpec v1"
+            )
 
     connection_names = [item["name"] for item in connections]
     duplicate_connection_names = _duplicates(connection_names)
@@ -577,10 +690,29 @@ def _validate_semantics(payload: JSONObject) -> None:
             issues.append(f"[DUPLICATE_CONNECTION] {connection_id} repeats an existing connection")
         seen_connections.add(normalized)
         realizing = connection.get("realizing_occurrence_id")
-        if realizing and realizing not in occurrence_by_id:
-            issues.append(
-                f"[UNKNOWN_REFERENCE] {connection_id} realizing occurrence {realizing} does not exist"
-            )
+        if realizing:
+            realizing_occurrence = occurrence_by_id.get(realizing)
+            if realizing_occurrence is None:
+                issues.append(
+                    f"[UNKNOWN_REFERENCE] {connection_id} realizing occurrence "
+                    f"{realizing} does not exist"
+                )
+            else:
+                realizing_type = type_by_id.get(realizing_occurrence["type_id"])
+                if (
+                    realizing == spatial["space_occurrence_id"]
+                    or realizing_type is None
+                    or realizing_type["ifc_class"] not in BUILDABLE_OCCURRENCE_IFC_CLASSES
+                ):
+                    issues.append(
+                        f"[UNSUPPORTED_REALIZER] {connection_id} realizing occurrence "
+                        f"{realizing} must be a supported non-spatial IfcElement"
+                    )
+                elif system not in realizing_occurrence["systems"]:
+                    issues.append(
+                        f"[SYSTEM_MEMBERSHIP] {connection_id} realizing occurrence "
+                        f"{realizing} is not a member of {system}"
+                    )
 
     required_ids = set(requirements["asset_ids"])
     missing_required_ids = sorted(required_ids - set(catalog_ids))

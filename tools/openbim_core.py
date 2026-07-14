@@ -12,13 +12,17 @@ import json
 import math
 import uuid
 from collections import Counter, defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import ifcopenshell
 import ifcopenshell.guid
-from project_spec import ProjectSpec, load_project_spec
+from project_spec import (
+    RESERVED_OPENBIM_ASSET_PROPERTIES,
+    ProjectSpec,
+    load_project_spec,
+)
 from reproducibility import source_timestamp
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +36,44 @@ PROJECT_SPEC = load_project_spec()
 
 
 GUID_NAMESPACE = uuid.UUID("aecb7935-dd13-5b74-93af-50a8a7c9a89c")
+
+
+def _safe_custom_asset_properties(properties: Mapping[str, object]) -> dict[str, object]:
+    """Protect authoritative identity fields even for directly constructed models."""
+
+    return {
+        name: value
+        for name, value in properties.items()
+        if name not in RESERVED_OPENBIM_ASSET_PROPERTIES
+    }
+
+
+def _json_compatible(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {str(name): _json_compatible(item) for name, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_compatible(item) for item in value]
+    return value
+
+
+def _ifc_type_parameter_value(value: object) -> object:
+    """Keep scalar IFC types and canonically encode structured JSON values."""
+
+    if isinstance(value, (str, bool, int, float)):
+        return value
+    return json.dumps(
+        _json_compatible(value),
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+
+
+def _ifc_type_parameters(parameters: Mapping[str, object]) -> dict[str, object]:
+    return {
+        name: _ifc_type_parameter_value(value)
+        for name, value in parameters.items()
+    }
 
 
 def guid(key: str) -> str:
@@ -58,6 +100,7 @@ class ProductSpec:
     type_id: str = ""
     port_systems: dict[str, str] = field(default_factory=dict)
     properties: dict[str, object] = field(default_factory=dict)
+    type_parameters: dict[str, object] = field(default_factory=dict)
 
 
 def connection_description(
@@ -78,7 +121,9 @@ def connection_description(
 
 
 class OpenBIMBuilder:
-    def __init__(self) -> None:
+    def __init__(self, project_spec: ProjectSpec | None = None) -> None:
+        self.project_spec = project_spec or PROJECT_SPEC
+        self._canonical_guid_contract = self.project_spec.source_path == PROJECT_SPEC.source_path
         self.model = ifcopenshell.file(schema="IFC4")
         self.model.header.file_name.time_stamp = source_timestamp()
         self.body_context = None
@@ -89,13 +134,20 @@ class OpenBIMBuilder:
         self.systems: dict[str, object] = {}
         self.product_specs: list[ProductSpec] = []
 
+    def stable_guid(self, key: str) -> str:
+        """Return a project-scoped GUID while preserving the golden v1 identities."""
+
+        if self._canonical_guid_contract:
+            return guid(key)
+        return guid(f"project:{self.project_spec.project.project_id}:{key}")
+
     def entity(self, ifc_class: str, *args, **kwargs):
         return self.model.create_entity(ifc_class, *args, **kwargs)
 
     def root(self, ifc_class: str, name: str, *, guid_key: str | None = None, **kwargs):
         return self.entity(
             ifc_class,
-            GlobalId=guid(guid_key or f"root:{ifc_class}:{name}"),
+            GlobalId=self.stable_guid(guid_key or f"root:{ifc_class}:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=kwargs.pop("Description", None),
@@ -159,9 +211,9 @@ class OpenBIMBuilder:
         return self.entity("IfcLabel", str(raw))
 
     def setup_project(self) -> tuple[object, object, object, object, object]:
-        spatial = PROJECT_SPEC.spatial
-        room_type = PROJECT_SPEC.asset_types_by_id[spatial.space_type_id]
-        room = PROJECT_SPEC.occurrences_by_id[spatial.space_occurrence_id]
+        spatial = self.project_spec.spatial
+        room_type = self.project_spec.asset_types_by_id[spatial.space_type_id]
+        room = self.project_spec.occurrences_by_id[spatial.space_occurrence_id]
         length_unit = self.entity(
             "IfcSIUnit", UnitType="LENGTHUNIT", Prefix="MILLI", Name="METRE"
         )
@@ -205,7 +257,6 @@ class OpenBIMBuilder:
                 room_length,
                 room_width,
                 room_height,
-                room.extrusion_axis,
             ),
             LongName=spatial.space_long_name,
             CompositionType="ELEMENT",
@@ -223,9 +274,15 @@ class OpenBIMBuilder:
                 "SystemName": "",
                 "MaterialName": room.material,
                 "MachineReadable": True,
-                **room.properties,
+                **_safe_custom_asset_properties(room.properties),
             },
         )
+        if room_type.parameters:
+            self.add_pset(
+                space,
+                "Pset_ProjectSpecTypeParameters",
+                _ifc_type_parameters(room_type.parameters),
+            )
         self.add_pset(
             space,
             "Pset_AssetGeometry",
@@ -248,7 +305,7 @@ class OpenBIMBuilder:
     def rel_aggregates(self, name: str, parent, children: list[object]) -> None:
         self.entity(
             "IfcRelAggregates",
-            GlobalId=guid(f"rel-aggregates:{name}"),
+            GlobalId=self.stable_guid(f"rel-aggregates:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=None,
@@ -259,7 +316,7 @@ class OpenBIMBuilder:
     def rel_contained(self, name: str, structure, products: list[object]) -> None:
         self.entity(
             "IfcRelContainedInSpatialStructure",
-            GlobalId=guid(f"rel-contained:{name}"),
+            GlobalId=self.stable_guid(f"rel-contained:{name}"),
             OwnerHistory=None,
             Name=name,
             Description=None,
@@ -289,7 +346,6 @@ class OpenBIMBuilder:
         length: float,
         width: float,
         height: float,
-        axis: tuple[float, float, float] = (0.0, 0.0, 1.0),
     ):
         profile = self.entity(
             "IfcRectangleProfileDef",
@@ -302,9 +358,10 @@ class OpenBIMBuilder:
         solid = self.entity(
             "IfcExtrudedAreaSolid",
             SweptArea=profile,
-            Position=self.axis3d(
-                axis=axis, ref=self.perpendicular_reference(axis)
-            ),
+            # ProjectSpec box origins are lower-min corners. IFC rectangle
+            # profiles are centered on their placement, so offset the profile
+            # by half its plan dimensions before extruding it upward.
+            Position=self.axis3d((float(length) / 2, float(width) / 2, 0.0)),
             ExtrudedDirection=self.direction((0.0, 0.0, 1.0)),
             Depth=float(height),
         )
@@ -340,9 +397,7 @@ class OpenBIMBuilder:
             radius, depth = spec.dimensions_mm
             return self.cylinder_representation(spec.name, radius, depth, spec.extrusion_axis)
         length, width, height = spec.dimensions_mm
-        return self.box_representation(
-            spec.name, length, width, height, spec.extrusion_axis
-        )
+        return self.box_representation(spec.name, length, width, height)
 
     def add_pset(self, product, pset_name: str, properties: dict[str, object]) -> None:
         props = [
@@ -357,7 +412,7 @@ class OpenBIMBuilder:
         ]
         pset = self.entity(
             "IfcPropertySet",
-            GlobalId=guid(f"pset:{product.GlobalId}:{pset_name}"),
+            GlobalId=self.stable_guid(f"pset:{product.GlobalId}:{pset_name}"),
             OwnerHistory=None,
             Name=pset_name,
             Description=None,
@@ -365,7 +420,7 @@ class OpenBIMBuilder:
         )
         self.entity(
             "IfcRelDefinesByProperties",
-            GlobalId=guid(f"rel-pset:{product.GlobalId}:{pset_name}"),
+            GlobalId=self.stable_guid(f"rel-pset:{product.GlobalId}:{pset_name}"),
             OwnerHistory=None,
             Name=f"{pset_name} -> {product.Name}",
             Description=None,
@@ -381,7 +436,7 @@ class OpenBIMBuilder:
     def assign_material(self, product, material_name: str) -> None:
         self.entity(
             "IfcRelAssociatesMaterial",
-            GlobalId=guid(f"rel-material:{product.GlobalId}:{material_name}"),
+            GlobalId=self.stable_guid(f"rel-material:{product.GlobalId}:{material_name}"),
             OwnerHistory=None,
             Name=f"Material -> {product.Name}",
             Description=None,
@@ -415,9 +470,15 @@ class OpenBIMBuilder:
                 "SystemName": ", ".join(spec.system),
                 "MaterialName": spec.material,
                 "MachineReadable": True,
-                **spec.properties,
+                **_safe_custom_asset_properties(spec.properties),
             },
         )
+        if spec.type_parameters:
+            self.add_pset(
+                product,
+                "Pset_ProjectSpecTypeParameters",
+                _ifc_type_parameters(spec.type_parameters),
+            )
         self.add_pset(
             product,
             "Pset_AssetGeometry",
@@ -466,7 +527,7 @@ class OpenBIMBuilder:
         )
         self.entity(
             "IfcRelConnectsPortToElement",
-            GlobalId=guid(f"rel-port-element:{asset_id}:{port_name}"),
+            GlobalId=self.stable_guid(f"rel-port-element:{asset_id}:{port_name}"),
             OwnerHistory=None,
             Name=f"{port.Name} -> {product.Name}",
             Description=None,
@@ -475,7 +536,7 @@ class OpenBIMBuilder:
         )
 
     def add_systems(self, names: Iterable[str]) -> None:
-        definitions = {system.name: system for system in PROJECT_SPEC.systems}
+        definitions = {system.name: system for system in self.project_spec.systems}
         for name in names:
             definition = definitions[name]
             self.systems[name] = self.root(
@@ -495,7 +556,7 @@ class OpenBIMBuilder:
         for system_name, products in members.items():
             self.entity(
                 "IfcRelAssignsToGroup",
-                GlobalId=guid(f"rel-system-members:{system_name}"),
+                GlobalId=self.stable_guid(f"rel-system-members:{system_name}"),
                 OwnerHistory=None,
                 Name=f"{system_name} members",
                 Description=None,
@@ -515,7 +576,7 @@ class OpenBIMBuilder:
     ) -> None:
         self.entity(
             "IfcRelConnectsPorts",
-            GlobalId=guid(f"rel-port-connection:{connection_id}"),
+            GlobalId=self.stable_guid(f"rel-port-connection:{connection_id}"),
             OwnerHistory=None,
             Name=name,
             Description=connection_description(
@@ -561,6 +622,7 @@ def product_schedule(project_spec: ProjectSpec | None = None) -> list[ProductSpe
                 ports=occurrence.ports,
                 port_systems=dict(occurrence.port_systems),
                 properties=dict(occurrence.properties),
+                type_parameters=dict(asset_type.parameters),
             )
         )
     return schedule
@@ -576,14 +638,20 @@ CONNECTIVITY = [
 ]
 
 
-def build_openbim_model() -> ifcopenshell.file:
-    builder = OpenBIMBuilder()
+def build_openbim_model(project_spec: ProjectSpec | None = None) -> ifcopenshell.file:
+    project = project_spec or PROJECT_SPEC
+    builder = OpenBIMBuilder(project)
     _, _, _, storey, _ = builder.setup_project()
-    builder.add_systems(SYSTEMS)
-    products = [builder.add_product(spec) for spec in product_schedule()]
-    builder.rel_contained("Storey contains OpenBIM mechanical room products", storey, products)
+    builder.add_systems(project.system_names)
+    products = [builder.add_product(spec) for spec in product_schedule(project)]
+    containment_name = (
+        "Storey contains OpenBIM mechanical room products"
+        if project.source_path == PROJECT_SPEC.source_path
+        else f"Storey contains {project.project.name} products"
+    )
+    builder.rel_contained(containment_name, storey, products)
     builder.assign_systems()
-    for connection in PROJECT_SPEC.connections:
+    for connection in project.connections:
         builder.connect_ports(
             (connection.source.occurrence_id, connection.source.port),
             (connection.target.occurrence_id, connection.target.port),
@@ -606,7 +674,22 @@ def product_system_lookup(model: ifcopenshell.file) -> dict[int, list[str]]:
     return lookup
 
 
-def write_summary(model: ifcopenshell.file) -> None:
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
+def write_summary(
+    model: ifcopenshell.file,
+    *,
+    summary_path: Path = SUMMARY_PATH,
+    ifc_path: Path = IFC_PATH,
+    project_spec: ProjectSpec = PROJECT_SPEC,
+    project_source_label: str | None = None,
+    ifc_display_path: str | None = None,
+) -> None:
     counts = Counter(entity.is_a() for entity in model)
     products = [
         product
@@ -616,14 +699,24 @@ def write_summary(model: ifcopenshell.file) -> None:
     systems = model.by_type("IfcDistributionSystem")
     psets = model.by_type("IfcPropertySet")
     port_rels = model.by_type("IfcRelConnectsPorts")
+    if project_spec.source_path == PROJECT_SPEC.source_path:
+        source_lines = [
+            "This IFC is generated from `spec/mechanical_room.project.json` as the semantic",
+            "source of truth for the coordination package. FreeCAD/STEP artifacts are",
+            "supporting CAD views of the same mechanical-room intent.",
+        ]
+    else:
+        source_label = project_source_label or project_spec.source_path.name
+        source_lines = [
+            f"This IFC is generated from `{source_label}` as the semantic",
+            f"source of truth for `{project_spec.project.name}`.",
+        ]
     lines = [
         "# IFC Entity Summary",
         "",
-        f"File: `{IFC_PATH.relative_to(ROOT)}`",
+        f"File: `{ifc_display_path or _display_path(ifc_path)}`",
         "",
-        "This IFC is generated from `spec/mechanical_room.project.json` as the semantic",
-        "source of truth for the coordination package. FreeCAD/STEP artifacts are",
-        "supporting CAD views of the same mechanical-room intent.",
+        *source_lines,
         "",
         "## OpenBIM QA Snapshot",
         "",
@@ -650,13 +743,19 @@ def write_summary(model: ifcopenshell.file) -> None:
                 member_count += len(rel.RelatedObjects)
         lines.append(f"| `{system.Name}` | {member_count} |")
     lines.append("")
-    SUMMARY_PATH.write_text("\n".join(lines), encoding="utf-8")
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def write_inventory(model: ifcopenshell.file) -> None:
+def write_inventory(
+    model: ifcopenshell.file,
+    *,
+    inventory_path: Path = INVENTORY_PATH,
+    project_spec: ProjectSpec = PROJECT_SPEC,
+) -> None:
     system_lookup = product_system_lookup(model)
-    INVENTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with INVENTORY_PATH.open("w", newline="", encoding="utf-8") as handle:
+    inventory_path.parent.mkdir(parents=True, exist_ok=True)
+    with inventory_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=["asset_id", "ifc_name", "ifc_class", "systems", "category"],
@@ -669,8 +768,8 @@ def write_inventory(model: ifcopenshell.file) -> None:
             if any(product.is_a(ifc_class) for ifc_class in ("IfcSite", "IfcBuilding", "IfcBuildingStorey")):
                 continue
             asset_id = getattr(product, "Tag", None) or ""
-            if product.is_a("IfcSpace") and product.Name == PROJECT_SPEC.spatial.space_ifc_name:
-                asset_id = PROJECT_SPEC.spatial.space_occurrence_id
+            if product.is_a("IfcSpace") and product.Name == project_spec.spatial.space_ifc_name:
+                asset_id = project_spec.spatial.space_occurrence_id
             if not asset_id:
                 continue
             category = ""
@@ -693,21 +792,26 @@ def write_inventory(model: ifcopenshell.file) -> None:
             )
 
 
-def patch_bim_map_from_ifc(model: ifcopenshell.file) -> None:
-    if not BIM_MAP_PATH.exists():
+def patch_bim_map_from_ifc(
+    model: ifcopenshell.file,
+    *,
+    bim_map_path: Path = BIM_MAP_PATH,
+    project_spec: ProjectSpec = PROJECT_SPEC,
+) -> None:
+    if not bim_map_path.exists():
         return
     products_by_tag = {
         getattr(product, "Tag", None): product
         for product in model.by_type("IfcProduct")
         if getattr(product, "Tag", None)
     }
-    products_by_tag["room_shell_001"] = next(
+    products_by_tag[project_spec.spatial.space_occurrence_id] = next(
         product
         for product in model.by_type("IfcSpace")
-        if product.Name == PROJECT_SPEC.spatial.space_ifc_name
+        if product.Name == project_spec.spatial.space_ifc_name
     )
     rows: list[dict[str, str]] = []
-    with BIM_MAP_PATH.open(newline="", encoding="utf-8") as handle:
+    with bim_map_path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         fieldnames = reader.fieldnames or []
         for row in reader:
@@ -716,15 +820,38 @@ def patch_bim_map_from_ifc(model: ifcopenshell.file) -> None:
                 row["freecad_object_name"] = product.Name
                 row["ifc_class"] = product.is_a()
             rows.append(row)
-    with BIM_MAP_PATH.open("w", newline="", encoding="utf-8") as handle:
+    with bim_map_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
 
-def write_openbim_outputs(model: ifcopenshell.file) -> None:
-    IFC_PATH.parent.mkdir(parents=True, exist_ok=True)
-    model.write(IFC_PATH)
-    write_summary(model)
-    write_inventory(model)
-    patch_bim_map_from_ifc(model)
+def write_openbim_outputs(
+    model: ifcopenshell.file,
+    *,
+    ifc_path: Path = IFC_PATH,
+    summary_path: Path = SUMMARY_PATH,
+    inventory_path: Path = INVENTORY_PATH,
+    bim_map_path: Path = BIM_MAP_PATH,
+    project_spec: ProjectSpec = PROJECT_SPEC,
+    project_source_label: str | None = None,
+    ifc_display_path: str | None = None,
+    patch_bim_map: bool = True,
+) -> None:
+    ifc_path.parent.mkdir(parents=True, exist_ok=True)
+    model.write(ifc_path)
+    write_summary(
+        model,
+        summary_path=summary_path,
+        ifc_path=ifc_path,
+        project_spec=project_spec,
+        project_source_label=project_source_label,
+        ifc_display_path=ifc_display_path,
+    )
+    write_inventory(model, inventory_path=inventory_path, project_spec=project_spec)
+    if patch_bim_map:
+        patch_bim_map_from_ifc(
+            model,
+            bim_map_path=bim_map_path,
+            project_spec=project_spec,
+        )

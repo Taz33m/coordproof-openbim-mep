@@ -1,0 +1,851 @@
+{
+  "$schema": "../../spec/project.schema.json",
+  "schema_version": 1,
+  "project": {
+    "project_id": "coordproof_electrical_room",
+    "name": "CoordProof Electrical Room",
+    "description": "Portable ProjectSpec example for normal-power distribution, grounding, metering, feeder routing, and service-clearance coordination."
+  },
+  "units": "millimeters",
+  "spatial": {
+    "project_ifc_name": "Project_CoordProof_ElectricalRoom",
+    "site_ifc_name": "Site_OpenBIM_Testbed",
+    "building_ifc_name": "Building_ElectricalLab",
+    "storey_ifc_name": "Storey_ElectricalLevel_01",
+    "storey_elevation_mm": 0.0,
+    "space_type_id": "electrical_room_space_type",
+    "space_occurrence_id": "electrical_room_space_001",
+    "space_ifc_name": "Space_ElectricalRoom_001",
+    "space_long_name": "Main Electrical Room Coordination Space",
+    "space_dimensions_mm": [
+      9000.0,
+      6000.0,
+      4000.0
+    ],
+    "semantic_source_tool": "ProjectSpec v1 / IfcOpenShell"
+  },
+  "systems": [
+    {
+      "name": "System_Normal480V",
+      "long_name": "Normal Power 480Y/277 V",
+      "object_type": "normal_power_480v",
+      "description": "Normal-power service from the utility point through the main switchboard to the transformer primary."
+    },
+    {
+      "name": "System_Normal208V",
+      "long_name": "Normal Power 208Y/120 V",
+      "object_type": "normal_power_208v",
+      "description": "Transformer secondary distribution through panelboard LP-1 to the coordinated branch load."
+    },
+    {
+      "name": "System_Grounding",
+      "long_name": "Equipment Grounding and Bonding",
+      "object_type": "equipment_grounding",
+      "description": "Grounding and bonding connections between distribution equipment and the main ground bar."
+    },
+    {
+      "name": "System_Monitoring",
+      "long_name": "Electrical Metering Network",
+      "object_type": "electrical_monitoring",
+      "description": "Metering data connection between the main switchboard and revenue-grade power meter."
+    }
+  ],
+  "asset_types": [
+    {
+      "type_id": "electrical_room_space_type",
+      "catalog_order": 0,
+      "group": "bim",
+      "display_name": "Electrical Room Coordination Space",
+      "category": "electrical_space",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcSpace",
+      "parameters": {
+        "length_mm": 9000,
+        "width_mm": 6000,
+        "height_mm": 4000
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Primary containment volume for the electrical coordination example."
+    },
+    {
+      "type_id": "electrical_slab_type",
+      "catalog_order": 1,
+      "group": "bim",
+      "display_name": "Electrical Room Concrete Slab",
+      "category": "architectural_shell",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcSlab",
+      "parameters": {
+        "length_mm": 9000,
+        "width_mm": 6000,
+        "height_mm": 200
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Concrete equipment-support slab."
+    },
+    {
+      "type_id": "electrical_access_door_type",
+      "catalog_order": 2,
+      "group": "bim",
+      "display_name": "Electrical Room Double Access Door",
+      "category": "architectural_shell",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcDoor",
+      "parameters": {
+        "width_mm": 1800,
+        "height_mm": 2400,
+        "thickness_mm": 50
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Equipment-replacement access opening."
+    },
+    {
+      "type_id": "utility_service_type",
+      "catalog_order": 3,
+      "group": "bim",
+      "display_name": "Utility Service Point",
+      "category": "electrical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcElectricDistributionBoard",
+      "parameters": {
+        "rated_voltage_v": 480,
+        "phase_count": 3,
+        "frequency_hz": 60,
+        "available_fault_current_ka": 42
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Utility service boundary represented as electrical distribution equipment with a connected outgoing port."
+    },
+    {
+      "type_id": "main_switchboard_type",
+      "catalog_order": 4,
+      "group": "bim",
+      "display_name": "Main Switchboard MSB-1",
+      "category": "electrical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcElectricDistributionBoard",
+      "parameters": {
+        "rated_voltage_v": 480,
+        "main_rating_a": 1600,
+        "short_circuit_rating_ka": 65,
+        "section_count": 4
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Multi-section switchboard represented as native IFC electrical distribution equipment."
+    },
+    {
+      "type_id": "dry_type_transformer_type",
+      "catalog_order": 5,
+      "group": "bim",
+      "display_name": "Dry-Type Transformer T-1",
+      "category": "electrical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcTransformer",
+      "parameters": {
+        "rating_kva": 225,
+        "primary_voltage_v": 480,
+        "secondary_voltage_v": 208,
+        "phase_count": 3,
+        "impedance_percent": 5.75
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Voltage-transforming equipment represented by the native IFC transformer class."
+    },
+    {
+      "type_id": "panelboard_type",
+      "catalog_order": 6,
+      "group": "bim",
+      "display_name": "Lighting Panelboard LP-1",
+      "category": "electrical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcElectricDistributionBoard",
+      "parameters": {
+        "rated_voltage_v": 208,
+        "main_rating_a": 400,
+        "circuit_count": 42,
+        "short_circuit_rating_ka": 22
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Branch panelboard represented as native IFC electrical distribution equipment."
+    },
+    {
+      "type_id": "load_bank_type",
+      "catalog_order": 7,
+      "group": "bim",
+      "display_name": "Commissioning Load Bank LB-1",
+      "category": "electrical_equipment",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcElectricAppliance",
+      "parameters": {
+        "rated_voltage_v": 208,
+        "rated_power_kw": 30,
+        "phase_count": 3
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Coordinated terminal load used to close the secondary distribution path."
+    },
+    {
+      "type_id": "feeder_route_type",
+      "catalog_order": 8,
+      "group": "bim",
+      "display_name": "Electrical Feeder Route",
+      "category": "electrical_routing",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcCableCarrierSegment",
+      "parameters": {
+        "carrier_width_mm": 300,
+        "carrier_height_mm": 150,
+        "conductor_material": "Copper",
+        "insulation_rating_v": 600
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Reusable coordinated containment envelope; conductor identity remains an occurrence property."
+    },
+    {
+      "type_id": "main_ground_bar_type",
+      "catalog_order": 9,
+      "group": "bim",
+      "display_name": "Main Electrical Ground Bar",
+      "category": "grounding",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcJunctionBox",
+      "parameters": {
+        "length_mm": 1200,
+        "width_mm": 100,
+        "height_mm": 10,
+        "material": "Copper"
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Equipotential bonding bar with individually modeled connection points."
+    },
+    {
+      "type_id": "revenue_meter_type",
+      "catalog_order": 10,
+      "group": "bim",
+      "display_name": "Revenue-Grade Power Meter",
+      "category": "monitoring",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcSensor",
+      "parameters": {
+        "protocol": "Modbus TCP",
+        "accuracy_class": "0.2S",
+        "rated_voltage_v": 480
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Electrical metering sensor connected to the switchboard monitoring interface."
+    },
+    {
+      "type_id": "electrical_service_clearance_type",
+      "catalog_order": 11,
+      "group": "bim",
+      "display_name": "Electrical Working Clearance",
+      "category": "clearance_zone",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcVirtualElement",
+      "parameters": {
+        "minimum_depth_mm": 1200,
+        "minimum_width_mm": 900,
+        "minimum_height_mm": 2000,
+        "rule_basis": "NFPA 70 working-space coordination input; authority having jurisdiction governs."
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Transparent coordination volume, not a code-compliance certification."
+    }
+  ],
+  "occurrences": [
+    {
+      "occurrence_id": "electrical_room_space_001",
+      "type_id": "electrical_room_space_type",
+      "ifc_name": "Space_ElectricalRoom_001",
+      "material": "Air",
+      "systems": [],
+      "object_type": "coordination_space",
+      "geometry": "box",
+      "origin_mm": [0.0, 0.0, 0.0],
+      "dimensions_mm": [9000.0, 6000.0, 4000.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "space_number": "ER-101",
+        "occupancy": "Restricted electrical service"
+      }
+    },
+    {
+      "occurrence_id": "electrical_slab_001",
+      "type_id": "electrical_slab_type",
+      "ifc_name": "Slab_ElectricalRoom_001",
+      "material": "Reinforced concrete",
+      "systems": [],
+      "object_type": "floor_slab",
+      "geometry": "box",
+      "origin_mm": [0.0, 0.0, -200.0],
+      "dimensions_mm": [9000.0, 6000.0, 200.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "finish": "Sealed concrete"
+      }
+    },
+    {
+      "occurrence_id": "electrical_access_door_001",
+      "type_id": "electrical_access_door_type",
+      "ifc_name": "Door_ElectricalRoom_001",
+      "material": "Painted steel",
+      "systems": [],
+      "object_type": "double_equipment_access_door",
+      "geometry": "box",
+      "origin_mm": [6800.0, 0.0, 0.0],
+      "dimensions_mm": [1800.0, 200.0, 2400.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "fire_rating_minutes": 90,
+        "swing": "Outward"
+      }
+    },
+    {
+      "occurrence_id": "utility_service_001",
+      "type_id": "utility_service_type",
+      "ifc_name": "Utility_Service_480V_001",
+      "material": "Painted steel",
+      "systems": ["System_Normal480V"],
+      "object_type": "utility_service_point",
+      "geometry": "box",
+      "origin_mm": [400.0, 700.0, 0.0],
+      "dimensions_mm": [800.0, 500.0, 1800.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["outgoing_480v"],
+      "port_systems": {
+        "outgoing_480v": "System_Normal480V"
+      },
+      "properties": {
+        "source": "Utility",
+        "service_configuration": "480Y/277 V, 3-phase, 4-wire"
+      }
+    },
+    {
+      "occurrence_id": "switchboard_msb_001",
+      "type_id": "main_switchboard_type",
+      "ifc_name": "Switchboard_MSB_001",
+      "material": "Painted steel",
+      "systems": ["System_Normal480V", "System_Grounding", "System_Monitoring"],
+      "object_type": "main_switchboard",
+      "geometry": "box",
+      "origin_mm": [1800.0, 700.0, 0.0],
+      "dimensions_mm": [2400.0, 800.0, 2200.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["service_in", "transformer_out", "ground", "meter_link"],
+      "port_systems": {
+        "service_in": "System_Normal480V",
+        "transformer_out": "System_Normal480V",
+        "ground": "System_Grounding",
+        "meter_link": "System_Monitoring"
+      },
+      "properties": {
+        "tag": "MSB-1",
+        "arc_flash_label_required": true
+      }
+    },
+    {
+      "occurrence_id": "transformer_t1_001",
+      "type_id": "dry_type_transformer_type",
+      "ifc_name": "Transformer_T1_001",
+      "material": "Steel and copper",
+      "systems": ["System_Normal480V", "System_Normal208V", "System_Grounding"],
+      "object_type": "dry_type_transformer",
+      "geometry": "box",
+      "origin_mm": [5200.0, 900.0, 0.0],
+      "dimensions_mm": [1400.0, 1100.0, 1600.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["primary", "secondary", "ground"],
+      "port_systems": {
+        "primary": "System_Normal480V",
+        "secondary": "System_Normal208V",
+        "ground": "System_Grounding"
+      },
+      "properties": {
+        "tag": "T-1",
+        "winding": "Delta-Wye grounded"
+      }
+    },
+    {
+      "occurrence_id": "panelboard_lp1_001",
+      "type_id": "panelboard_type",
+      "ifc_name": "Panelboard_LP1_001",
+      "material": "Painted steel",
+      "systems": ["System_Normal208V", "System_Grounding"],
+      "object_type": "lighting_panelboard",
+      "geometry": "box",
+      "origin_mm": [7200.0, 1000.0, 0.0],
+      "dimensions_mm": [1000.0, 350.0, 1800.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["main_in", "branch_out", "ground"],
+      "port_systems": {
+        "main_in": "System_Normal208V",
+        "branch_out": "System_Normal208V",
+        "ground": "System_Grounding"
+      },
+      "properties": {
+        "tag": "LP-1",
+        "bus_rating_a": 400
+      }
+    },
+    {
+      "occurrence_id": "load_bank_lb1_001",
+      "type_id": "load_bank_type",
+      "ifc_name": "LoadBank_LB1_001",
+      "material": "Painted steel",
+      "systems": ["System_Normal208V"],
+      "object_type": "commissioning_load_bank",
+      "geometry": "box",
+      "origin_mm": [7400.0, 3600.0, 0.0],
+      "dimensions_mm": [900.0, 600.0, 1200.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["incoming"],
+      "port_systems": {
+        "incoming": "System_Normal208V"
+      },
+      "properties": {
+        "tag": "LB-1",
+        "load_type": "Temporary commissioning"
+      }
+    },
+    {
+      "occurrence_id": "feeder_service_001",
+      "type_id": "feeder_route_type",
+      "ifc_name": "Feeder_Service_001",
+      "material": "Galvanized steel carrier with copper conductors",
+      "systems": ["System_Normal480V"],
+      "object_type": "service_feeder_route",
+      "geometry": "box",
+      "origin_mm": [1200.0, 850.0, 2100.0],
+      "dimensions_mm": [600.0, 300.0, 150.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["source_end", "load_end"],
+      "port_systems": {
+        "source_end": "System_Normal480V",
+        "load_end": "System_Normal480V"
+      },
+      "properties": {
+        "circuit_id": "SVC-MSB1",
+        "voltage_v": 480,
+        "conductor_configuration": "4 sets 4#600 kcmil Cu plus ground"
+      }
+    },
+    {
+      "occurrence_id": "feeder_transformer_primary_001",
+      "type_id": "feeder_route_type",
+      "ifc_name": "Feeder_TransformerPrimary_001",
+      "material": "Galvanized steel carrier with copper conductors",
+      "systems": ["System_Normal480V"],
+      "object_type": "transformer_primary_feeder_route",
+      "geometry": "box",
+      "origin_mm": [4200.0, 1100.0, 2300.0],
+      "dimensions_mm": [1000.0, 300.0, 150.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["source_end", "load_end"],
+      "port_systems": {
+        "source_end": "System_Normal480V",
+        "load_end": "System_Normal480V"
+      },
+      "properties": {
+        "circuit_id": "MSB1-T1",
+        "voltage_v": 480,
+        "conductor_configuration": "3#350 kcmil Cu plus ground"
+      }
+    },
+    {
+      "occurrence_id": "feeder_panel_secondary_001",
+      "type_id": "feeder_route_type",
+      "ifc_name": "Feeder_PanelSecondary_001",
+      "material": "Galvanized steel carrier with copper conductors",
+      "systems": ["System_Normal208V"],
+      "object_type": "panel_secondary_feeder_route",
+      "geometry": "box",
+      "origin_mm": [6600.0, 1200.0, 2200.0],
+      "dimensions_mm": [600.0, 300.0, 150.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["source_end", "load_end"],
+      "port_systems": {
+        "source_end": "System_Normal208V",
+        "load_end": "System_Normal208V"
+      },
+      "properties": {
+        "circuit_id": "T1-LP1",
+        "voltage_v": 208,
+        "conductor_configuration": "2 sets 4#250 kcmil Cu plus ground"
+      }
+    },
+    {
+      "occurrence_id": "feeder_branch_001",
+      "type_id": "feeder_route_type",
+      "ifc_name": "Feeder_Branch_001",
+      "material": "Galvanized steel carrier with copper conductors",
+      "systems": ["System_Normal208V"],
+      "object_type": "branch_feeder_route",
+      "geometry": "box",
+      "origin_mm": [7600.0, 1800.0, 2300.0],
+      "dimensions_mm": [1800.0, 150.0, 100.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["source_end", "load_end"],
+      "port_systems": {
+        "source_end": "System_Normal208V",
+        "load_end": "System_Normal208V"
+      },
+      "properties": {
+        "circuit_id": "LP1-LB1",
+        "voltage_v": 208,
+        "conductor_configuration": "4#1 AWG Cu plus ground"
+      }
+    },
+    {
+      "occurrence_id": "ground_bar_main_001",
+      "type_id": "main_ground_bar_type",
+      "ifc_name": "GroundBar_Main_001",
+      "material": "Copper",
+      "systems": ["System_Grounding"],
+      "object_type": "main_ground_bar",
+      "geometry": "box",
+      "origin_mm": [3500.0, 5600.0, 600.0],
+      "dimensions_mm": [1200.0, 100.0, 100.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["switchboard_bond", "transformer_bond", "panelboard_bond"],
+      "port_systems": {
+        "switchboard_bond": "System_Grounding",
+        "transformer_bond": "System_Grounding",
+        "panelboard_bond": "System_Grounding"
+      },
+      "properties": {
+        "tag": "MGB-1",
+        "bonding_point_count": 3
+      }
+    },
+    {
+      "occurrence_id": "revenue_meter_001",
+      "type_id": "revenue_meter_type",
+      "ifc_name": "Meter_Revenue_001",
+      "material": "Polycarbonate and steel",
+      "systems": ["System_Monitoring"],
+      "object_type": "revenue_power_meter",
+      "geometry": "box",
+      "origin_mm": [2500.0, 1550.0, 1500.0],
+      "dimensions_mm": [250.0, 180.0, 350.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": ["data_link"],
+      "port_systems": {
+        "data_link": "System_Monitoring"
+      },
+      "properties": {
+        "tag": "MTR-1",
+        "network_address": "10.10.20.31"
+      }
+    },
+    {
+      "occurrence_id": "clearance_switchboard_001",
+      "type_id": "electrical_service_clearance_type",
+      "ifc_name": "Clearance_Switchboard_001",
+      "material": "Virtual",
+      "systems": [],
+      "object_type": "working_clearance",
+      "geometry": "box",
+      "origin_mm": [1800.0, 1500.0, 0.0],
+      "dimensions_mm": [2400.0, 1200.0, 2200.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "served_occurrence_id": "switchboard_msb_001",
+        "clearance_role": "Front working space"
+      }
+    },
+    {
+      "occurrence_id": "clearance_transformer_001",
+      "type_id": "electrical_service_clearance_type",
+      "ifc_name": "Clearance_Transformer_001",
+      "material": "Virtual",
+      "systems": [],
+      "object_type": "service_clearance",
+      "geometry": "box",
+      "origin_mm": [4800.0, 500.0, 0.0],
+      "dimensions_mm": [2200.0, 2200.0, 2200.0],
+      "extrusion_axis": [0.0, 0.0, 1.0],
+      "ports": [],
+      "port_systems": {},
+      "properties": {
+        "served_occurrence_id": "transformer_t1_001",
+        "clearance_role": "Ventilation and maintenance"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "electrical_room_ifc",
+      "catalog_order": 12,
+      "group": "bim",
+      "display_name": "Electrical Room Coordination IFC",
+      "category": "bim_export",
+      "source_tool": "IfcOpenShell",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "schema": "IFC4",
+        "coordination_view": "Electrical room systems and clearances"
+      },
+      "exports": {
+        "ifc": "examples/electrical_room/outputs/electrical_room.ifc"
+      },
+      "notes": "Declared output target for a future example-specific generator."
+    },
+    {
+      "artifact_id": "electrical_single_line_diagram",
+      "catalog_order": 13,
+      "group": "drawing",
+      "display_name": "Electrical Single-Line Diagram",
+      "category": "drawing",
+      "source_tool": "QCAD",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "sheet": "E-601",
+        "paper_size": "ANSI D"
+      },
+      "exports": {
+        "dxf": "examples/electrical_room/outputs/electrical_single_line.dxf",
+        "pdf": "examples/electrical_room/outputs/electrical_single_line.pdf"
+      },
+      "notes": "Declared editable and review-format single-line outputs."
+    },
+    {
+      "artifact_id": "electrical_coordination_schedule",
+      "catalog_order": 14,
+      "group": "report",
+      "display_name": "Electrical Coordination Schedule",
+      "category": "report",
+      "source_tool": "CoordProof",
+      "ifc_class": "IfcDocumentReference",
+      "parameters": {
+        "report_scope": "Equipment, feeders, ports, systems, and service clearances"
+      },
+      "exports": {
+        "csv": "examples/electrical_room/outputs/electrical_coordination_schedule.csv",
+        "json": "examples/electrical_room/outputs/electrical_coordination_schedule.json"
+      },
+      "notes": "Declared machine-readable evidence targets for the electrical example."
+    }
+  ],
+  "connections": [
+    {
+      "connection_id": "utility_to_service_feeder",
+      "system": "System_Normal480V",
+      "from": {
+        "occurrence_id": "utility_service_001",
+        "port": "outgoing_480v"
+      },
+      "to": {
+        "occurrence_id": "feeder_service_001",
+        "port": "source_end"
+      },
+      "name": "Utility service to service-feeder source",
+      "realizing_occurrence_id": "feeder_service_001"
+    },
+    {
+      "connection_id": "service_feeder_to_switchboard",
+      "system": "System_Normal480V",
+      "from": {
+        "occurrence_id": "feeder_service_001",
+        "port": "load_end"
+      },
+      "to": {
+        "occurrence_id": "switchboard_msb_001",
+        "port": "service_in"
+      },
+      "name": "Service feeder to main switchboard",
+      "realizing_occurrence_id": "feeder_service_001"
+    },
+    {
+      "connection_id": "switchboard_to_primary_feeder",
+      "system": "System_Normal480V",
+      "from": {
+        "occurrence_id": "switchboard_msb_001",
+        "port": "transformer_out"
+      },
+      "to": {
+        "occurrence_id": "feeder_transformer_primary_001",
+        "port": "source_end"
+      },
+      "name": "Switchboard to transformer-primary feeder",
+      "realizing_occurrence_id": "feeder_transformer_primary_001"
+    },
+    {
+      "connection_id": "primary_feeder_to_transformer",
+      "system": "System_Normal480V",
+      "from": {
+        "occurrence_id": "feeder_transformer_primary_001",
+        "port": "load_end"
+      },
+      "to": {
+        "occurrence_id": "transformer_t1_001",
+        "port": "primary"
+      },
+      "name": "Transformer-primary feeder to T-1",
+      "realizing_occurrence_id": "feeder_transformer_primary_001"
+    },
+    {
+      "connection_id": "transformer_to_secondary_feeder",
+      "system": "System_Normal208V",
+      "from": {
+        "occurrence_id": "transformer_t1_001",
+        "port": "secondary"
+      },
+      "to": {
+        "occurrence_id": "feeder_panel_secondary_001",
+        "port": "source_end"
+      },
+      "name": "T-1 secondary to panel feeder",
+      "realizing_occurrence_id": "feeder_panel_secondary_001"
+    },
+    {
+      "connection_id": "secondary_feeder_to_panelboard",
+      "system": "System_Normal208V",
+      "from": {
+        "occurrence_id": "feeder_panel_secondary_001",
+        "port": "load_end"
+      },
+      "to": {
+        "occurrence_id": "panelboard_lp1_001",
+        "port": "main_in"
+      },
+      "name": "Transformer-secondary feeder to LP-1",
+      "realizing_occurrence_id": "feeder_panel_secondary_001"
+    },
+    {
+      "connection_id": "panelboard_to_branch_feeder",
+      "system": "System_Normal208V",
+      "from": {
+        "occurrence_id": "panelboard_lp1_001",
+        "port": "branch_out"
+      },
+      "to": {
+        "occurrence_id": "feeder_branch_001",
+        "port": "source_end"
+      },
+      "name": "LP-1 to branch-feeder source",
+      "realizing_occurrence_id": "feeder_branch_001"
+    },
+    {
+      "connection_id": "branch_feeder_to_load_bank",
+      "system": "System_Normal208V",
+      "from": {
+        "occurrence_id": "feeder_branch_001",
+        "port": "load_end"
+      },
+      "to": {
+        "occurrence_id": "load_bank_lb1_001",
+        "port": "incoming"
+      },
+      "name": "Branch feeder to commissioning load bank",
+      "realizing_occurrence_id": "feeder_branch_001"
+    },
+    {
+      "connection_id": "switchboard_to_ground_bar",
+      "system": "System_Grounding",
+      "from": {
+        "occurrence_id": "switchboard_msb_001",
+        "port": "ground"
+      },
+      "to": {
+        "occurrence_id": "ground_bar_main_001",
+        "port": "switchboard_bond"
+      },
+      "name": "Main switchboard bonding connection"
+    },
+    {
+      "connection_id": "transformer_to_ground_bar",
+      "system": "System_Grounding",
+      "from": {
+        "occurrence_id": "transformer_t1_001",
+        "port": "ground"
+      },
+      "to": {
+        "occurrence_id": "ground_bar_main_001",
+        "port": "transformer_bond"
+      },
+      "name": "Transformer grounding-electrode connection"
+    },
+    {
+      "connection_id": "panelboard_to_ground_bar",
+      "system": "System_Grounding",
+      "from": {
+        "occurrence_id": "panelboard_lp1_001",
+        "port": "ground"
+      },
+      "to": {
+        "occurrence_id": "ground_bar_main_001",
+        "port": "panelboard_bond"
+      },
+      "name": "Panelboard equipment-ground connection"
+    },
+    {
+      "connection_id": "switchboard_to_revenue_meter",
+      "system": "System_Monitoring",
+      "from": {
+        "occurrence_id": "switchboard_msb_001",
+        "port": "meter_link"
+      },
+      "to": {
+        "occurrence_id": "revenue_meter_001",
+        "port": "data_link"
+      },
+      "name": "Switchboard revenue-meter data link"
+    }
+  ],
+  "requirements": {
+    "categories": [
+      "electrical_equipment",
+      "electrical_routing",
+      "grounding",
+      "monitoring",
+      "clearance_zone",
+      "bim_export",
+      "drawing",
+      "report"
+    ],
+    "asset_ids": [
+      "main_switchboard_type",
+      "dry_type_transformer_type",
+      "panelboard_type",
+      "feeder_route_type",
+      "main_ground_bar_type",
+      "revenue_meter_type",
+      "electrical_service_clearance_type",
+      "electrical_room_ifc",
+      "electrical_single_line_diagram",
+      "electrical_coordination_schedule"
+    ]
+  }
+}

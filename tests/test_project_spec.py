@@ -8,8 +8,16 @@ from pathlib import Path
 
 import pytest
 from asset_catalog import ALL_ASSETS
+from ifcopenshell import ifcopenshell_wrapper
 from openbim_core import product_schedule
-from project_spec import ProjectSpecError, clear_project_spec_cache, load_project_spec
+from project_spec import (
+    BUILDABLE_OCCURRENCE_IFC_CLASSES,
+    PORT_CAPABLE_IFC_CLASSES,
+    RESERVED_OPENBIM_ASSET_PROPERTIES,
+    ProjectSpecError,
+    clear_project_spec_cache,
+    load_project_spec,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT_SPEC_PATH = ROOT / "spec" / "mechanical_room.project.json"
@@ -49,6 +57,32 @@ def test_project_spec_loads_with_expected_inventory() -> None:
     assert len(project.asset_types_by_id) == len(project.asset_types)
     assert len(project.occurrences_by_id) == len(project.occurrences)
     assert len(project.artifacts_by_id) == len(project.artifacts)
+
+
+def test_schema_ifc_vocabulary_matches_runtime_builder_contract() -> None:
+    schema = json.loads((ROOT / "spec" / "project.schema.json").read_text(encoding="utf-8"))
+    declared_classes = set(schema["$defs"]["ifcClass"]["enum"])
+    ifc4 = ifcopenshell_wrapper.schema_by_name("IFC4")
+
+    def inheritance(ifc_class: str) -> set[str]:
+        declaration = ifc4.declaration_by_name(ifc_class)
+        names: set[str] = set()
+        while declaration is not None:
+            names.add(declaration.name())
+            declaration = declaration.supertype()
+        return names
+
+    expected_buildable = {
+        ifc_class for ifc_class in declared_classes if "IfcElement" in inheritance(ifc_class)
+    }
+    expected_port_capable = {
+        ifc_class
+        for ifc_class in expected_buildable
+        if "IfcDistributionElement" in inheritance(ifc_class)
+    }
+
+    assert expected_buildable == BUILDABLE_OCCURRENCE_IFC_CLASSES
+    assert expected_port_capable == PORT_CAPABLE_IFC_CLASSES
 
 
 def test_catalog_projection_preserves_the_legacy_asset_contract() -> None:
@@ -101,6 +135,7 @@ def test_occurrence_projection_preserves_the_openbim_product_contract() -> None:
         assert product.ports == occurrence.ports
         assert product.port_systems == occurrence.port_systems
         assert product.properties == occurrence.properties
+        assert product.type_parameters == asset_type.parameters
 
 
 def test_product_schedule_supports_reused_types_with_distinct_occurrences() -> None:
@@ -192,6 +227,106 @@ def test_semantics_reject_unknown_references(
     assert "missing_required_asset" in message
 
 
+def test_semantics_reject_non_product_class_for_a_placed_occurrence(
+    tmp_path: Path, project_payload: dict[str, object]
+) -> None:
+    occurrence = next(
+        item
+        for item in project_payload["occurrences"]
+        if item["occurrence_id"] == "equipment_ahu_001"
+    )
+    asset_type = next(
+        item
+        for item in project_payload["asset_types"]
+        if item["type_id"] == occurrence["type_id"]
+    )
+    asset_type["ifc_class"] = "IfcDocumentReference"
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    message = str(exc_info.value)
+    assert "[UNBUILDABLE_IFC_CLASS]" in message
+    assert "equipment_ahu_001 uses IfcDocumentReference" in message
+
+
+def test_semantics_reject_unsupported_box_axis(
+    tmp_path: Path, project_payload: dict[str, object]
+) -> None:
+    occurrence = next(
+        item
+        for item in project_payload["occurrences"]
+        if item["occurrence_id"] == "slab_concrete_base_001"
+    )
+    occurrence["extrusion_axis"] = [1.0, 0.0, 0.0]
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    assert "[UNSUPPORTED_BOX_AXIS]" in str(exc_info.value)
+
+
+def test_semantics_reject_ports_on_a_non_distribution_element(
+    tmp_path: Path, project_payload: dict[str, object]
+) -> None:
+    occurrence = next(
+        item
+        for item in project_payload["occurrences"]
+        if item["occurrence_id"] == "equipment_ahu_001"
+    )
+    asset_type = next(
+        item
+        for item in project_payload["asset_types"]
+        if item["type_id"] == occurrence["type_id"]
+    )
+    asset_type["ifc_class"] = "IfcElementAssembly"
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    message = str(exc_info.value)
+    assert "[UNSUPPORTED_PORT_HOST]" in message
+    assert "equipment_ahu_001 declares ports but uses IfcElementAssembly" in message
+
+
+def test_semantics_reject_system_ports_on_spatial_occurrence(
+    tmp_path: Path, project_payload: dict[str, object]
+) -> None:
+    room_id = project_payload["spatial"]["space_occurrence_id"]
+    room = next(
+        item for item in project_payload["occurrences"] if item["occurrence_id"] == room_id
+    )
+    room["systems"] = ["System_CHWS"]
+    room["ports"] = ["space_port"]
+    room["port_systems"] = {"space_port": "System_CHWS"}
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    assert "spatial space occurrence cannot declare systems or ports" in str(exc_info.value)
+
+
+@pytest.mark.parametrize("property_name", sorted(RESERVED_OPENBIM_ASSET_PROPERTIES))
+def test_semantics_reject_reserved_ifc_identity_property_overrides(
+    tmp_path: Path,
+    project_payload: dict[str, object],
+    property_name: str,
+) -> None:
+    occurrence = next(
+        item
+        for item in project_payload["occurrences"]
+        if item["occurrence_id"] == "equipment_ahu_001"
+    )
+    occurrence["properties"][property_name] = "spoofed"
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    message = str(exc_info.value)
+    assert "[RESERVED_PROPERTY]" in message
+    assert property_name in message
+
+
 def test_semantics_reject_unsafe_export_paths(
     tmp_path: Path, project_payload: dict[str, object]
 ) -> None:
@@ -249,6 +384,36 @@ def test_semantics_reject_unknown_connection_references(
     assert "[UNKNOWN_REFERENCE]" in message
     assert "missing_occurrence" in message
     assert "missing_realizer" in message
+
+
+def test_semantics_reject_spatial_occurrence_as_connection_realizer(
+    tmp_path: Path,
+    project_payload: dict[str, object],
+) -> None:
+    connection = project_payload["connections"][0]
+    connection["realizing_occurrence_id"] = project_payload["spatial"][
+        "space_occurrence_id"
+    ]
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    assert "[UNSUPPORTED_REALIZER]" in str(exc_info.value)
+
+
+def test_semantics_reject_realizer_outside_the_connection_system(
+    tmp_path: Path,
+    project_payload: dict[str, object],
+) -> None:
+    connection = project_payload["connections"][0]
+    connection["realizing_occurrence_id"] = "slab_concrete_base_001"
+
+    with pytest.raises(ProjectSpecError, match="semantic validation failed") as exc_info:
+        load_mutated_spec(tmp_path, project_payload)
+
+    message = str(exc_info.value)
+    assert "[SYSTEM_MEMBERSHIP]" in message
+    assert "slab_concrete_base_001" in message
 
 
 def test_project_spec_summary_cli() -> None:
