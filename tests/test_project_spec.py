@@ -47,13 +47,13 @@ def test_project_spec_loads_with_expected_inventory() -> None:
         "units": "millimeters",
         "asset_type_count": 44,
         "occurrence_count": 40,
-        "artifact_count": 12,
-        "catalog_record_count": 56,
+        "artifact_count": 13,
+        "catalog_record_count": 57,
         "system_count": 5,
         "connection_count": 22,
         "declared_port_count": 51,
     }
-    assert [record.catalog_order for record in project.catalog_records()] == list(range(56))
+    assert [record.catalog_order for record in project.catalog_records()] == list(range(57))
     assert len(project.asset_types_by_id) == len(project.asset_types)
     assert len(project.occurrences_by_id) == len(project.occurrences)
     assert len(project.artifacts_by_id) == len(project.artifacts)
@@ -434,5 +434,5 @@ def test_project_spec_summary_cli() -> None:
     assert result.returncode == 0, result.stderr
     summary = json.loads(result.stdout)
     assert summary["project_id"] == "coordproof_mechanical_room"
-    assert summary["catalog_record_count"] == 56
+    assert summary["catalog_record_count"] == 57
     assert summary["connection_count"] == 22

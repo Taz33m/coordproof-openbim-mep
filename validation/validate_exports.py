@@ -6,6 +6,7 @@ import csv
 import json
 import stat
 import struct
+import sys
 import zipfile
 from pathlib import Path, PurePosixPath
 
@@ -13,6 +14,9 @@ import ezdxf
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPORT_INDEX = ROOT / "manifest" / "export_index.csv"
+sys.path.insert(0, str(ROOT / "tools"))
+
+from project_spec import load_project_spec  # noqa: E402
 
 REQUIRED_FILES = [
     "exports/step/support_pipe_bracket_type_a.step",
@@ -61,6 +65,8 @@ REQUIRED_FILES = [
     "reports/clash_clearance_report.csv",
     "reports/parameter_reconciliation.csv",
     "reports/parameter_reconciliation.md",
+    "reports/observed_geometry_matrix.csv",
+    "reports/observed_geometry_matrix.md",
 ]
 
 
@@ -176,17 +182,68 @@ def validate() -> dict[str, object]:
             failures.append(f"Zero-byte required export: {rel_path}")
 
     indexed_paths: set[str] = set()
+    indexed_rows: list[tuple[str, str, str]] = []
     if not EXPORT_INDEX.exists():
         failures.append("Missing manifest/export_index.csv")
     else:
         with EXPORT_INDEX.open(newline="", encoding="utf-8") as handle:
-            for row in csv.DictReader(handle):
-                indexed_paths.add(row["path"])
-                path = ROOT / row["path"]
+            reader = csv.DictReader(handle)
+            if reader.fieldnames != ["asset_id", "format", "path"]:
+                failures.append("Export index header must be exactly: asset_id, format, path")
+            for row_number, row in enumerate(reader, start=2):
+                raw_values = (row.get("asset_id"), row.get("format"), row.get("path"))
+                if not all(isinstance(value, str) for value in raw_values):
+                    failures.append(f"Unsafe or incomplete export index row {row_number}")
+                    indexed_rows.append(
+                        tuple("" if value is None else str(value) for value in raw_values)
+                    )
+                    continue
+                asset_id, format_name, export_path = raw_values
+                indexed_rows.append((asset_id, format_name, export_path))
+                candidate = PurePosixPath(export_path)
+                if (
+                    not asset_id
+                    or not format_name
+                    or not export_path
+                    or candidate.is_absolute()
+                    or "\\" in export_path
+                    or any(part in {"", ".", ".."} for part in candidate.parts)
+                ):
+                    failures.append(f"Unsafe or incomplete export index row {row_number}")
+                    continue
+                indexed_paths.add(export_path)
+                path = ROOT / export_path
                 if not path.exists():
-                    failures.append(f"Indexed export missing: {row['path']}")
+                    failures.append(f"Indexed export missing: {export_path}")
                 elif path.stat().st_size == 0:
-                    failures.append(f"Indexed export is zero bytes: {row['path']}")
+                    failures.append(f"Indexed export is zero bytes: {export_path}")
+
+    expected_rows = {
+        (record.asset_id, format_name, str(export_path))
+        for record in load_project_spec().catalog_records()
+        for format_name, export_path in record.exports.items()
+    }
+    actual_rows = set(indexed_rows)
+    duplicate_rows = sorted(
+        {row for row in indexed_rows if indexed_rows.count(row) > 1}
+    )
+    if duplicate_rows:
+        failures.append(
+            "Duplicate export index rows: "
+            + ", ".join("/".join(row) for row in duplicate_rows)
+        )
+    missing_rows = sorted(expected_rows - actual_rows)
+    unexpected_rows = sorted(actual_rows - expected_rows)
+    if missing_rows:
+        failures.append(
+            "Export index misses ProjectSpec references: "
+            + ", ".join("/".join(row) for row in missing_rows)
+        )
+    if unexpected_rows:
+        failures.append(
+            "Export index contains undeclared references: "
+            + ", ".join("/".join(row) for row in unexpected_rows)
+        )
 
     for rel_path in sorted(set(REQUIRED_FILES) | indexed_paths):
         path = ROOT / rel_path
@@ -221,6 +278,7 @@ def validate() -> dict[str, object]:
             "required_file_count": len(REQUIRED_FILES),
             "generated_export_count": len(generated_files),
             "indexed_export_count": len(indexed_paths),
+            "indexed_export_reference_count": len(indexed_rows),
         },
         "failures": failures,
         "warnings": warnings,

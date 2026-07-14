@@ -1235,8 +1235,9 @@ def reconcile(
         "declared type-to-occurrence relations.",
         "CadQuery parameter-sensitivity tests show that each current numeric input changes "
         "generated geometry, but reconciliation does not prove exact BRep/mesh dimensions "
-        "or dimensional parity of committed exports; FreeCAD, drawings, and observed-export "
-        "measurement remain future scope.",
+        "or dimensional parity of committed exports by itself. The separate observed-geometry "
+        "gate now checks current IFC, STEP, STL, and selected DXF bounds; FreeCAD assembly "
+        "decomposition, unselected drawing entities, and topology remain outside that scope.",
     ]
     rows: list[dict[str, object]] = []
     required_types = {

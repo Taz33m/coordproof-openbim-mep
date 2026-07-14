@@ -95,6 +95,7 @@ def write_parameter_schema() -> None:
             "clearance_mm": {"type": "number", "minimum": 0},
             "material_tag": {"type": "string"},
             "export_formats": {"type": "array", "items": {"type": "string"}},
+            "observed_formats": {"type": "array", "items": {"type": "string"}},
         },
     }
     path = ROOT / "manifest" / "parameter_schema.json"

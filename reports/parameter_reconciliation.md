@@ -32,7 +32,7 @@ are evaluated; derived values use the contract's small transform vocabulary.
 ## Scope Warnings
 
 - This v1 contract verifies CadQuery fallback mappings and canonical ProjectSpec forwarding, OpenSCAD literal declarations and deterministic -D injection, and declared type-to-occurrence relations.
-- CadQuery parameter-sensitivity tests show that each current numeric input changes generated geometry, but reconciliation does not prove exact BRep/mesh dimensions or dimensional parity of committed exports; FreeCAD, drawings, and observed-export measurement remain future scope.
+- CadQuery parameter-sensitivity tests show that each current numeric input changes generated geometry, but reconciliation does not prove exact BRep/mesh dimensions or dimensional parity of committed exports by itself. The separate observed-geometry gate now checks current IFC, STEP, STL, and selected DXF bounds; FreeCAD assembly decomposition, unselected drawing entities, and topology remain outside that scope.
 
 ## Evidence
 

@@ -38,7 +38,7 @@ def test_export_overview_counts_only_coordination_reports() -> None:
 def test_system_overview_uses_current_evidence_counts() -> None:
     metrics = overview_metrics()
 
-    assert metrics["assets"][0] == "56"
+    assert metrics["assets"][0] == "57"
     assert metrics["connections"][0] == "22"
     assert metrics["ports"][0] == "51"
     assert metrics["sheets"][0] == "7+7"

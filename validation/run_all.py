@@ -8,6 +8,7 @@ from pathlib import Path
 from validate_exports import validate as validate_exports
 from validate_ifc import validate as validate_ifc
 from validate_manifest import validate as validate_manifest
+from validate_observed_geometry import validate as validate_observed_geometry
 from validate_reconciliation import validate as validate_reconciliation
 from validate_sources import validate as validate_sources
 
@@ -54,6 +55,7 @@ def main() -> int:
         validate_sources(),
         validate_reconciliation(),
         validate_ifc(),
+        validate_observed_geometry(),
         validate_manifest(),
         validate_exports(),
     ]
@@ -65,7 +67,7 @@ def main() -> int:
         "",
         f"Overall Status: **{status_line(overall)}**",
         "",
-        "This report checks IFC readability, semantic MEP class coverage, distribution systems, port connectivity, property sets, manifest completeness, export presence, file sizes, and required asset coverage. It does not perform engineering or code-compliance validation.",
+        "This report checks IFC readability, semantic MEP class coverage, distribution systems, port connectivity, property sets, observed IFC/STEP/STL/DXF bounding-envelope parity, manifest completeness, export presence, file sizes, and required asset coverage. It does not perform engineering or code-compliance validation.",
         "",
     ]
     for result in results:
