@@ -1,3 +1,78 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coordproof-openbim-mep"
+dynamic = ["version"]
+description = "Deterministic OpenBIM evidence builds for MEP coordination projects"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "CoordProof contributors" }]
+keywords = ["bim", "ifc", "mep", "openbim", "cad"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Manufacturing",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "ifcopenshell>=0.8,<0.9",
+  "jsonschema>=4.23,<5",
+  # IfcOpenShell 0.8.x's EXPRESS rule executor imports pytest's assertion
+  # rewriter at runtime. Keep this explicit while formal validation is a hard
+  # publication gate rather than relying on an undeclared transitive package.
+  "pytest>=9.0.3,<10",
+]
+
+[project.optional-dependencies]
+full = [
+  "cadquery>=2.5,<2.6",
+  "defusedxml>=0.7,<1",
+  "ezdxf>=1.4,<2",
+  "reportlab>=4.2,<6",
+  "Pillow>=9,<13",
+]
+bcf = [
+  "bcf-client>=0.8,<0.9",
+]
+dev = [
+  "build>=1.2,<2",
+  "cadquery>=2.5,<2.6",
+  "defusedxml>=0.7,<1",
+  "ezdxf>=1.4,<2",
+  "reportlab>=4.2,<6",
+  "Pillow>=9,<13",
+  "pytest>=9.0.3,<10",
+  "pytest-cov>=5,<7",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+coordproof = "coordproof.cli:main"
+
+[project.urls]
+Homepage = "https://taz33m.github.io/coordproof-openbim-mep/"
+Repository = "https://github.com/Taz33m/coordproof-openbim-mep"
+Issues = "https://github.com/Taz33m/coordproof-openbim-mep/issues"
+
+[tool.setuptools]
+packages = ["coordproof", "spec"]
+py-modules = ["external_ifc_clash", "openbim_core", "project_spec", "reproducibility"]
+package-dir = { "" = "tools", coordproof = "src/coordproof", spec = "spec" }
+include-package-data = true
+
+[tool.setuptools.package-data]
+spec = ["*.json"]
+
+[tool.setuptools.dynamic]
+version = { file = ["VERSION"] }
+
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
 testpaths = ["tests"]
@@ -7,7 +82,7 @@ markers = [
 
 [tool.coverage.run]
 branch = true
-source = ["tools", "validation", "integrations"]
+source = ["coordproof", "tools", "validation", "integrations"]
 
 [tool.coverage.report]
 show_missing = true
