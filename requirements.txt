@@ -7,3 +7,5 @@ ezdxf>=1.4,<2
 reportlab>=4.2,<6
 Pillow>=9,<13
 jsonschema>=4.23,<5
+# Required by IfcOpenShell 0.8.x when EXPRESS rules are enabled.
+pytest>=9.0.3,<10
