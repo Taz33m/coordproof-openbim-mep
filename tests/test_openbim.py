@@ -29,6 +29,14 @@ def write_model(model, path: Path) -> Path:
     return path
 
 
+def box_contract(product) -> tuple[tuple[float, ...], tuple[float, ...], tuple[float, ...]]:
+    placement = tuple(product.ObjectPlacement.RelativePlacement.Location.Coordinates)
+    solid = product.Representation.Representations[0].Items[0]
+    profile_offset = tuple(solid.Position.Location.Coordinates)
+    dimensions = (solid.SweptArea.XDim, solid.SweptArea.YDim, solid.Depth)
+    return placement, profile_offset, dimensions
+
+
 def test_generated_ifc_formally_valid_and_round_trips_project_spec(
     tmp_path: Path,
 ) -> None:
@@ -90,6 +98,23 @@ def test_ifc_evidence_keeps_type_port_and_material_identity() -> None:
         for product in rel.RelatedObjects
     }
     assert clearance.id() not in material_targets
+
+
+def test_ifc_box_origins_are_projectspec_lower_corners() -> None:
+    model = build_openbim_model()
+    products = {
+        getattr(product, "Tag", None): product
+        for product in model.by_type("IfcProduct")
+        if getattr(product, "Tag", None)
+    }
+    room = next(product for product in model.by_type("IfcSpace"))
+
+    assert box_contract(room) == ((0, 0, 0), (3000, 2100, 0), (6000, 4200, 3200))
+    assert box_contract(products["equipment_ahu_001"]) == (
+        (850, 780, 360),
+        (750, 425, 0),
+        (1500, 850, 1100),
+    )
 
 
 def test_validator_rejects_stale_projectspec_evidence(tmp_path: Path) -> None:
