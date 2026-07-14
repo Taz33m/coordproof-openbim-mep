@@ -45,6 +45,7 @@ jobs:
           python tools/generate_drawings.py --skip-pdf
           python tools/generate_ifc.py
           python tools/generate_coordination_reports.py
+          python tools/generate_observed_geometry_matrix.py
           python validation/run_all.py
       - name: Reject semantic evidence drift
         if: matrix.python-version == '3.11'
@@ -66,12 +67,70 @@ jobs:
           reports/clash_clearance_report.csv
           reports/parameter_reconciliation.csv
           reports/parameter_reconciliation.md
+          reports/observed_geometry_matrix.csv
+          reports/observed_geometry_matrix.md
           validation/validation_report.md
           qcad
       - name: Validate committed evidence package
         run: python validation/run_all.py
       - name: Public-package preflight
         run: python tools/preflight_public_package.py
+
+  package-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SOURCE_DATE_EPOCH: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Build wheel and source distribution
+        run: |
+          python -m pip install "build>=1.2,<2"
+          python -m build --sdist --wheel
+          python -m pip wheel dist/*.tar.gz --no-deps --wheel-dir "$RUNNER_TEMP/coordproof-sdist-wheel"
+          direct_wheel=$(ls dist/*.whl)
+          sdist_wheel=$(ls "$RUNNER_TEMP"/coordproof-sdist-wheel/*.whl)
+          cmp "$direct_wheel" "$sdist_wheel"
+      - name: Install and exercise the public CLI outside the checkout
+        run: |
+          smoke="$RUNNER_TEMP/coordproof-smoke"
+          evidence_a="$RUNNER_TEMP/electrical-evidence-a"
+          evidence_b="$RUNNER_TEMP/electrical-evidence-b"
+          clashes="$RUNNER_TEMP/clashes.json"
+          bcf="$RUNNER_TEMP/clashes.bcfzip"
+          python -m venv "$smoke"
+          wheel=$(ls "$RUNNER_TEMP"/coordproof-sdist-wheel/*.whl)
+          "$smoke/bin/python" -m pip install "${wheel}[bcf]"
+          cd "$RUNNER_TEMP"
+          "$smoke/bin/coordproof" --version
+          "$smoke/bin/coordproof" validate "$GITHUB_WORKSPACE/examples/electrical_room/electrical_room.project.json"
+          "$smoke/bin/coordproof" build "$GITHUB_WORKSPACE/examples/electrical_room/electrical_room.project.json" --output "$evidence_a"
+          "$smoke/bin/coordproof" build "$GITHUB_WORKSPACE/examples/electrical_room/electrical_room.project.json" --output "$evidence_b"
+          diff -ru "$evidence_a" "$evidence_b"
+          "$smoke/bin/coordproof" clash --help
+          "$smoke/bin/coordproof" clash "$GITHUB_WORKSPACE/bim/mechanical_room.ifc" "$evidence_a/project.ifc" --a-class IfcUnitaryEquipment --b-class IfcElectricDistributionBoard --output "$clashes" --bcf "$bcf"
+          "$smoke/bin/python" - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from bcf.v3.bcfxml import BcfXml
+
+          root = Path(os.environ["RUNNER_TEMP"])
+          report = json.loads((root / "clashes.json").read_text(encoding="utf-8"))
+          assert report["summary"]["clash_count"] > 0
+          package = BcfXml.load(root / "clashes.bcfzip")
+          assert package is not None
+          try:
+              assert len(package.topics) == report["summary"]["clash_count"]
+              assert all(len(topic.viewpoints) == 1 for topic in package.topics.values())
+          finally:
+              package.close()
+          PY
 
   opencad-pilot:
     runs-on: ubuntu-latest

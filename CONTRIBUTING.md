@@ -17,6 +17,7 @@ make spec-validate
 make reconcile
 make lint
 make test
+make observed-geometry
 make validate
 make preflight
 ```
@@ -66,11 +67,13 @@ For a new or changed asset:
    aliases must remain complete so every command-line `-D` value comes from
    ProjectSpec. Occurrence coordination dimensions may differ only when that
    distinction is explicit and tested.
-6. Regenerate affected STEP/STL, manifests, IFC, reports, and drawings.
+6. Regenerate affected STEP/STL, manifests, IFC, reports, drawings, and the
+   observed-geometry matrix. An exclusion must remain explicit and justified;
+   never convert missing observation coverage into a passing row.
 7. Add or update tests for dimensions, references, port-system bindings, and
    invalid parameter combinations.
-8. Run validation and inspect both reconciliation and validation reports—not
-   only screenshots.
+8. Run validation and inspect the reconciliation, observed-geometry, and
+   validation reports—not only screenshots.
 
 Use `make spec-summary` to review normalized inventory counts after a model
 change. `tools/asset_catalog.py` and `tools/openbim_core.py` are compatibility

@@ -220,21 +220,64 @@ def test_failed_publication_invalidates_the_previous_manifest(
         (stage / filename).write_text(f"new {filename}", encoding="utf-8")
         (output / filename).write_text(f"old {filename}", encoding="utf-8")
 
-    original_replace = cli.os.replace
+    original_rename = cli.os.rename
     calls = 0
 
-    def fail_second_artifact(source: Path, destination: Path) -> None:
+    def fail_second_artifact(
+        source: str | Path,
+        destination: str | Path,
+        **kwargs: object,
+    ) -> None:
         nonlocal calls
         calls += 1
         if calls == 2:
             raise OSError("injected publication failure")
-        original_replace(source, destination)
+        original_rename(source, destination, **kwargs)
 
-    monkeypatch.setattr(cli.os, "replace", fail_second_artifact)
+    monkeypatch.setattr(cli.os, "rename", fail_second_artifact)
     with pytest.raises(OSError, match="injected publication failure"):
         cli._publish(stage, output)
 
     assert not (output / MANIFEST_FILENAME).exists()
+
+
+def test_failed_staging_copy_removes_private_publication_leaves(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stage = tmp_path / "stage"
+    output = tmp_path / "output"
+    stage.mkdir()
+    output.mkdir()
+    for filename in (*EVIDENCE_FILENAMES, MANIFEST_FILENAME):
+        (stage / filename).write_text(filename, encoding="utf-8")
+
+    def fail_copy(*args: object, **kwargs: object) -> None:
+        raise OSError("injected copy failure")
+
+    monkeypatch.setattr(cli.shutil, "copyfileobj", fail_copy)
+
+    with pytest.raises(OSError, match="injected copy failure"):
+        cli._publish(stage, output)
+
+    assert list(output.iterdir()) == []
+
+
+def test_publication_fails_closed_without_directory_handle_support(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stage = tmp_path / "stage"
+    output = tmp_path / "output"
+    stage.mkdir()
+    for filename in (*EVIDENCE_FILENAMES, MANIFEST_FILENAME):
+        (stage / filename).write_text(filename, encoding="utf-8")
+    monkeypatch.setattr(cli, "_SECURE_PUBLICATION_SUPPORTED", False)
+
+    with pytest.raises(cli.CLIError, match="platform is not yet certified"):
+        cli._publish(stage, output)
+
+    assert not output.exists()
 
 
 def test_evidence_build_rejects_an_output_directory_symlink(tmp_path: Path) -> None:
@@ -248,6 +291,61 @@ def test_evidence_build_rejects_an_output_directory_symlink(tmp_path: Path) -> N
     assert main(["build", str(project_path), "--output", str(link)], stderr=stderr) == 1
     assert "refusing to publish through a symlink" in stderr.getvalue()
     assert list(target.iterdir()) == []
+
+
+def test_evidence_build_rejects_a_symlinked_output_parent(tmp_path: Path) -> None:
+    project_path = _independent_project(tmp_path)
+    target = tmp_path / "outside"
+    target.mkdir()
+    linked_parent = tmp_path / "linked-parent"
+    linked_parent.symlink_to(target, target_is_directory=True)
+    output = linked_parent / "evidence"
+    stderr = io.StringIO()
+
+    assert main(["build", str(project_path), "--output", str(output)], stderr=stderr) == 1
+    assert "refusing to publish through a symlinked path component" in stderr.getvalue()
+    assert list(target.iterdir()) == []
+
+
+def test_publication_cannot_be_redirected_between_artifacts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stage = tmp_path / "stage"
+    output_parent = tmp_path / "output-parent"
+    output = output_parent / "evidence"
+    outside = tmp_path / "outside"
+    stage.mkdir()
+    output.mkdir(parents=True)
+    (outside / "evidence").mkdir(parents=True)
+    for filename in (*EVIDENCE_FILENAMES, MANIFEST_FILENAME):
+        (stage / filename).write_text(filename, encoding="utf-8")
+
+    original_rename = cli.os.rename
+    replacements = 0
+
+    def rename_then_redirect(
+        source: str | Path,
+        destination: str | Path,
+        **kwargs: object,
+    ) -> None:
+        nonlocal replacements
+        original_rename(source, destination, **kwargs)
+        replacements += 1
+        if replacements == 1:
+            original_rename(output_parent, tmp_path / "original-output-parent")
+            output_parent.symlink_to(outside, target_is_directory=True)
+
+    monkeypatch.setattr(cli.os, "rename", rename_then_redirect)
+
+    cli._publish(stage, output)
+
+    assert list((outside / "evidence").iterdir()) == []
+    published = tmp_path / "original-output-parent" / "evidence"
+    assert {path.name for path in published.iterdir()} == {
+        *EVIDENCE_FILENAMES,
+        MANIFEST_FILENAME,
+    }
 
 
 def test_evidence_build_rejects_stale_unmanifested_output(tmp_path: Path) -> None:

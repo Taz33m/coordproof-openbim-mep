@@ -14,6 +14,22 @@ from asset_catalog import ALL_ASSETS, REQUIRED_ASSET_IDS, REQUIRED_CATEGORIES  #
 MANIFEST = ROOT / "manifest" / "asset_manifest.json"
 
 
+def _is_safe_export_path(value: str) -> bool:
+    """Return whether *value* is a canonical, portable repository-relative path."""
+
+    portable = PurePosixPath(value)
+    return (
+        bool(value)
+        and all(ord(character) >= 32 and ord(character) != 127 for character in value)
+        and ":" not in value
+        and "\\" not in value
+        and not portable.is_absolute()
+        and portable != PurePosixPath(".")
+        and value == portable.as_posix()
+        and all(part not in {"", ".", ".."} for part in value.split("/"))
+    )
+
+
 def validate() -> dict[str, object]:
     failures: list[str] = []
     warnings: list[str] = []
@@ -92,10 +108,7 @@ def validate() -> dict[str, object]:
                     f"{asset.get('asset_id')} export names and paths must be strings"
                 )
                 continue
-            portable = PurePosixPath(export_path)
-            if portable.is_absolute() or any(
-                part in {"", ".", ".."} for part in portable.parts
-            ):
+            if not _is_safe_export_path(export_path):
                 failures.append(
                     f"{asset.get('asset_id')} has unsafe export path: {export_path!r}"
                 )

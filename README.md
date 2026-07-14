@@ -1,13 +1,18 @@
 # CoordProof
 
-**Reproducible OpenBIM evidence package for MEP coordination.**
+**Deterministic OpenBIM builds and regression evidence for MEP coordination.**
 
 [![CI](https://github.com/Taz33m/coordproof-openbim-mep/actions/workflows/ci.yml/badge.svg)](https://github.com/Taz33m/coordproof-openbim-mep/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Taz33m/coordproof-openbim-mep/actions/workflows/codeql.yml/badge.svg)](https://github.com/Taz33m/coordproof-openbim-mep/actions/workflows/codeql.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.11–3.12](https://img.shields.io/badge/python-3.11%E2%80%933.12-3776AB.svg)](CONTRIBUTING.md)
 
-CoordProof generates a coordinated mechanical-room package from reviewed Python/OpenBIM source definitions. The package includes IFC4 semantics, FreeCAD review models, QCAD DXF/PDF drawings, STEP/STL CAD exports, asset manifests, BOM/clearance reports, and automated validation.
+CoordProof is an installable ProjectSpec validator and OpenBIM evidence builder.
+It turns supported, semantically valid ProjectSpec v1 files into deterministic
+six-file IFC evidence bundles and formally validates the IFC before publication.
+This repository also carries a deeper mechanical-room reference
+package with FreeCAD review models, QCAD DXF/PDF drawings, STEP/STL CAD exports,
+asset manifests, coordination reports, and automated validation.
 
 <p align="center">
   <a href="https://youtu.be/4Ww1gH0GFy8">
@@ -22,15 +27,21 @@ CoordProof generates a coordinated mechanical-room package from reviewed Python/
 
 ## System
 
-CoordProof models a mechanical room as a traceable CAD/BIM production package.
-The versioned [`spec/mechanical_room.project.json`](spec/mechanical_room.project.json)
-is the authoritative project contract for reusable asset types, placed
+CoordProof models coordination packages as traceable builds. A versioned
+ProjectSpec is the authoritative contract for reusable asset types, placed
 occurrences, deliverable artifacts, systems, ports, connections, and required
 coverage. [`spec/project.schema.json`](spec/project.schema.json) and semantic
 validation in [`tools/project_spec.py`](tools/project_spec.py) reject invalid or
-dangling declarations before generators run. Python consumers expose compatible
-catalog and IFC schedule projections while geometry remains implemented in the
-reviewed CadQuery, OpenSCAD, FreeCAD, and drawing generators.
+dangling declarations before generators run. The installable `coordproof` CLI
+validates, summarizes, and builds generic ProjectSpec files; the independent
+[`examples/electrical_room/`](examples/electrical_room/) contract exercises that
+path without adding a second loader or project-specific generator.
+
+The canonical [`spec/mechanical_room.project.json`](spec/mechanical_room.project.json)
+contains 44 asset types, 40 placed occurrences, 13 artifacts, and 57 catalog
+records. It drives the repository's broader CadQuery, OpenSCAD, FreeCAD, QCAD,
+reporting, and validation pipeline. Those `core` and `full` profiles remain tied
+to this checkout while their adapters are generalized.
 
 The versioned [`spec/reconciliation.contract.json`](spec/reconciliation.contract.json)
 binds authoritative numeric values to producer inputs without copying expected
@@ -43,8 +54,10 @@ safely derived, or a justified override.
 Reconciliation v1 verifies declared fallback values and the bounded plumbing
 that forwards ProjectSpec inputs into CadQuery or OpenSCAD. Differential tests
 also confirm that every current numeric CadQuery input changes generated
-geometry. These checks are not a dimensional inspection of committed STEP/STL
-files; observed-export parity remains a separate roadmap milestone.
+geometry. A separate observed-geometry matrix measures committed geometry rather
+than trusting embedded metadata: 69 IFC, STEP, STL, and selected DXF envelope
+observations pass, none fail, and the legacy FreeCAD assembly STEP remains one
+visible exclusion.
 
 The package connects geometry, drawings, IFC semantics, reports, and QA outputs as inspectable artifacts.
 
@@ -70,12 +83,14 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 | Distribution ports | 51 | MEP connectivity graph. |
 | Connected port pairs | 22 | Machine-readable relationships between systems/assets. |
 | Building element proxies | 0 | No generic proxy fallback in the authoritative validation model. |
-| Manifest assets | 56 | Traceable asset and evidence inventory across 15 categories. |
+| ProjectSpec inventory | 44 types / 40 occurrences / 13 artifacts | Canonical mechanical-room source contract. |
+| Manifest assets | 57 | Traceable catalog records across 15 categories. |
 | DXF/PDF sheets | 7 + 7 | QCAD drawing package and review exports. |
 | STEP/STL exports | 10 + 13 | Reusable CAD assets and mesh review/export layer. |
 | Canonical engineering parameters | 75 / 75 | Default/input bindings reconciled across the required CadQuery/OpenSCAD producers. |
 | Observed producer numeric inputs | 78 / 78 | Accounted for: 75 mapped values and 3 explicit OpenSCAD `$fn` technical exclusions. |
 | Reconciliation relations | 17 | Equal, safely derived, or justified type-to-occurrence relationships. |
+| Observed geometry bounds | 69 PASS / 0 FAIL / 1 EXCLUDED | Direct IFC, STEP, STL, and selected DXF envelope measurements; the exclusion is the legacy FreeCAD assembly STEP. |
 | Critical validation failures | 0 | Current automated QA status. |
 
 ## Generated Package
@@ -86,14 +101,15 @@ The package connects geometry, drawings, IFC semantics, reports, and QA outputs 
 | CAD review model | FreeCAD assembly files and supporting FreeCAD BIM organization for native model inspection. |
 | Drawing package | QCAD-ready DXF sheets with matching PDF exports, title blocks, dimensions, sections, details, and system routing views. |
 | Asset library | CadQuery and OpenSCAD assets exported to STEP/STL for reusable mechanical supports, routing components, bases, sleeves, and details. |
-| Reports | Coordination report, bill of materials, clash/clearance screen, parameter reconciliation evidence, IFC entity summary, and validation report. |
+| Reports | Coordination report, bill of materials, clearance screen, parameter reconciliation and observed-geometry evidence, IFC entity summary, and validation report. |
 | QA manifest | Asset manifest and export index linking generated objects to categories, parameters, file outputs, and validation status. |
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    P["ProjectSpec v1<br/>types + occurrences + systems + ports"] --> L["Schema + semantic validation"]
+    P["ProjectSpec v1<br/>types + occurrences + systems + ports"] --> CLI["coordproof CLI<br/>validate + summary + build"]
+    CLI --> L["Schema + semantic validation"]
     P --> R["Reconciliation contract<br/>selectors + safe relations"]
     L --> A["openbim_core.py<br/>placed-occurrence projection"]
     L --> T["asset_catalog.py<br/>catalog projection"]
@@ -118,6 +134,12 @@ flowchart LR
     V --> H
     R --> H
     J --> H
+    B --> O["Observed geometry<br/>IFC + STEP + STL + DXF bounds"]
+    D --> O
+    E --> O
+    O --> H
+    X["Two external IFC files"] --> Y["Bounded geometry-tree clash pilot"]
+    Y --> Z["Deterministic JSON<br/>optional BCF 3.0"]
 ```
 
 The authority and migration boundary are recorded in
@@ -130,15 +152,17 @@ The reconciliation boundary and safe-transform policy are recorded in
 
 | Area | Files |
 | --- | --- |
-| Project contract | [`spec/mechanical_room.project.json`](spec/mechanical_room.project.json), [`spec/project.schema.json`](spec/project.schema.json), [`tools/project_spec.py`](tools/project_spec.py) |
+| Installable CLI | [`src/coordproof/`](src/coordproof/), [`pyproject.toml`](pyproject.toml) |
+| Project contracts | [`spec/mechanical_room.project.json`](spec/mechanical_room.project.json), [`examples/electrical_room/electrical_room.project.json`](examples/electrical_room/electrical_room.project.json), [`spec/project.schema.json`](spec/project.schema.json) |
 | Reconciliation | [`spec/reconciliation.contract.json`](spec/reconciliation.contract.json), [`tools/reconcile_parameters.py`](tools/reconcile_parameters.py), [`reports/parameter_reconciliation.md`](reports/parameter_reconciliation.md) |
 | Generator projections | [`tools/asset_catalog.py`](tools/asset_catalog.py), [`tools/openbim_core.py`](tools/openbim_core.py), [`tools/build_all.py`](tools/build_all.py) |
 | IFC/OpenBIM | [`bim/mechanical_room.ifc`](bim/mechanical_room.ifc), [`bim/mechanical_room_freecad_review.ifc`](bim/mechanical_room_freecad_review.ifc), [`bim/openbim_semantic_inventory.csv`](bim/openbim_semantic_inventory.csv) |
 | Drawings | [`qcad/`](qcad/), [`qcad/pdf_exports/`](qcad/pdf_exports/) |
 | Assets | [`cadquery/`](cadquery/), [`openscad/`](openscad/), [`exports/`](exports/) |
-| Reports | [`reports/coordination_report.md`](reports/coordination_report.md), [`reports/bill_of_materials.csv`](reports/bill_of_materials.csv), [`reports/clash_clearance_report.csv`](reports/clash_clearance_report.csv) |
+| Reports | [`reports/coordination_report.md`](reports/coordination_report.md), [`reports/bill_of_materials.csv`](reports/bill_of_materials.csv), [`reports/clash_clearance_report.csv`](reports/clash_clearance_report.csv), [`reports/observed_geometry_matrix.md`](reports/observed_geometry_matrix.md) |
 | Validation | [`validation/validation_report.md`](validation/validation_report.md), [`tools/preflight_public_package.py`](tools/preflight_public_package.py) |
 | Provenance | [`manifest/build_provenance.json`](manifest/build_provenance.json), [`tools/build_provenance.py`](tools/build_provenance.py) |
+| External IFC clash pilot | [`tools/external_ifc_clash.py`](tools/external_ifc_clash.py) |
 | Optional OpenCAD | [`integrations/opencad/`](integrations/opencad/) |
 
 ## Validation
@@ -153,6 +177,8 @@ The reconciliation boundary and safe-transform policy are recorded in
 | Observed producer numeric inputs accounted | 78 / 78 | 78 / 78 | PASS |
 | Explicit technical exclusions | 3 OpenSCAD `$fn` controls | 3 | PASS |
 | Reconciliation evidence rows | 95 passing | 95 passing | PASS |
+| Observed geometry envelopes | 69 passing, 0 failing | 69 passing, 0 failing | PASS |
+| Explicit observed-geometry exclusions | 1 legacy FreeCAD assembly STEP | 1 | REVIEW |
 | Distribution systems | >= 5 | 5 | PASS |
 | Port connections | >= 20 | 22 | PASS |
 | Building element proxies | 0 | 0 | PASS |
@@ -161,7 +187,46 @@ The reconciliation boundary and safe-transform policy are recorded in
 
 Validation is implemented with IfcOpenShell inspection, manifest checks, export-count checks, and deterministic report generation. The generated report is available at [`validation/validation_report.md`](validation/validation_report.md).
 
-## Reproduction
+## Installable CLI
+
+Install the package from a checkout, then validate or build either included
+ProjectSpec—or another contract within the supported v1 class, geometry, and
+port-host vocabulary—without depending on the current working directory:
+
+```bash
+python3.11 -m venv .venv
+.venv/bin/python -m pip install .
+.venv/bin/coordproof validate spec/mechanical_room.project.json
+.venv/bin/coordproof summary examples/electrical_room/electrical_room.project.json
+.venv/bin/coordproof build examples/electrical_room/electrical_room.project.json \
+  --output build/electrical-room-evidence
+```
+
+The default `evidence` profile publishes exactly six deterministic files into
+a dedicated output directory:
+
+- `project.normalized.json`
+- `project-summary.json`
+- `project.ifc`
+- `ifc-entity-summary.md`
+- `openbim-semantic-inventory.csv`
+- `build-manifest.json`
+
+The manifest records SHA-256 hashes for the other five files. Publication is
+staged, stale manifests are invalidated before replacement, and symlinked output
+paths or pre-existing unmanifested entries are rejected. The normalized contract
+uses the schema's stable HTTPS ID, and generated IFC must pass formal EXPRESS
+validation before publication.
+Secure evidence publication currently requires POSIX directory-handle
+primitives and fails closed on unsupported platforms; see
+[`docs/limitations.md`](docs/limitations.md) for the explicit Windows boundary.
+IfcOpenShell 0.8.x uses pytest's assertion rewriter for that runtime EXPRESS
+gate, so pytest is an explicit base dependency rather than a hidden assumption.
+`--profile core` and `--profile full` invoke the canonical
+mechanical-room pipeline and are intentionally unavailable for arbitrary
+ProjectSpec paths today.
+
+## Reproduction of the Reference Package
 
 Python 3.11 is the reference environment; Python 3.12 is also supported. Start
 with the portable environment check:
@@ -217,6 +282,12 @@ make validate
 make preflight
 ```
 
+Generate and verify direct cross-format bounds independently:
+
+```bash
+make observed-geometry
+```
+
 Contributor tooling:
 
 ```bash
@@ -224,6 +295,42 @@ make install-dev
 make lint
 make test
 ```
+
+## External IFC Clash Pilot
+
+`coordproof clash` runs a bounded A-versus-B clash set using IfcOpenShell's
+compiled geometry tree and writes deterministic, path-free JSON. Collision,
+intersection, and clearance modes are supported, with repeatable IFC-class
+filters and explicit limits for files, elements, triangles, candidate pairs,
+results, and workers. Triangle counts are enforced immediately after each
+selected element is tessellated; they are not a peak-memory or execution-time
+sandbox for hostile IFC geometry:
+
+```bash
+.venv/bin/coordproof clash architecture.ifc mep.ifc \
+  --a-label Architecture --b-label MEP \
+  --a-class IfcBuildingElement --b-class IfcDistributionElement \
+  --mode intersection --output clashes.json --fail-on-clash
+```
+
+Optional deterministic BCF 3.0 issue output uses the tested `bcf-client` 0.8.x
+API:
+
+```bash
+.venv/bin/python -m pip install -e '.[bcf]'
+.venv/bin/coordproof clash architecture.ifc mep.ifc \
+  --output clashes.json --bcf clashes.bcfzip
+```
+
+This is a deliberately narrow interoperability pilot, not a federation manager:
+it accepts exactly two distinct uncompressed IFC STEP files in a shared
+coordinate frame, performs only cross-model comparisons, rejects ambiguous
+shared selected GlobalIds, and does not provide model alignment, selector-query
+languages, rulesets, snapshots, a wall-clock deadline, or an interactive issue
+workflow. With `--fail-on-clash`, the report is still written and a nonzero exit
+status makes detected clashes usable as a CI gate. Requested JSON and BCF are
+both staged before publication, so a BCF generation failure does not leave a
+new JSON-only result; each final file replacement is individually atomic.
 
 ## OpenCAD Pilot
 
@@ -246,6 +353,7 @@ Current validation status:
 ```text
 Overall Status: PASSED
 Parameter Reconciliation Validation: PASSED
+Observed Geometry Validation: PASSED (69 PASS, 0 FAIL, 1 EXCLUDED)
 IFC Validation: PASSED
 Manifest Validation: PASSED
 Exports Validation: PASSED
@@ -255,7 +363,9 @@ Exports Validation: PASSED
 
 The implemented scope is CAD/BIM automation and OpenBIM package generation.
 
-Excluded scopes: stamped engineering design, construction documents, manufacturer fabrication modeling, code compliance, hydraulic calculation, airflow calculation, and full clash-detection analysis.
+Excluded scopes: stamped engineering design, construction documents,
+manufacturer fabrication modeling, code compliance, hydraulic calculation,
+airflow calculation, and a full federation/clash-management workflow.
 
 Major objects are named, classified, exported, documented, mapped, coordinated,
 and validated from the versioned ProjectSpec contract. See

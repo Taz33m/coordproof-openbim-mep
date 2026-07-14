@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CoordProof | OpenBIM MEP Coordination Package</title>
-    <meta name="description" content="CoordProof is a reproducible OpenBIM evidence package for MEP coordination with IFC4 semantics, QCAD drawings, CAD exports, manifests, and validation.">
+    <title>CoordProof | Deterministic OpenBIM Builds and Evidence</title>
+    <meta name="description" content="CoordProof is an installable deterministic OpenBIM builder and regression-evidence system for MEP coordination, with generic ProjectSpec-to-IFC builds and a multi-tool reference package.">
     <meta property="og:title" content="CoordProof">
-    <meta property="og:description" content="Reproducible OpenBIM evidence package for MEP coordination.">
+    <meta property="og:description" content="Installable deterministic ProjectSpec-to-IFC builds and cross-format MEP coordination evidence.">
     <meta property="og:image" content="https://img.youtube.com/vi/4Ww1gH0GFy8/maxresdefault.jpg">
     <meta property="og:url" content="https://taz33m.github.io/coordproof-openbim-mep/">
     <style>
@@ -334,7 +334,7 @@
       <div class="hero">
         <div>
           <h1>OpenBIM coordination evidence, generated from a versioned project contract.</h1>
-          <p class="lede">CoordProof produces a mechanical-room package across IFC4, FreeCAD, QCAD drawings, CAD exports, manifests, reports, and automated QA.</p>
+          <p class="lede">CoordProof validates and builds generic ProjectSpec contracts into deterministic IFC evidence, backed by a deep mechanical-room reference package across FreeCAD, QCAD, STEP/STL, reports, and automated QA.</p>
           <div class="actions">
             <a class="button" href="https://github.com/Taz33m/coordproof-openbim-mep">Open repository</a>
             <a class="button secondary" href="https://youtu.be/4Ww1gH0GFy8">Watch video</a>
@@ -350,8 +350,17 @@
     <main>
       <section>
         <h2>Generated Package</h2>
-        <p class="section-copy">A versioned ProjectSpec declares reusable asset types, placed occurrences, IFC classes, systems, ports, connections, artifacts, and required coverage. A separate reconciliation contract binds those values to producer inputs without copying expected geometry. The v1 evidence verifies supported input plumbing and current CadQuery parameter sensitivity; exact dimensional inspection of committed exports remains a separate milestone.</p>
+        <p class="section-copy">A versioned ProjectSpec declares reusable asset types, placed occurrences, IFC classes, systems, ports, connections, artifacts, and required coverage. The installable <code>coordproof validate|summary|build</code> workflow accepts supported, semantically valid v1 contracts and publishes a deterministic, formally validated six-file IFC evidence bundle. The canonical mechanical room adds a separate reconciliation contract and direct observed-geometry inspection: 69 IFC, STEP, STL, and selected DXF envelope observations pass, none fail, and one legacy FreeCAD assembly remains explicitly excluded.</p>
         <img class="wide-image" src="https://raw.githubusercontent.com/Taz33m/coordproof-openbim-mep/main/screenshots/00_coordproof_system_overview.png" alt="CoordProof generated OpenBIM package overview">
+      </section>
+
+      <section>
+        <h2>One contract format, two domains</h2>
+        <p class="section-copy">The full mechanical-room package contains 44 asset types, 40 placed occurrences, 13 artifacts, and 57 catalog records. A substantially different electrical-room example models utility, distribution, transformer, panelboard, grounding, metering, feeders, and clearances through the same loader and generic IFC builder. The wider CAD/drawing profiles remain intentionally tied to the mechanical-room reference while those adapters are generalized.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/Taz33m/coordproof-openbim-mep/tree/main/examples/electrical_room">Open electrical example</a>
+          <a class="button secondary" href="https://github.com/Taz33m/coordproof-openbim-mep/blob/main/README.md#installable-cli">Use the CLI</a>
+        </div>
       </section>
 
       <section>
@@ -379,24 +388,28 @@
           <div class="metric"><strong>5</strong><span>distribution systems</span></div>
           <div class="metric"><strong>51</strong><span>distribution ports</span></div>
           <div class="metric"><strong>22</strong><span>connected port pairs</span></div>
-          <div class="metric"><strong>56</strong><span>manifest assets</span></div>
+          <div class="metric"><strong>57</strong><span>catalog records</span></div>
           <div class="metric"><strong>75/75</strong><span>engineering parameters</span></div>
           <div class="metric"><strong>78/78</strong><span>producer inputs accounted</span></div>
+          <div class="metric"><strong>69/69</strong><span>observed bounds passing</span></div>
           <div class="metric"><strong>0</strong><span>critical failures</span></div>
         </div>
-        <p class="section-copy">The 78 observed top-level producer inputs comprise 75 mapped engineering values and three explicitly excluded OpenSCAD <code>$fn</code> facet controls.</p>
+        <p class="section-copy">The 78 observed top-level producer inputs comprise 75 mapped engineering values and three explicitly excluded OpenSCAD <code>$fn</code> facet controls. Direct export observation is a separate check with 69 passes, zero failures, and one visible FreeCAD assembly exclusion.</p>
       </section>
 
       <section>
         <h2>Architecture</h2>
         <table>
           <tr><th>Layer</th><th>Generated artifacts</th></tr>
-          <tr><td><code>spec/mechanical_room.project.json</code></td><td>Versioned source of truth for asset types, placed occurrences, systems, ports, connections, artifacts, and coverage requirements.</td></tr>
+          <tr><td><code>coordproof</code> CLI</td><td>Installable validation, inventory summary, generic deterministic ProjectSpec-to-IFC evidence builds, and bounded external IFC clash sets.</td></tr>
+          <tr><td><code>spec/mechanical_room.project.json</code></td><td>Versioned source of truth for 44 asset types, 40 placed occurrences, 13 artifacts, systems, ports, connections, and coverage requirements.</td></tr>
+          <tr><td><code>examples/electrical_room/</code></td><td>Independent domain example exercising the same schema, loader, validation, and generic IFC evidence build.</td></tr>
           <tr><td><code>spec/reconciliation.contract.json</code></td><td>Versioned selectors, safe derived relations, and justified occurrence overrides for cross-format parameter evidence.</td></tr>
           <tr><td>Python projections</td><td>Validated catalog and OpenBIM schedules consumed by generators without duplicating project declarations.</td></tr>
           <tr><td>IFC/OpenBIM</td><td>IFC4 model, distribution systems, ports, property sets, semantic inventory, and entity summary.</td></tr>
           <tr><td>CAD/Drawing package</td><td>FreeCAD review files, QCAD DXF sheets, PDF exports, CadQuery assets, and OpenSCAD assets.</td></tr>
-          <tr><td>QA layer</td><td>Parameter reconciliation, manifest coverage, export checks, IFC validation, BOM, clearance report, and public-package preflight.</td></tr>
+          <tr><td>QA layer</td><td>Parameter reconciliation, 69 direct observed-geometry passes, manifest coverage, export checks, IFC validation, BOM, clearance report, and public-package preflight.</td></tr>
+          <tr><td>External IFC pilot</td><td>Bounded two-model collision/intersection/clearance checks with deterministic JSON and optional BCF 3.0.</td></tr>
         </table>
       </section>
 
@@ -413,6 +426,8 @@
           <tr><td>Observed producer numeric inputs accounted</td><td>78 / 78</td><td>78 / 78</td><td>PASS</td></tr>
           <tr><td>Explicit technical exclusions</td><td>3 OpenSCAD <code>$fn</code> controls</td><td>3</td><td>PASS</td></tr>
           <tr><td>Reconciliation evidence rows</td><td>95 passing</td><td>95 passing</td><td>PASS</td></tr>
+          <tr><td>Observed geometry envelopes</td><td>69 passing, 0 failing</td><td>69 passing, 0 failing</td><td>PASS</td></tr>
+          <tr><td>Explicit observed exclusions</td><td>1 legacy FreeCAD assembly</td><td>1</td><td>REVIEW</td></tr>
           <tr><td>Port connections</td><td>&gt;= 20</td><td>22</td><td>PASS</td></tr>
           <tr><td>Building element proxies</td><td>0</td><td>0</td><td>PASS</td></tr>
           <tr><td>Required exports</td><td>35+</td><td>46</td><td>PASS</td></tr>
@@ -420,13 +435,13 @@
         </table>
         <div class="actions">
           <a class="button" href="https://github.com/Taz33m/coordproof-openbim-mep/blob/main/validation/validation_report.md">Open validation report</a>
-          <a class="button secondary" href="https://github.com/Taz33m/coordproof-openbim-mep/blob/main/README.md#reproduction">Reproduce package</a>
+          <a class="button secondary" href="https://github.com/Taz33m/coordproof-openbim-mep/blob/main/README.md#reproduction-of-the-reference-package">Reproduce package</a>
         </div>
       </section>
     </main>
 
     <footer>
-      CoordProof is an OpenBIM/CAD automation package for technical inspection. Source and generated artifacts are available in the public repository.
+      CoordProof is an installable OpenBIM build and CAD/BIM regression-evidence project for technical inspection. Source and generated artifacts are available in the public repository.
     </footer>
   </body>
 </html>

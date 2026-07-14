@@ -813,7 +813,11 @@ def write_bcf_report(report: dict[str, Any], path: str | Path) -> None:
         raise ClashInputError("BCF output must use a .bcf or .bcfzip suffix")
     api = _load_bcf_api()
     output.parent.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.fromtimestamp(source_date_epoch(), tz=UTC)
+    try:
+        epoch = source_date_epoch()
+    except ValueError as exc:
+        raise ClashInputError(str(exc)) from exc
+    timestamp = datetime.fromtimestamp(epoch, tz=UTC)
     creation_date = api.XmlDateTime.from_datetime(timestamp)
     extensions = api.model.Extensions(
         topic_types=api.model.ExtensionsTopicTypes(topic_type=["Clash"]),

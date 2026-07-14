@@ -201,8 +201,8 @@
       "sha256": "f00bc4ea16d708e3a42570971a42e1e154b7cffe7e789aaa596e543a44ac090e"
     },
     "manifest/parameter_schema.json": {
-      "bytes": 3496,
-      "sha256": "7e28e521f557d67931ecba6df1730a2abae0c68beb31ec5060e1225b4f0e45ad"
+      "bytes": 3523,
+      "sha256": "128bd1687427fa1692e2a4324683a7b0526acf6a829fe500376ff98b525eb3d1"
     },
     "openscad/bracket_plate.scad": {
       "bytes": 727,
@@ -369,8 +369,8 @@
       "sha256": "c72781f2f990f07d0b5f9dd59027a7cfc946b58ede6c3fce63fbf8b567fe9c13"
     },
     "tools/build_manifest.py": {
-      "bytes": 6814,
-      "sha256": "b86ceabf0329c0b9d8bae2d9670fd01ec579960d001c018869358946d60a931f"
+      "bytes": 6898,
+      "sha256": "832f27a9f0a261b36b670fd63c68edda950255d97fec3dda2dd67c375f46ff57"
     },
     "tools/build_provenance.py": {
       "bytes": 7766,
@@ -389,8 +389,8 @@
       "sha256": "54664f223fa1557e606de01efd257deb824146fa3c9e2db731efc16160a5e372"
     },
     "tools/external_ifc_clash.py": {
-      "bytes": 37475,
-      "sha256": "67bb1b083ff4923e34486b9452f6426bced5f2055e2ab62e778f894ad66adb4c"
+      "bytes": 37585,
+      "sha256": "9ad76736fd09f4add0103d31227987d7bafc1c01141f0fcdf2116d2877b8249a"
     },
     "tools/freecad_artifact_normalization.py": {
       "bytes": 27333,
@@ -413,8 +413,8 @@
       "sha256": "e7069e7b2b011fc7efdc583d2441af1dd692f24df0f4ac965aab0723c0e96738"
     },
     "tools/generate_observed_geometry_matrix.py": {
-      "bytes": 37037,
-      "sha256": "5481f5698ace9a77db3e2d54a4eefe1acadc7ff2997286c31aa2386182b33756"
+      "bytes": 37727,
+      "sha256": "4a1951c86668ff6a71dbd516cc295c7b1cfe6436b5cca5e2dd5d0f68cff95535"
     },
     "tools/generate_openscad_exports.py": {
       "bytes": 5067,
@@ -457,16 +457,16 @@
       "sha256": "935c9fb49df675bc21762cef22f88bd0de7b2d74e04502b3ce364d46a24bf58a"
     },
     "validation/validate_exports.py": {
-      "bytes": 12379,
-      "sha256": "34cb06b8a954cf2f2d7b344c6685dcdd9ab4be2c4fc5ed22fb0a3eb873bc25b1"
+      "bytes": 12727,
+      "sha256": "4038236bf4c58a78e7ab7956c603ec6e6268701c51d72778aee3d7bd7ac9b056"
     },
     "validation/validate_ifc.py": {
       "bytes": 29810,
       "sha256": "2156324f4ee337e687d41d691372a56d2d05dfeaf109c7d537c40edb454b49ce"
     },
     "validation/validate_manifest.py": {
-      "bytes": 7238,
-      "sha256": "3157393e8b04e9c9f619a21d1cfa1edf62b156a41ce43f6def183fc9fc8373e1"
+      "bytes": 7665,
+      "sha256": "89e1cda04960a6b699ffcd20bc613ecdb133ae4d2d99adf6d555b3e8cedba410"
     },
     "validation/validate_observed_geometry.py": {
       "bytes": 3238,

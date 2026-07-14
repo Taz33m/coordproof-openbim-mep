@@ -15,6 +15,7 @@ from tools.generate_observed_geometry_matrix import (
     _dxf_polyline_bounds,
     _openscad_connector,
     _row,
+    _safe_repo_path,
     ifc_product_bounds,
     main,
     occurrence_bounds,
@@ -99,6 +100,43 @@ def test_dxf_observer_rejects_an_open_outline() -> None:
         _dxf_polyline_bounds(polyline)
 
 
+def test_dxf_observer_rejects_bulge_arcs() -> None:
+    document = ezdxf.new()
+    polyline = document.modelspace().add_lwpolyline(
+        [(0, 0, 1), (10, 0, 0), (10, 10, 0)],
+        format="xyb",
+        close=True,
+    )
+
+    with pytest.raises(ValueError, match="bulge arcs"):
+        _dxf_polyline_bounds(polyline)
+
+
+@pytest.mark.parametrize("symlinked_parent", [False, True])
+def test_safe_repo_path_rejects_symlink_components(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    symlinked_parent: bool,
+) -> None:
+    root = tmp_path / "repo"
+    outside = tmp_path / "outside"
+    root.mkdir()
+    outside.mkdir()
+    artifact = outside / "artifact.ifc"
+    artifact.write_text("outside", encoding="utf-8")
+
+    if symlinked_parent:
+        (root / "linked").symlink_to(outside, target_is_directory=True)
+        supplied = Path("linked/artifact.ifc")
+    else:
+        (root / "artifact.ifc").symlink_to(artifact)
+        supplied = Path("artifact.ifc")
+
+    monkeypatch.setattr(geometry_matrix, "ROOT", root)
+    with pytest.raises(ValueError, match="symlink component"):
+        _safe_repo_path(supplied)
+
+
 def test_openscad_connector_envelope_is_derived_from_project_parameters() -> None:
     parameters = PROJECT_SPEC.asset_types_by_id[
         "openscad_duct_connector_type_b"
@@ -166,6 +204,21 @@ def test_observed_matrix_cli_rejects_noncanonical_projects_cleanly(
         ]
     ) == 2
     assert "currently certify only the canonical" in capsys.readouterr().err
+
+
+def test_observed_matrix_cli_accepts_a_repo_relative_ifc_path(
+    tmp_path: Path,
+) -> None:
+    assert main(
+        [
+            "--ifc",
+            "bim/mechanical_room.ifc",
+            "--csv",
+            str(tmp_path / "matrix.csv"),
+            "--markdown",
+            str(tmp_path / "matrix.md"),
+        ]
+    ) == 0
 
 
 def test_observed_matrix_rejects_a_noncanonical_contract_spoofing_the_project_id(

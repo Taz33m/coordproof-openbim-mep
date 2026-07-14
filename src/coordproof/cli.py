@@ -7,10 +7,14 @@ import hashlib
 import importlib
 import json
 import os
+import secrets
+import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 from collections.abc import Sequence
+from contextlib import suppress
 from dataclasses import replace
 from importlib.metadata import PackageNotFoundError, distribution
 from pathlib import Path
@@ -28,6 +32,16 @@ EVIDENCE_FILENAMES = (
 )
 MANIFEST_FILENAME = "build-manifest.json"
 EVIDENCE_PACKAGE_FILENAMES = frozenset((*EVIDENCE_FILENAMES, MANIFEST_FILENAME))
+_SECURE_PUBLICATION_SUPPORTED = (
+    os.name == "posix"
+    and all(
+        function in os.supports_dir_fd
+        for function in (os.open, os.mkdir, os.rename, os.stat, os.unlink)
+    )
+    and os.listdir in os.supports_fd
+    and os.stat in os.supports_follow_symlinks
+    and all(hasattr(os, flag) for flag in ("O_DIRECTORY", "O_NOFOLLOW"))
+)
 
 
 class CLIError(RuntimeError):
@@ -178,9 +192,33 @@ def _manifest(project: Any, stage: Path) -> dict[str, object]:
     }
 
 
+def _absolute_lexical_path(path: Path) -> Path:
+    """Return an absolute path without resolving filesystem links."""
+
+    return Path(os.path.abspath(os.fspath(path)))
+
+
+def _reject_symlink_components(path: Path) -> None:
+    """Reject every existing symlink in a publication path."""
+
+    absolute = _absolute_lexical_path(path)
+    current = Path(absolute.anchor)
+    for component in absolute.parts[1:]:
+        current /= component
+        try:
+            metadata = current.lstat()
+        except FileNotFoundError:
+            continue
+        attributes = getattr(metadata, "st_file_attributes", 0)
+        reparse_point = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        if stat.S_ISLNK(metadata.st_mode) or attributes & reparse_point:
+            raise CLIError(
+                f"refusing to publish through a symlinked path component: {current}"
+            )
+
+
 def _preflight_evidence_output(output: Path) -> None:
-    if output.is_symlink():
-        raise CLIError(f"refusing to publish through a symlink: {output}")
+    _reject_symlink_components(output)
     if output.exists() and not output.is_dir():
         raise CLIError(f"evidence output is not a directory: {output}")
     if not output.exists():
@@ -203,39 +241,161 @@ def _preflight_evidence_output(output: Path) -> None:
             raise CLIError(f"refusing to replace a non-file output: {destination}")
 
 
+def _secure_publication_supported() -> bool:
+    return _SECURE_PUBLICATION_SUPPORTED
+
+
+def _open_pinned_output_directory(output: Path) -> int:
+    """Securely create and open *output* without following path components."""
+
+    if not _secure_publication_supported():
+        raise CLIError(
+            "secure evidence publication requires POSIX directory-handle support; "
+            "this platform is not yet certified for evidence builds"
+        )
+
+    absolute = _absolute_lexical_path(output)
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    current_fd = os.open(absolute.anchor, flags)
+    current_path = Path(absolute.anchor)
+    try:
+        for component in absolute.parts[1:]:
+            current_path /= component
+            try:
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except FileNotFoundError:
+                os.mkdir(component, mode=0o755, dir_fd=current_fd)
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except OSError as exc:
+                raise CLIError(
+                    "refusing to publish through a non-directory or linked path "
+                    f"component: {current_path}"
+                ) from exc
+            os.close(current_fd)
+            current_fd = next_fd
+        return current_fd
+    except BaseException:
+        os.close(current_fd)
+        raise
+
+
+def _preflight_pinned_output(
+    output_fd: int,
+    output: Path,
+    ignored: set[str] | None = None,
+) -> None:
+    """Validate an already pinned output directory without reopening its path."""
+
+    ignored_names = ignored or set()
+    entries = set(os.listdir(output_fd))
+    unexpected = sorted(entries - EVIDENCE_PACKAGE_FILENAMES - ignored_names)
+    if unexpected:
+        names = ", ".join(unexpected)
+        raise CLIError(
+            "evidence output must be a dedicated directory; "
+            f"unexpected existing entries: {names}"
+        )
+    reparse_point = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    for filename in EVIDENCE_PACKAGE_FILENAMES & entries:
+        metadata = os.stat(filename, dir_fd=output_fd, follow_symlinks=False)
+        attributes = getattr(metadata, "st_file_attributes", 0)
+        if stat.S_ISLNK(metadata.st_mode) or attributes & reparse_point:
+            raise CLIError(f"refusing to replace a symlinked output: {output / filename}")
+        if not stat.S_ISREG(metadata.st_mode):
+            raise CLIError(f"refusing to replace a non-file output: {output / filename}")
+
+
+def _copy_to_pinned_temporary(stage_file: Path, output_fd: int) -> str:
+    """Copy one staged file to an unpredictable leaf in a pinned directory."""
+
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    while True:
+        temporary_name = f".coordproof-publish-{secrets.token_hex(16)}.tmp"
+        try:
+            descriptor = os.open(temporary_name, flags, 0o666, dir_fd=output_fd)
+        except FileExistsError:
+            continue
+        break
+    completed = False
+    try:
+        with stage_file.open("rb") as source, os.fdopen(descriptor, "wb") as destination:
+            descriptor = -1
+            shutil.copyfileobj(source, destination, length=1024 * 1024)
+            destination.flush()
+            os.fsync(destination.fileno())
+        completed = True
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+        if not completed:
+            with suppress(FileNotFoundError):
+                os.unlink(temporary_name, dir_fd=output_fd)
+    return temporary_name
+
+
 def _publish(stage: Path, output: Path) -> None:
     _preflight_evidence_output(output)
-    output.mkdir(parents=True, exist_ok=True)
-    # Recheck after creation and immediately before invalidating the previous
-    # certificate so a concurrently introduced extra payload fails closed.
-    _preflight_evidence_output(output)
+    output_fd = _open_pinned_output_directory(output)
+    temporary_names: dict[str, str] = {}
+    try:
+        _preflight_pinned_output(output_fd, output)
+        for filename in (*EVIDENCE_FILENAMES, MANIFEST_FILENAME):
+            temporary_names[filename] = _copy_to_pinned_temporary(
+                stage / filename,
+                output_fd,
+            )
 
-    # Invalidate the previous certificate before changing any artifact. A failed
-    # publication can leave recoverable files, but never a stale valid-looking
-    # manifest beside a mixed package.
-    manifest = output / MANIFEST_FILENAME
-    if manifest.exists():
-        manifest.unlink()
-    for filename in EVIDENCE_FILENAMES:
-        os.replace(stage / filename, output / filename)
-    os.replace(stage / MANIFEST_FILENAME, manifest)
+        # A concurrent ancestor rename cannot redirect any operation below:
+        # every mutation is relative to the verified directory handle. Recheck
+        # its contents before invalidating the previous certificate.
+        _preflight_pinned_output(output_fd, output, set(temporary_names.values()))
+        with suppress(FileNotFoundError):
+            os.unlink(MANIFEST_FILENAME, dir_fd=output_fd)
+        for filename in EVIDENCE_FILENAMES:
+            temporary_name = temporary_names[filename]
+            os.rename(
+                temporary_name,
+                filename,
+                src_dir_fd=output_fd,
+                dst_dir_fd=output_fd,
+            )
+            del temporary_names[filename]
+        os.fsync(output_fd)
+        manifest_temporary = temporary_names[MANIFEST_FILENAME]
+        _preflight_pinned_output(output_fd, output, {manifest_temporary})
+        os.rename(
+            manifest_temporary,
+            MANIFEST_FILENAME,
+            src_dir_fd=output_fd,
+            dst_dir_fd=output_fd,
+        )
+        del temporary_names[MANIFEST_FILENAME]
+        os.fsync(output_fd)
+    finally:
+        try:
+            for temporary_name in temporary_names.values():
+                with suppress(FileNotFoundError):
+                    os.unlink(temporary_name, dir_fd=output_fd)
+        finally:
+            os.close(output_fd)
 
 
 def build_evidence(project_path: Path, output: Path | None = None) -> Path:
     project_path = project_path.expanduser().resolve()
     project, normalized_payload = _project_snapshot(project_path)
     selected_output = output if output is not None else _default_output(project)
-    lexical_output = selected_output.expanduser()
-    if lexical_output.is_symlink():
-        raise CLIError(f"refusing to publish through a symlink: {lexical_output}")
+    lexical_output = _absolute_lexical_path(selected_output.expanduser())
+    _reject_symlink_components(lexical_output)
     resolved_output = lexical_output.resolve()
     if resolved_output == project_path or project_path.is_relative_to(resolved_output):
         raise CLIError("the build output cannot contain the source ProjectSpec")
 
     _preflight_evidence_output(lexical_output)
-    resolved_output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
-        dir=resolved_output.parent,
         prefix=".coordproof-stage-",
     ) as temporary_directory:
         stage = Path(temporary_directory)
@@ -256,7 +416,7 @@ def build_evidence(project_path: Path, output: Path | None = None) -> Path:
             project_source_label="project.normalized.json",
         )
         _write_json(stage / MANIFEST_FILENAME, _manifest(project, stage))
-        _publish(stage, resolved_output)
+        _publish(stage, lexical_output)
     return resolved_output
 
 

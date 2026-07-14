@@ -6,6 +6,39 @@ Check the portable environment with `make doctor`. Use `make core` for the
 Python/IfcOpenShell/CadQuery path. `make all` is the complete desktop profile and
 requires FreeCAD, OpenSCAD, and QCAD; run `make doctor-full` first.
 
+## 0. Use the Installable ProjectSpec CLI
+
+Install CoordProof from a checkout:
+
+```bash
+python3.11 -m venv .venv
+.venv/bin/python -m pip install .
+```
+
+The default CLI workflow applies to ProjectSpec v1 files that satisfy the
+versioned class, geometry, and port-host contract:
+
+```bash
+.venv/bin/coordproof validate PROJECT.json
+.venv/bin/coordproof summary PROJECT.json
+.venv/bin/coordproof build PROJECT.json --output build/project-evidence
+```
+
+The `evidence` build publishes a normalized ProjectSpec, JSON summary, IFC,
+IFC entity summary, semantic inventory, and SHA-256 build manifest. The source
+file is snapshotted before generation, publication uses a staging directory,
+the normalized contract records the schema's stable HTTPS ID, the IFC receives
+formal EXPRESS validation before publication, and the output is independent of
+the caller's working directory. The generic
+path is exercised by both the mechanical-room contract and
+`examples/electrical_room/electrical_room.project.json`.
+
+The repository's multi-tool `core` and `full` profiles remain canonical
+mechanical-room builds. They can be requested with `--profile core` or
+`--profile full` for `spec/mechanical_room.project.json` from a source checkout,
+but noncanonical ProjectSpec files must use the `evidence` profile until the CAD,
+drawing, and report adapters are generalized.
+
 ## 1. Validate the Project Contract
 
 ```bash
@@ -47,8 +80,8 @@ For CadQuery, the source gate requires canonical ProjectSpec forwarding, bounded
 literal reads of the merged mapping, consumption of every numeric fallback, and
 a differential test showing that each current numeric input changes the shape
 signature. For OpenSCAD, it validates literal declarations and the generator's
-`-D` injection boundary. Reconciliation does not measure committed STEP/STL
-dimensions; observed-export parity remains separate work.
+`-D` injection boundary. This source-level reconciliation remains distinct from
+the direct observed-geometry inspection in step 8.
 
 ## 3. Generate Structured Metadata
 
@@ -133,16 +166,40 @@ treats the ProjectSpec as the source of truth for IFC classes, systems, ports,
 connections, properties, and manifest coverage. `tools/openbim_core.py` is its
 typed generator-facing projection.
 
-## 8. Validate
+## 8. Measure Observed Geometry
+
+```bash
+make observed-geometry
+```
+
+`tools/generate_observed_geometry_matrix.py` derives expected bounds from
+ProjectSpec and compares them with geometry read directly from the committed
+IFC, STEP, STL, and selected floor-plan DXF entities. It writes:
+
+- `reports/observed_geometry_matrix.csv`
+- `reports/observed_geometry_matrix.md`
+
+The current matrix contains 69 passing observations, no failures, and one
+explicit exclusion for `mechanical_room_assembly.step`, whose legacy FreeCAD
+decomposition has not yet been completely projected from ProjectSpec. Bounds
+parity verifies placement and envelope dimensions; it does not certify topology,
+fabrication readiness, or engineering performance.
+
+These reviewed adapters currently certify only the canonical mechanical-room
+package. Passing another `--project-spec` fails cleanly until project-scoped CAD
+and drawing observation adapters are available.
+
+## 9. Validate
 
 ```bash
 .venv/bin/python validation/run_all.py
 ```
 
-The report is written to `validation/validation_report.md` and includes the
-live reconciliation result.
+The report is written to `validation/validation_report.md` and includes live
+reconciliation and observed-geometry results. Validation also rejects a stale
+committed geometry matrix.
 
-## 9. Record Provenance
+## 10. Record Provenance
 
 ```bash
 .venv/bin/python tools/build_provenance.py
@@ -151,7 +208,35 @@ live reconciliation result.
 This writes hashes and tool versions to `manifest/build_provenance.json`.
 Set `SOURCE_DATE_EPOCH` when producing a reproducibly timestamped release.
 
-## 10. Optional OpenCAD Feature-Tree Pilot
+## 11. Compare Two External IFC Models
+
+The installable clash pilot performs a bounded cross-model set with the compiled
+IfcOpenShell geometry tree:
+
+```bash
+.venv/bin/coordproof clash architecture.ifc mep.ifc \
+  --a-label Architecture --b-label MEP \
+  --a-class IfcBuildingElement --b-class IfcDistributionElement \
+  --mode intersection --output clashes.json --fail-on-clash
+```
+
+JSON output is deterministic and identifies both inputs by SHA-256 rather than
+embedding local paths. Install the optional BCF writer and add `--bcf` for a BCF
+3.0 issue package:
+
+```bash
+.venv/bin/python -m pip install -e '.[bcf]'
+.venv/bin/coordproof clash architecture.ifc mep.ifc \
+  --output clashes.json --bcf clashes.bcfzip
+```
+
+The pilot accepts two distinct, uncompressed IFC files in one coordinate frame.
+It does not run intra-model checks, align federated coordinates, or implement a
+complete issue-management workflow. Its triangle limit is a post-tessellation
+count gate, not a hard memory/time sandbox. See [limitations](limitations.md)
+before using it as a project gate.
+
+## 12. Optional OpenCAD Feature-Tree Pilot
 
 ```bash
 make install-opencad
