@@ -411,6 +411,34 @@ def test_cli_fails_closed_when_optional_bcf_api_is_absent(
     assert not output.exists()
 
 
+def test_cli_reports_invalid_source_date_epoch_as_controlled_bcf_input_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    output = tmp_path / "clashes.json"
+    bcf = tmp_path / "clashes.bcfzip"
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "not-an-epoch")
+    monkeypatch.setattr(external_ifc_clash, "_load_bcf_api", lambda: object())
+    monkeypatch.setattr(external_ifc_clash, "run_external_clash", lambda *args, **kwargs: {})
+
+    status = main(
+        [
+            str(tmp_path / "a.ifc"),
+            str(tmp_path / "b.ifc"),
+            "--output",
+            str(output),
+            "--bcf",
+            str(bcf),
+        ]
+    )
+
+    assert status == 2
+    assert "SOURCE_DATE_EPOCH must be a supported non-negative integer" in capsys.readouterr().err
+    assert not output.exists()
+    assert not bcf.exists()
+
+
 def test_bcf_is_real_deterministic_bcf3_or_fails_as_optional_capability(
     clashing_ifcs: tuple[Path, Path, dict[str, str], dict[str, str]],
     tmp_path: Path,

@@ -70,6 +70,22 @@ REQUIRED_FILES = [
 ]
 
 
+def _is_safe_export_path(value: str) -> bool:
+    """Return whether *value* is a canonical, portable repository-relative path."""
+
+    portable = PurePosixPath(value)
+    return (
+        bool(value)
+        and all(ord(character) >= 32 and ord(character) != 127 for character in value)
+        and ":" not in value
+        and "\\" not in value
+        and not portable.is_absolute()
+        and portable != PurePosixPath(".")
+        and value == portable.as_posix()
+        and all(part not in {"", ".", ".."} for part in value.split("/"))
+    )
+
+
 def artifact_structure_error(path: Path) -> str | None:
     """Return a concise error when a supported artifact is structurally invalid."""
 
@@ -200,14 +216,10 @@ def validate() -> dict[str, object]:
                     continue
                 asset_id, format_name, export_path = raw_values
                 indexed_rows.append((asset_id, format_name, export_path))
-                candidate = PurePosixPath(export_path)
                 if (
                     not asset_id
                     or not format_name
-                    or not export_path
-                    or candidate.is_absolute()
-                    or "\\" in export_path
-                    or any(part in {"", ".", ".."} for part in candidate.parts)
+                    or not _is_safe_export_path(export_path)
                 ):
                     failures.append(f"Unsafe or incomplete export index row {row_number}")
                     continue

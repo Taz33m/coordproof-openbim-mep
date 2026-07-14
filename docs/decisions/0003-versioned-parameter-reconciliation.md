@@ -40,7 +40,9 @@ generator injects mapped ProjectSpec values with deterministic `-D` arguments.
 This contract proves declared fallback alignment, supported input plumbing, and
 the classified relations in its report. It does not prove exact BRep/mesh
 dimensions or that committed exports geometrically match every declared value;
-those require format-specific observed-geometry checks.
+those require format-specific observed-geometry checks. The canonical package
+now provides a separate direct-bounds gate for IFC, STEP, STL, and selected DXF
+entities while keeping that evidence distinct from this declaration contract.
 
 ## Consequences
 

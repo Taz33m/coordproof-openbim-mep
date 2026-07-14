@@ -11,6 +11,7 @@ import argparse
 import csv
 import io
 import math
+import os
 import struct
 import sys
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -113,12 +114,25 @@ class Bounds:
         )
 
 
-def _safe_repo_path(relative: str) -> Path:
-    path = (ROOT / relative).resolve()
-    if not path.is_relative_to(ROOT.resolve()):
-        raise ValueError(f"artifact path escapes repository root: {relative!r}")
-    if not path.is_file() or path.is_symlink():
-        raise ValueError(f"artifact is not a regular file: {relative}")
+def _safe_repo_path(value: str | Path) -> Path:
+    root = ROOT.resolve()
+    supplied = Path(value)
+    candidate = supplied if supplied.is_absolute() else ROOT / supplied
+    lexical = Path(os.path.abspath(candidate))
+    if not lexical.is_relative_to(root):
+        raise ValueError(f"artifact path escapes repository root: {value!r}")
+
+    cursor = root
+    for part in lexical.relative_to(root).parts:
+        cursor /= part
+        if cursor.is_symlink():
+            raise ValueError(f"artifact path uses a symlink component: {value!r}")
+
+    path = lexical.resolve()
+    if not path.is_relative_to(root):
+        raise ValueError(f"artifact path escapes repository root: {value!r}")
+    if not path.is_file():
+        raise ValueError(f"artifact is not a regular file: {value}")
     return path
 
 
@@ -598,8 +612,9 @@ def _failure_row(
 
 
 def observe_ifc(project: ProjectSpec, ifc_path: Path) -> list[dict[str, str]]:
-    relative = ifc_path.relative_to(ROOT).as_posix()
-    model = ifcopenshell.open(ifc_path)
+    safe_ifc_path = _safe_repo_path(ifc_path)
+    relative = safe_ifc_path.relative_to(ROOT.resolve()).as_posix()
+    model = ifcopenshell.open(safe_ifc_path)
     products = {
         str(product.Tag): product
         for product in model.by_type("IfcProduct")
@@ -761,6 +776,10 @@ def observe_openscad(project: ProjectSpec) -> list[dict[str, str]]:
 def _dxf_polyline_bounds(entity) -> Bounds:
     if not entity.closed:
         raise ValueError("DXF observation requires a closed LWPOLYLINE")
+    if entity.has_arc:
+        raise ValueError(
+            "DXF observation does not support LWPOLYLINE bulge arcs; arc extrema are not certified"
+        )
     points = [(float(x), float(y), 0.0) for x, y, *_ in entity.get_points()]
     return _bounds_from_points(points)
 
