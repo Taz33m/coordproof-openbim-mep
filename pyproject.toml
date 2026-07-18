@@ -32,7 +32,7 @@ dependencies = [
 
 [project.optional-dependencies]
 full = [
-  "cadquery>=2.5,<2.6",
+  "cadquery>=2.5,<2.9",
   "defusedxml>=0.7,<1",
   "ezdxf>=1.4,<2",
   "reportlab>=4.2,<6",
@@ -43,7 +43,7 @@ bcf = [
 ]
 dev = [
   "build>=1.2,<2",
-  "cadquery>=2.5,<2.6",
+  "cadquery>=2.5,<2.9",
   "defusedxml>=0.7,<1",
   "ezdxf>=1.4,<2",
   "reportlab>=4.2,<6",
