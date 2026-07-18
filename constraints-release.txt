@@ -3,7 +3,7 @@
 # CAD/IFC serialization toolchain is deliberate and reproducible. Supported
 # version ranges remain declared in requirements.txt for separate compatibility
 # testing. The key runtime versions are recorded in build provenance.
-cadquery==2.5.2
+cadquery==2.8.0
 cadquery-ocp==7.7.2
 defusedxml==0.7.1
 ifcopenshell==0.8.5

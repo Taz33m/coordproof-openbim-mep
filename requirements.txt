@@ -1,6 +1,6 @@
 # Tested compatibility ranges. Keep upper bounds deliberate: CAD kernels and
 # exporters can change geometry or file serialization between major releases.
-cadquery>=2.5,<2.6
+cadquery>=2.5,<2.9
 defusedxml>=0.7,<1
 ifcopenshell>=0.8,<0.9
 ezdxf>=1.4,<2
