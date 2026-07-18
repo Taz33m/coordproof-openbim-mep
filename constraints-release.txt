@@ -4,7 +4,7 @@
 # version ranges remain declared in requirements.txt for separate compatibility
 # testing. The key runtime versions are recorded in build provenance.
 cadquery==2.5.2
-cadquery-ocp==7.7.2
+cadquery-ocp==7.9.3.1.1
 defusedxml==0.7.1
 ifcopenshell==0.8.5
 ezdxf==1.4.4
