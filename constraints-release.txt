@@ -8,7 +8,7 @@ cadquery-ocp==7.7.2
 defusedxml==0.7.1
 ifcopenshell==0.8.5
 ezdxf==1.4.4
-reportlab==5.0.0
+reportlab==5.0.1
 Pillow==12.3.0
 jsonschema==4.26.0
 pytest==9.1.1
