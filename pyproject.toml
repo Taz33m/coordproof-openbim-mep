@@ -36,7 +36,7 @@ full = [
   "defusedxml>=0.7,<1",
   "ezdxf>=1.4,<2",
   "reportlab>=4.2,<6",
-  "Pillow>=9,<13",
+  "Pillow>=9,<14",
 ]
 bcf = [
   "bcf-client>=0.8,<0.9",
@@ -47,7 +47,7 @@ dev = [
   "defusedxml>=0.7,<1",
   "ezdxf>=1.4,<2",
   "reportlab>=4.2,<6",
-  "Pillow>=9,<13",
+  "Pillow>=9,<14",
   "pytest>=9.0.3,<10",
   "pytest-cov>=5,<7",
   "ruff>=0.9,<1",

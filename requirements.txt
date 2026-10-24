@@ -5,7 +5,7 @@ defusedxml>=0.7,<1
 ifcopenshell>=0.8,<0.9
 ezdxf>=1.4,<2
 reportlab>=4.2,<6
-Pillow>=9,<13
+Pillow>=9,<14
 jsonschema>=4.23,<5
 # Required by IfcOpenShell 0.8.x when EXPRESS rules are enabled.
 pytest>=9.0.3,<10
